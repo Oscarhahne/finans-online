@@ -1,7 +1,7 @@
 // Stämmer motorn med de viktigaste reglerna?
 const assert = require('assert');
 const G = require('../game.js');
-const two = () => G.newGame([{ id: 'a', name: 'A' }, { id: 'b', name: 'B' }, { id: 'c', name: 'C' }]);
+const two = () => G.newGame([{ id: 'a', name: 'A' }, { id: 'b', name: 'B' }, { id: 'c', name: 'C' }], { autoEnd: false });
 const rejects = (g, id, a, re) => assert.throws(() => G.apply(g, id, a), re);
 let g = two();
 rejects(g, 'b', { type: 'roll' }, /inte din tur/);
@@ -101,4 +101,12 @@ g = two(); g.players[0].pos = 17; g.plots[10].owner = 'a'; g.news = { type: 'bui
 g = two(); { g.plots[10].owner = 'b'; g.news = { type: 'double', group: 'F' }; const c = g.players[0].cash; landOn(g, 10); assert.equal(g.players[0].cash, c - 8000); }
 g = two(); { g.players[1].pos = 40; g.players[2].pos = 12; news(g, (c) => c.t === 'rebuild'); landOn(g, 6); assert.equal(g.players[1].pos, 47); assert.equal(g.players[2].pos, 12); }
 g = two(); news(g, (c) => c.t === 'double' && c.group === 'I'); landOn(g, 6); assert.equal(g.news.group, 'I');
+// Turen går vidare automatiskt, men väntar in gratifikation, köp av obligation och skulder.
+const auto = () => G.newGame([{ id: 'a', name: 'A' }, { id: 'b', name: 'B' }]);
+g = auto(); landOn(g, 1); assert.equal(g.current, 1); assert.equal(g.stage, 'pre');
+g = auto(); landOn(g, 34); assert.equal(g.current, 0); assert.equal(g.stage, 'bonus'); Math.random = () => 0; G.apply(g, 'a', { type: 'bonus' }); Math.random = orig; assert.equal(g.current, 1);
+g = auto(); landOn(g, 41); assert.equal(g.current, 0); assert.ok(g.bondRound); G.apply(g, 'a', { type: 'skipBond' }); assert.equal(g.current, 1);
+g = auto(); g.plots[10].owner = 'b'; g.players[0].cash = 0; landOn(g, 10); assert.equal(g.current, 0); assert.equal(g.debts.length, 1); G.apply(g, 'a', { type: 'loan' }); assert.equal(g.current, 1);
+g = auto(); { const p = g.players[0]; p.car = true; p.pos = 1; Math.random = () => 0; G.apply(g, 'a', { type: 'roll' }); Math.random = orig; assert.equal(g.current, 0); assert.equal(g.stage, 'pre'); }
+g = auto(); { const p = g.players[0]; p.pos = 9; p.jail = 2; const q = [0, 0.5]; let i = 0; Math.random = () => q[i++ % 2]; G.apply(g, 'a', { type: 'roll' }); Math.random = orig; assert.equal(g.current, 1); }
 console.log('Alla regeltester klara');
