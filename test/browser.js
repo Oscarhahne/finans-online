@@ -15,9 +15,10 @@ const out = process.argv[2];
   let bought = 0;
   for (let i = 0; i < 400 && bought < 3; i++) {
     for (const p of [A, B]) {
+      await p.waitForFunction(() => !document.body.classList.contains('rolling'));
       const buy = p.locator('button:has-text("Köp tomt/aktie")');
       if (await buy.count()) { await buy.click(); if (p === A) await p.screenshot({ path: out + '/buy.png' }); const k = p.locator('.modal .item button:not([disabled])').first(); if (await k.count()) { await k.click(); bought++; await p.waitForTimeout(100); } await p.locator('.modal button:has-text("Stäng")').click(); }
-      for (const t of ['Slå tärningen', 'Slå två tärningar', 'Avsluta turen', 'Köp ingen']) { const q = p.locator(`.side button:has-text("${t}")`); if (await q.count()) { await q.first().click(); await p.waitForTimeout(40); break; } }
+      for (const t of ['Slå tärningen', 'Slå två tärningar', 'Avsluta turen', 'Köp ingen']) { const q = p.locator(`.side button:has-text("${t}")`); if (await q.count()) { await q.first().click({ timeout: 3000 }).catch(() => {}); await p.waitForTimeout(40); break; } }
     }
     await A.waitForTimeout(50);
   }
