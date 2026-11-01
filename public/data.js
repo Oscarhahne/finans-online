@@ -72,17 +72,35 @@
     { t: 'perbuild', a: 2000, x: 'Fastighetsunderhåll. Betala 2 000 kr per byggnad.' },
     { t: 'gain', a: 25000, x: 'Ett arv från en okänd släkting. Du får 25 000 kr.' },
   ];
-  const BORSTIPS = TIPS.concat(TIPS); // 40 kort
+  // Nya kort finns i ett exemplar var.
+  const TIPS_EXTRA = [
+    { t: 'bondwin', n: 1, a: 10000, x: 'Obligation nr 1 har utfallit med vinst. Ägaren inkasserar 10 000 kr.' },
+    { t: 'bondwin', n: 5, a: 10000, x: 'Obligation nr 5 har utfallit med vinst. Ägaren inkasserar 10 000 kr.' },
+    { t: 'bondwin', n: 9, a: 10000, x: 'Obligation nr 9 har utfallit med vinst. Ägaren inkasserar 10 000 kr.' },
+    { t: 'smalldraw', x: 'Lilla obligationsdragningen! Köp en obligation, sedan sker dragningen.' },
+    { t: 'back', n: 2, x: 'Du glömde portföljen. Gå 2 steg bakåt.' },
+    { t: 'forward', n: 2, x: 'Bra fart i affärerna. Gå 2 steg framåt.' },
+    { t: 'prison', x: 'Gå direkt i fängelse.' },
+    { t: 'jailfree', x: 'Frikort! Spara kortet. Du kan använda det för att slippa fängelset.' },
+    { t: 'goto', to: 12, x: 'Gå direkt till Bankfilialen.' },
+    { t: 'goto', to: 21, x: 'Gå direkt till ruta 21.' },
+    { t: 'visit', x: 'Besök en av dina egna tomter. Har du ingen tomt går du direkt till Bankentré.' },
+    { t: 'handover', x: 'Överlämna valfri tomt eller aktie till föregående spelare.' },
+  ];
+  const BORSTIPS = TIPS.concat(TIPS, TIPS_EXTRA);
   const FINANS = [].concat(
     Array(3).fill({ t: 'good', until: true, x: 'Goda tider! Gratifikationen räknas dubbelt och utdelningsrutan gäller alla. Gäller tills nästa tidning.' }),
     Array(3).fill({ t: 'bad', until: true, x: 'Dåliga tider! Gratifikationen räknas till hälften. Gäller tills nästa tidning.' }),
-    Array(2).fill({ t: 'largedraw', x: 'Stora obligationsdragningen! Alla får köpa en obligation före dragningen.' }),
+    Array(3).fill({ t: 'largedraw', x: 'Stora obligationsdragningen! Alla får köpa en obligation före dragningen.' }),
     Array(3).fill({ t: 'alldiv', x: 'Hausse på börsen! Alla spelare får aktieutdelning.' }),
     Array(2).fill({ t: 'inflation', x: 'Inflation och kursfall! Alla betalar 10 % av sitt aktiekapital.' }),
     Array(2).fill({ t: 'proptax', x: 'Ny fastighetsskatt! Alla betalar 1 000 kr per tomt och 3 000 kr per byggnad.' }),
     Array(2).fill({ t: 'boom', x: 'Byggboom! Alla får 5 000 kr per byggnad.' }),
     Array(2).fill({ t: 'rate', x: 'Räntehöjning! Alla betalar 5 000 kr per banklån.' }),
-    Array(2).fill({ t: 'grant', x: 'Företagsstöd! Alla spelare får 10 000 kr.' })
+    Array(2).fill({ t: 'grant', x: 'Företagsstöd! Alla spelare får 10 000 kr.' }),
+    { t: 'buildstop', until: true, x: 'Byggstopp! Ingen får bygga. Gäller tills nästa tidning.' },
+    { t: 'rebuild', x: 'Ombyggnad i banken! Alla som är inne i banken hamnar direkt på Bankutgång.' },
+    Object.keys(GROUPS).map((k) => ({ t: 'double', group: k, until: true, x: `Högkonjunktur för ${GROUPS[k].name}! Dubbel hyra på gruppens tomter. Gäller tills nästa tidning.` }))
   );
 
   const RULES = {

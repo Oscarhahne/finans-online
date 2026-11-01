@@ -408,7 +408,7 @@ function renderSide() {
       el('div', { style: 'margin-top:12px' }, actionsFor(me, myTurn, debt, bond))),
     g.news || g.lastCard ? el('div', { class: 'card', style: 'margin:0;padding:14px;display:grid;gap:8px' },
       g.lastCard ? el('div', { class: 'news', style: 'background:' + (g.lastCard.deck === 'Börstips' ? '#7dd3fc' : '#fde047') }, el('div', { class: 'small', style: 'color:#1a1740' }, g.lastCard.deck), g.lastCard.text) : null,
-      g.news ? el('div', { class: 'small' }, 'Just nu: ' + (g.news.type === 'good' ? 'Goda tider' : 'Dåliga tider')) : null) : null,
+      g.news ? el('div', { class: 'small' }, 'Just nu: ' + g.news.text) : null) : null,
     el('div', { class: 'card', style: 'margin:0;padding:14px' }, el('h3', {}, 'Spelare · mål ' + kr(g.target)),
       g.players.map((p) => { const m = S.members.find((x) => x.id === p.id);
         return el('div', { class: 'pl' + (p.id === current.id ? ' on' : '') + (p.out ? ' out' : '') }, el('div', { style: 'display:flex;gap:8px;align-items:center;min-width:0' }, el('span', { class: 'dot', style: 'background:' + COLORS[p.color] }), el('div', {}, p.name + (p.id === S.you ? ' (du)' : ''), el('div', { class: 'small' }, [p.car ? 'bil' : null, p.loans ? p.loans + ' lån' : null, p.jail ? 'i fängelse ' + p.jail + ' år' : null, m && !m.online ? 'borta' : null].filter(Boolean).join(' · ')))), el('div', { class: 'money' }, kr(p.cash))); })),
@@ -430,9 +430,12 @@ function actionsFor(me, myTurn, debt, bond) {
   if (bond) return el('p', { class: 'small' }, 'Väntar på obligationsköp.');
   if (!myTurn) return el('div', { class: 'actions' }, el('button', { onclick: () => open(assetsModal) }, 'Mina tillgångar'));
   if (g.stage === 'bonus') return el('button', { class: 'primary', style: 'width:100%', onclick: () => act({ type: 'bonus' }) }, 'Slå gratifikation');
-  if (g.stage === 'sentence') return el('button', { class: 'primary', style: 'width:100%', onclick: () => act({ type: 'sentence' }) }, 'Slå hur länge du ska sitta');
+  if (g.stage === 'sentence') return el('div', { class: 'stack' }, el('button', { class: 'primary', onclick: () => act({ type: 'sentence' }) }, 'Slå hur länge du ska sitta'), me.jailFree && me.jailFree.length ? el('button', { onclick: () => act({ type: 'useJailFree' }) }, 'Använd frikort') : null);
+  if (g.stage === 'visit') return el('div', { class: 'stack' }, el('div', {}, 'Välj vilken av dina tomter du vill besöka:'), el('div', { class: 'actions' }, myPlots().map((n) => el('button', { onclick: () => act({ type: 'visit', n }) }, SQUARES[n].name))));
+  if (g.stage === 'handover') { const prev = (() => { const n = g.players.length; const i = g.players.indexOf(me); for (let k = 1; k < n; k++) { const o = g.players[(i - k + n) % n]; if (!o.out) return o; } return null; })(); const full = (k) => plotsIn(k).every((n) => g.plots[n].owner === S.you) && g.shares.filter((v) => v.group === k).every((v) => v.owner === S.you);
+    return el('div', { class: 'stack' }, el('div', {}, 'Välj vad du lämnar över till ' + (prev ? prev.name : '') + ':'), el('div', { class: 'actions' }, myPlots().filter((n) => !full(SQUARES[n].group)).map((n) => el('button', { onclick: () => act({ type: 'handover', kind: 'plot', n }) }, SQUARES[n].name)), g.shares.filter((v) => v.owner === S.you && !full(v.group)).map((v) => el('button', { onclick: () => act({ type: 'handover', kind: 'share', id: v.id }) }, 'Aktie ' + GROUPS[v.group].name + ' ' + kr(v.value))))); }
   if (g.stage === 'pre') {
-    const trade = canTrade(me); const bld = me.pos === 17 || me.pos === 40 || me.freeBuild;
+    const trade = canTrade(me); const bld = (me.pos === 17 || me.pos === 40 || me.freeBuild) && !(g.news && g.news.type === 'buildstop');
     return el('div', { class: 'stack' }, el('button', { class: 'primary', onclick: () => act({ type: 'roll' }) }, me.jail ? 'Slå för att komma ut' : (g.doubles ? 'Slå igen: ' : '') + (me.car && !(me.pos >= 34 && me.pos < 47) ? 'Slå två tärningar' : 'Slå tärningen')),
       el('div', { class: 'actions' }, trade ? el('button', { onclick: () => open(buyModal) }, 'Köp tomt/aktie') : null, trade ? el('button', { onclick: () => open(meetingModal) }, 'Bolagsstämma') : null, bld ? el('button', { onclick: () => open(buildModal) }, 'Bygg') : null,
         !me.car ? el('button', { onclick: () => act({ type: 'buyCar' }), disabled: me.cash < RULES.carPrice }, 'Köp bil 50 000 kr') : null,
@@ -453,7 +456,8 @@ const SQUARE_TEXT = { bor: 'Dra ett Börstips.', news: 'Dra en Finanstidning.', 
 function currentRent(n) {
   const g = S.game; const x = g.plots[n]; if (!x.owner || x.mort) return 0; const i = plotInfo(n); const k = SQUARES[n].group;
   const full = plotsIn(k).every((m) => g.plots[m].owner === x.owner) && g.shares.filter((s) => s.group === k).every((s) => s.owner === x.owner);
-  return (x.built ? i.rentBuilt : i.rent) * (full ? 2 : 1);
+  const boom = g.news && g.news.type === 'double' && g.news.group === k;
+  return (x.built ? i.rentBuilt : i.rent) * (full || boom ? 2 : 1);
 }
 function renderLanding() {
   const box = document.getElementById('landing'); if (!box) return; const g = S.game; const L = g.landed;
@@ -484,6 +488,7 @@ function renderPiles() {
     pile('Tomter', mine.length, mine.map((n) => { const gr = GROUPS[SQUARES[n].group]; return el('button', { class: 'mini' + (g.plots[n].mort ? ' m' : ''), style: `background:${gr.color};color:${gr.text}`, title: SQUARES[n].name + (g.plots[n].built ? ', bebyggd' : ''), onclick: () => showSquare(n) }, breakable(SQUARES[n].name)); }), 'Inga tomter än'),
     pile('Aktier', shares.length, shares.map((v) => { const gr = GROUPS[v.group]; return el('div', { class: 'mini', style: `background:${gr.color};color:${gr.text}`, title: gr.name }, (v.value / 1000) + 'k ' + v.pct + ' %'); }), 'Inga aktier än'),
     pile('Obligationer', bonds.length, bonds.map((n) => el('div', { class: 'mini bond' }, n)), 'Inga obligationer än'),
+    pile('Frikort', (me.jailFree || []).length, (me.jailFree || []).map(() => el('div', { class: 'mini', style: 'background:#7dd3fc;color:#1a1740' }, 'Frikort')), 'Inga frikort'),
     pile('Pengar', kr(me.cash), notes, 'Inga pengar'));
 }
 // Varje händelse visas i 3 sekunder hos alla spelare.

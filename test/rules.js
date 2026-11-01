@@ -76,4 +76,29 @@ g.stage = 'post'; G.apply(g, 'a', { type: 'end' }); for (let i = 0; i < 3; i++) 
 // Dragningen sparar tärningar, vinnare och priser. Obligationer utan ägare visas utan vinnare.
 g = two(); g.players[0].pos = 40; g.bonds[2] = 'a'; g.bonds[12] = 'c'; Math.random = () => 0; G.apply(g, 'a', { type: 'roll' }); G.apply(g, 'a', { type: 'skipBond' }); Math.random = orig;
 assert.deepEqual(g.lastDraw.dice, [1, 1]); assert.deepEqual(g.lastDraw.results.map((r) => [r.num, r.prize, r.winner]), [[2, 50000, 'A'], [1, 25000, null], [12, 15000, 'C']]);
+// Nya kort: drar ett bestämt Börstips eller en Finanstidning.
+const D = require('../public/data.js');
+const tip = (g, match) => { const i = D.BORSTIPS.findIndex(match); g.tipDeck = [i, ...g.tipDeck.filter((v) => v !== i)]; };
+const news = (g, match) => { const i = D.FINANS.findIndex(match); g.newsDeck = [i, ...g.newsDeck.filter((v) => v !== i)]; };
+const landOn = (g, pos, die = 0) => { g.players[g.current].pos = pos - 1; Math.random = () => die; G.apply(g, g.players[g.current].id, { type: 'roll' }); Math.random = orig; };
+assert.equal(D.BORSTIPS.length, 52); assert.equal(D.FINANS.length, 31);
+g = two(); g.bonds[1] = 'b'; { const c = g.players[1].cash; tip(g, (c) => c.t === 'bondwin' && c.n === 1); landOn(g, 2); assert.equal(g.players[1].cash, c + 10000); assert.equal(g.bonds[1], null); }
+g = two(); tip(g, (c) => c.t === 'smalldraw'); landOn(g, 2); assert.equal(g.bondRound.draw, 'small');
+g = two(); tip(g, (c) => c.t === 'back'); landOn(g, 2); assert.equal(g.players[0].pos, 53);
+g = two(); tip(g, (c) => c.t === 'forward'); landOn(g, 2); assert.equal(g.players[0].pos, 4);
+g = two(); tip(g, (c) => c.t === 'goto' && c.to === 21); landOn(g, 2); assert.equal(g.players[0].pos, 21);
+g = two(); tip(g, (c) => c.t === 'visit'); landOn(g, 2); assert.equal(g.players[0].pos, 34); assert.equal(g.stage, 'bonus');
+g = two(); g.plots[10].owner = 'a'; tip(g, (c) => c.t === 'visit'); landOn(g, 2); assert.equal(g.stage, 'visit'); G.apply(g, 'a', { type: 'visit', n: 10 }); assert.equal(g.players[0].pos, 10); assert.equal(g.stage, 'post');
+// Frikort sparas, tas ur kortleken och kan användas för att slippa fängelset.
+g = two(); { const i = D.BORSTIPS.findIndex((c) => c.t === 'jailfree'); const p = g.players[0]; tip(g, (c) => c.t === 'jailfree'); landOn(g, 2); assert.equal(p.jailFree.length, 1); assert.ok(!g.tipDeck.includes(i));
+  g.stage = 'post'; G.apply(g, 'a', { type: 'end' }); g.stage = 'post'; G.apply(g, 'b', { type: 'end' }); g.stage = 'post'; G.apply(g, 'c', { type: 'end' });
+  landOn(g, 30); assert.equal(g.stage, 'sentence'); G.apply(g, 'a', { type: 'useJailFree' }); assert.equal(p.pos, 30); assert.equal(p.jail, 0); assert.equal(p.jailFree.length, 0); assert.ok(g.tipDeck.includes(i)); assert.equal(g.stage, 'post'); }
+// Överlämning går till föregående spelare, och kompletta grupper är skyddade.
+g = two(); g.plots[10].owner = 'a'; tip(g, (c) => c.t === 'handover'); landOn(g, 2); assert.equal(g.stage, 'handover'); G.apply(g, 'a', { type: 'handover', kind: 'plot', n: 10 }); assert.equal(g.plots[10].owner, 'c');
+g = two(); [1, 3].forEach((n) => { g.plots[n].owner = 'a'; }); g.shares.filter((v) => v.group === 'S').forEach((v) => { v.owner = 'a'; }); tip(g, (c) => c.t === 'handover'); landOn(g, 2); assert.equal(g.stage, 'post');
+// Finanstidningar: byggstopp, dubbel hyra och ombyggnad.
+g = two(); g.players[0].pos = 17; g.plots[10].owner = 'a'; g.news = { type: 'buildstop' }; rejects(g, 'a', { type: 'build', n: 10 }, /Byggstopp/);
+g = two(); { g.plots[10].owner = 'b'; g.news = { type: 'double', group: 'F' }; const c = g.players[0].cash; landOn(g, 10); assert.equal(g.players[0].cash, c - 8000); }
+g = two(); { g.players[1].pos = 40; g.players[2].pos = 12; news(g, (c) => c.t === 'rebuild'); landOn(g, 6); assert.equal(g.players[1].pos, 47); assert.equal(g.players[2].pos, 12); }
+g = two(); news(g, (c) => c.t === 'double' && c.group === 'I'); landOn(g, 6); assert.equal(g.news.group, 'I');
 console.log('Alla regeltester klara');

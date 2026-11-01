@@ -10,7 +10,7 @@ const groupPlots = (k) => Object.keys(SQUARES).map(Number).filter((n) => SQUARES
 function newGame(players, opts = {}) {
   const g = {
     phase: 'play', target: opts.target || R.target, doubles: 0, drawNo: 0, lastDraw: null, extraRoll: false, eventNo: 0, events: [], finalRound: null, landed: null, cardNo: 0, rollNo: 0, lastRoll: null, turnNo: 1, current: 0, stage: 'pre', boughtPlot: false, boughtShare: false,
-    players: players.map((p, i) => ({ id: p.id, name: p.name, bot: !!p.bot, color: i, pos: 47, cash: R.startCash, car: false, loans: 0, jail: 0, lapDone: false, fromPrison: false, freeBuild: false, out: false })),
+    players: players.map((p, i) => ({ id: p.id, name: p.name, bot: !!p.bot, color: i, pos: 47, cash: R.startCash, car: false, loans: 0, jail: 0, jailFree: [], lapDone: false, fromPrison: false, freeBuild: false, out: false })),
     plots: {}, shares: [], bonds: {}, news: null, dice: [], debts: [], bondRound: null, winner: null, log: [],
     tipDeck: shuffled(BORSTIPS.length), newsDeck: shuffled(FINANS.length), lastCard: null,
   };
@@ -41,7 +41,9 @@ const completeCount = (g, p) => Object.keys(GROUPS).filter((k) => completeGroup(
 function rentOf(g, n) {
   const x = g.plots[n]; const i = plotInfo(n); const o = P(g, x.owner);
   let r = x.built ? i.rentBuilt : i.rent;
-  if (completeGroup(g, SQUARES[n].group, o)) r *= 2;
+  // Dubbel hyra räknas en gång, även om gruppen är komplett och har högkonjunktur.
+  const boom = g.news && g.news.type === 'double' && g.news.group === SQUARES[n].group;
+  if (boom || completeGroup(g, SQUARES[n].group, o)) r *= 2;
   return r;
 }
 function pay(g, from, to, amount, why) { if (amount > 0) g.debts.push({ from: from.id, to: to ? to.id : null, amount, why }); }
@@ -59,7 +61,7 @@ function giveDividends(g, p) {
   }
 }
 function drawTip(g, p, d) {
-  const i = g.tipDeck.shift(); g.tipDeck.push(i); const c = BORSTIPS[i];
+  const i = g.tipDeck.shift(); const c = BORSTIPS[i]; if (c.t !== 'jailfree') g.tipDeck.push(i); else p.jailFree.push(i);
   g.cardNo++; g.lastCard = { id: g.cardNo, deck: 'Börstips', text: c.x }; log(g, `Börstips till ${p.name}: ${c.x}`, true);
   if (c.t === 'gain') p.cash += c.a;
   else if (c.t === 'lose') pay(g, p, null, c.a, 'börstips');
@@ -69,16 +71,24 @@ function drawTip(g, p, d) {
   else if (c.t === 'freebuild') p.freeBuild = true;
   else if (c.t === 'news') drawNews(g, p, d);
   else if (c.t === 'prison') { sendToPrison(g, p); }
+  else if (c.t === 'bondwin') { const o = g.bonds[c.n] ? P(g, g.bonds[c.n]) : null; if (o) { o.cash += c.a; g.bonds[c.n] = null; log(g, `${o.name} inkasserar ${kr(c.a)} på obligation ${c.n}.`); } else log(g, `Ingen äger obligation ${c.n}.`); }
+  else if (c.t === 'smalldraw') startBonds(g, p, false, 'small');
+  else if (c.t === 'back') { for (let k = 0; k < c.n; k++) p.pos = p.pos === 1 ? 53 : p.pos - 1; land(g, p, d + 1); }
+  else if (c.t === 'forward') { for (let k = 0; k < c.n; k++) { p.pos = p.pos === 53 ? 1 : p.pos + 1; if (p.pos === 34 || p.pos === 47) break; } land(g, p, d + 1); }
+  else if (c.t === 'jailfree') log(g, `${p.name} sparar ett frikort.`);
+  else if (c.t === 'visit') { if (plotsOf(g, p).length) g.stage = 'visit'; else { p.pos = 34; land(g, p, d + 1); } }
+  else if (c.t === 'handover') { if (handoverItems(g, p).length && prevPlayer(g, p)) g.stage = 'handover'; else log(g, `${p.name} har inget att lämna över.`); }
   else if (c.t === 'car') { if (p.car) pay(g, p, null, c.a, 'bilservice'); }
   else if (c.t === 'collect') alive(g).forEach((o) => { if (o !== p) pay(g, o, p, c.a, 'födelsedag'); });
   else if (c.t === 'perbuild') pay(g, p, null, c.a * buildingsOf(g, p), 'underhåll');
 }
 function drawNews(g, p) {
   const i = g.newsDeck.shift(); g.newsDeck.push(i); const c = FINANS[i];
-  g.news = c.until ? { type: c.t, text: c.x } : null;
   g.cardNo++; g.lastCard = { id: g.cardNo, deck: 'Finanstidningen', text: c.x }; log(g, `Finanstidningen: ${c.x}`, true);
   const everyone = alive(g);
+  g.news = c.until ? { type: c.t, text: c.x, group: c.group } : null;
   if (c.t === 'largedraw') startBonds(g, p, true, 'large');
+  else if (c.t === 'rebuild') everyone.forEach((o) => { if (o.pos >= 34 && o.pos < 47) { o.pos = 47; o.fromPrison = false; log(g, `${o.name} hamnar på Bankutgång.`); } });
   else if (c.t === 'alldiv') everyone.forEach((o) => dividendTo(g, o));
   else if (c.t === 'inflation') everyone.forEach((o) => pay(g, o, null, Math.round(shareCapital(g, o) * 0.1), 'inflation'));
   else if (c.t === 'proptax') everyone.forEach((o) => pay(g, o, null, plotsOf(g, o).length * 1000 + buildingsOf(g, o) * 3000, 'fastighetsskatt'));
@@ -107,12 +117,24 @@ function runDraw(g, kind) {
 }
 // Spelaren hamnar i fängelset och slår själv hur länge det blir.
 function sendToPrison(g, p) {
+  g.prisonFrom = { pos: p.pos, fromPrison: p.fromPrison };
   p.pos = 9; p.fromPrison = true; g.landed = { player: p.id, pos: 9 }; g.extraRoll = false; g.stage = 'sentence';
   log(g, `${p.name} åker i fängelse.`);
 }
+// Det som går att lämna över. Kompletta företagsgrupper är skyddade.
+function handoverItems(g, p) {
+  const free = (k) => !completeGroup(g, k, p);
+  return [...plotsOf(g, p).filter((n) => free(SQUARES[n].group)).map((n) => ({ kind: 'plot', n, value: plotInfo(n).price })),
+    ...g.shares.filter((s) => s.owner === p.id && free(s.group)).map((s) => ({ kind: 'share', id: s.id, value: s.value }))];
+}
+function prevPlayer(g, p) {
+  const n = g.players.length; const i = g.players.indexOf(p);
+  for (let k = 1; k < n; k++) { const o = g.players[(i - k + n) % n]; if (!o.out) return o; }
+  return null;
+}
 function afterLanding(g, p) {
   if (g.stage === 'post' && g.extraRoll && !p.jail && !p.out) { g.stage = 'pre'; log(g, `${p.name} slog lika och får slå igen.`); }
-  if (g.stage !== 'bonus') g.extraRoll = false;
+  if (!['bonus', 'visit', 'handover'].includes(g.stage)) g.extraRoll = false;
 }
 function land(g, p, depth = 0) {
   if (depth > 5) return;
@@ -146,6 +168,7 @@ function bankruptPlayer(g, p) {
   const owed = g.debts.find((d) => d.from === p.id && d.to);
   if (owed && p.cash > 0) { const c = P(g, owed.to); if (c && !c.out) c.cash += p.cash; }
   g.debts = g.debts.filter((d) => d.from !== p.id);
+  g.tipDeck.push(...p.jailFree); p.jailFree = [];
   p.cash = 0; p.out = true; p.loans = 0; p.car = false;
   Object.values(g.plots).forEach((x) => { if (x.owner === p.id) { x.owner = null; x.built = false; x.mort = false; } });
   g.shares.forEach((s) => { if (s.owner === p.id) s.owner = null; });
@@ -249,6 +272,17 @@ function apply(g, pid, a) {
       const d = die(); setRoll(g, pid, [d], 'slår hur länge fängelset blir');
       p.jail = d <= 2 ? 1 : d <= 4 ? 2 : 3; g.stage = 'post';
       log(g, `${p.name} ska sitta i fängelse i ${p.jail} år.`); break; }
+    case 'useJailFree': { needTurn(); if (g.stage !== 'sentence') fail('Det går inte nu.'); if (!p.jailFree.length) fail('Du har inget frikort.');
+      g.tipDeck.push(p.jailFree.shift()); const from = g.prisonFrom || { pos: 9, fromPrison: false };
+      p.pos = from.pos; p.fromPrison = from.fromPrison; p.jail = 0; g.landed = { player: pid, pos: p.pos }; g.stage = 'post';
+      log(g, `${p.name} använder sitt frikort och slipper fängelset.`); break; }
+    case 'visit': { needTurn(); if (g.stage !== 'visit') fail('Det går inte nu.'); const n = Number(a.n); needOwnPlot(n);
+      p.pos = n; g.stage = 'post'; log(g, `${p.name} besöker ${SQUARES[n].name}.`); land(g, p, 1); afterLanding(g, p); break; }
+    case 'handover': { needTurn(); if (g.stage !== 'handover') fail('Det går inte nu.'); const to = prevPlayer(g, p); const items = handoverItems(g, p);
+      const it = items.find((v) => (a.kind === 'plot' ? v.kind === 'plot' && v.n === Number(a.n) : v.kind === 'share' && v.id === a.id)); if (!it) fail('Det går inte att lämna över.');
+      if (it.kind === 'plot') { g.plots[it.n].owner = to.id; log(g, `${p.name} lämnar över ${SQUARES[it.n].name} till ${to.name}.`); }
+      else { g.shares.find((v) => v.id === it.id).owner = to.id; log(g, `${p.name} lämnar över en aktie till ${to.name}.`); }
+      g.stage = 'post'; afterLanding(g, p); break; }
     case 'end': needTurn(); if (g.stage !== 'post') fail('Du måste slå först.'); nextTurn(g); break;
     case 'buyCar': pre(); if (p.car) fail('Du har redan en bil.'); if (p.cash < R.carPrice) fail('Du har inte råd.'); p.cash -= R.carPrice; p.car = true; log(g, `${p.name} köper bil.`); break;
     case 'sellCar': if (!raising) fail('Inte nu.'); if (!p.car) fail('Du har ingen bil.'); p.car = false; p.cash += R.carSell; log(g, `${p.name} säljer bilen.`); break;
@@ -258,7 +292,7 @@ function apply(g, pid, a) {
     case 'buyShare': { pre(); if (!canTrade(p)) fail(tradeFail(p)); if (g.boughtShare) fail('Bara en aktie per tur.');
       const s = g.shares.find((v) => v.id === a.id); if (!s || s.owner) fail('Aktien går inte att köpa.'); if (p.cash < s.value) fail('Du har inte råd.');
       p.cash -= s.value; s.owner = pid; g.boughtShare = true; log(g, `${p.name} köper en aktie i ${GROUPS[s.group].name}.`); break; }
-    case 'build': { pre(); if (!canBuildHere(p)) fail('Du kan inte bygga här.'); const x = needOwnPlot(a.n); if (x.built) fail('Tomten är redan bebyggd.'); if (x.mort) fail('Tomten är belånad.');
+    case 'build': { pre(); if (g.news && g.news.type === 'buildstop') fail('Byggstopp gäller just nu.'); if (!canBuildHere(p)) fail('Du kan inte bygga här.'); const x = needOwnPlot(a.n); if (x.built) fail('Tomten är redan bebyggd.'); if (x.mort) fail('Tomten är belånad.');
       const c = plotInfo(a.n).build; if (p.cash < c) fail('Du har inte råd.'); p.cash -= c; x.built = true;
       if (p.pos !== 17 && p.pos !== 40) p.freeBuild = false; log(g, `${p.name} bygger på ${SQUARES[a.n].name}.`); break; }
     case 'mortgage': { if (!raising) fail('Inte nu.'); const x = needOwnPlot(a.n); if (x.mort) fail('Redan belånad.'); const i = plotInfo(a.n); p.cash += x.built ? i.mortgageBuilt : i.mortgage; x.mort = true; log(g, `${p.name} belånar ${SQUARES[a.n].name}.`); break; }
@@ -310,7 +344,9 @@ function botAction(g, pid, passive) {
     return prefer ? { type: 'buyBond', n: prefer } : { type: 'skipBond' };
   }
   if (g.stage === 'bonus') return { type: 'bonus' };
-  if (g.stage === 'sentence') return { type: 'sentence' };
+  if (g.stage === 'sentence') return !passive && p.jailFree.length ? { type: 'useJailFree' } : { type: 'sentence' };
+  if (g.stage === 'visit') return { type: 'visit', n: plotsOf(g, p)[0] };
+  if (g.stage === 'handover') { const it = handoverItems(g, p).sort((x, y) => x.value - y.value)[0]; return { type: 'handover', ...it }; }
   if (g.stage === 'post') return { type: 'end' };
   if (passive) return { type: 'roll' };
   if (!p.car && p.cash > 150000) return { type: 'buyCar' };
@@ -320,7 +356,7 @@ function botAction(g, pid, passive) {
     if (!g.boughtPlot) { const n = Object.keys(g.plots).map(Number).find((m) => !g.plots[m].owner && p.cash >= plotInfo(m).price + 20000); if (n) return { type: 'buyPlot', n }; }
     if (!g.boughtShare) { const s = g.shares.find((v) => !v.owner && p.cash >= v.value + 20000); if (s) return { type: 'buyShare', id: s.id }; }
   }
-  if (canBuildHere(p)) { const n = plotsOf(g, p).find((m) => !g.plots[m].built && !g.plots[m].mort && p.cash >= plotInfo(m).build + 30000); if (n) return { type: 'build', n }; }
+  if (canBuildHere(p) && !(g.news && g.news.type === 'buildstop')) { const n = plotsOf(g, p).find((m) => !g.plots[m].built && !g.plots[m].mort && p.cash >= plotInfo(m).build + 30000); if (n) return { type: 'build', n }; }
   if (p.loans && p.cash > 200000) return { type: 'repay' };
   return { type: 'roll' };
 }
