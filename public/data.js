@@ -75,8 +75,6 @@
   // Nya kort finns i ett exemplar var.
   const TIPS_EXTRA = [
     { t: 'bondwin', n: 1, a: 10000, x: 'Obligation nr 1 har utfallit med vinst. Ägaren inkasserar 10 000 kr.' },
-    { t: 'bondwin', n: 5, a: 10000, x: 'Obligation nr 5 har utfallit med vinst. Ägaren inkasserar 10 000 kr.' },
-    { t: 'bondwin', n: 9, a: 10000, x: 'Obligation nr 9 har utfallit med vinst. Ägaren inkasserar 10 000 kr.' },
     { t: 'smalldraw', x: 'Lilla obligationsdragningen! Köp en obligation, sedan sker dragningen.' },
     { t: 'back', n: 2, x: 'Du glömde portföljen. Gå 2 steg bakåt.' },
     { t: 'forward', n: 2, x: 'Bra fart i affärerna. Gå 2 steg framåt.' },
