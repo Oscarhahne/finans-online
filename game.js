@@ -9,7 +9,7 @@ const groupPlots = (k) => Object.keys(SQUARES).map(Number).filter((n) => SQUARES
 
 function newGame(players, opts = {}) {
   const g = {
-    phase: 'play', autoEnd: opts.autoEnd !== false, target: opts.target || R.target, doubles: 0, drawNo: 0, lastDraw: null, extraRoll: false, eventNo: 0, events: [], finalRound: null, landed: null, cardNo: 0, rollNo: 0, lastRoll: null, turnNo: 1, current: 0, stage: 'pre', boughtPlot: false, boughtShare: false,
+    phase: 'play', autoEnd: opts.autoEnd !== false, target: opts.target || R.target, doubles: 0, bonusThenLand: false, drawNo: 0, lastDraw: null, extraRoll: false, eventNo: 0, events: [], finalRound: null, landed: null, cardNo: 0, rollNo: 0, lastRoll: null, turnNo: 1, current: 0, stage: 'pre', boughtPlot: false, boughtShare: false,
     players: players.map((p, i) => ({ id: p.id, name: p.name, bot: !!p.bot, color: i, pos: 47, cash: R.startCash, car: false, loans: 0, jail: 0, jailFree: [], lapDone: false, fromPrison: false, freeBuild: false, out: false })),
     plots: {}, shares: [], bonds: {}, news: null, dice: [], debts: [], bondRound: null, winner: null, log: [],
     tipDeck: shuffled(BORSTIPS.length), newsDeck: shuffled(FINANS.length), lastCard: null,
@@ -75,8 +75,10 @@ function drawTip(g, p, d) {
   else if (c.t === 'smalldraw') startBonds(g, p, false, 'small');
   else if (c.t === 'back') { for (let k = 0; k < c.n; k++) p.pos = p.pos === 1 ? 53 : p.pos - 1; land(g, p, d + 1); }
   else if (c.t === 'forward') { // Stegkort stannar inte vid banken, utan kan gå rakt in i den.
-    for (let k = 0; k < c.n; k++) { p.pos = p.pos === 53 ? 1 : p.pos + 1; if (p.pos === 34) p.lapDone = true; if (p.pos === 47) p.fromPrison = false; }
-    land(g, p, d + 1); }
+    let passedEntry = false;
+    for (let k = 0; k < c.n; k++) { p.pos = p.pos === 53 ? 1 : p.pos + 1; if (p.pos === 34 && k < c.n - 1) passedEntry = true; if (p.pos === 47) p.fromPrison = false; }
+    // Går man förbi Bankentré slår man gratifikation först. Sedan gäller rutan man kom till.
+    if (passedEntry) { p.lapDone = true; g.extraRoll = false; g.bonusThenLand = true; g.stage = 'bonus'; } else land(g, p, d + 1); }
   else if (c.t === 'jailfree') log(g, `${p.name} sparar ett frikort.`);
   else if (c.t === 'visit') { if (plotsOf(g, p).length) g.stage = 'visit'; else { p.pos = 34; land(g, p, d + 1); } }
   else if (c.t === 'handover') { if (handoverItems(g, p).length && prevPlayer(g, p)) g.stage = 'handover'; else log(g, `${p.name} har inget att lämna över.`); }
@@ -271,7 +273,7 @@ function apply(g, pid, a) {
       let bonus = (a1 + a2) * R.bonusPerPip;
       if (g.news && g.news.type === 'good') bonus *= 2; else if (g.news && g.news.type === 'bad') bonus = Math.round(bonus / 2);
       p.cash += bonus; log(g, `${p.name} får ${kr(bonus)} i gratifikation.`);
-      g.stage = 'post'; afterLanding(g, p); break; }
+      g.stage = 'post'; if (g.bonusThenLand) { g.bonusThenLand = false; g.landed = { player: pid, pos: p.pos }; land(g, p, 1); } afterLanding(g, p); break; }
     case 'sentence': { needTurn(); if (g.stage !== 'sentence') fail('Det går inte nu.');
       const d = die(); setRoll(g, pid, [d], 'slår hur länge fängelset blir');
       p.jail = d <= 2 ? 1 : d <= 4 ? 2 : 3; g.stage = 'post';

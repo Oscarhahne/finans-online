@@ -90,7 +90,7 @@ g = two(); tip(g, (c) => c.t === 'goto' && c.to === 21); landOn(g, 2); assert.eq
 g = two(); tip(g, (c) => c.t === 'visit'); landOn(g, 2); assert.equal(g.players[0].pos, 34); assert.equal(g.stage, 'bonus');
 g = two(); g.plots[10].owner = 'a'; tip(g, (c) => c.t === 'visit'); landOn(g, 2); assert.equal(g.stage, 'visit'); G.apply(g, 'a', { type: 'visit', n: 10 }); assert.equal(g.players[0].pos, 10); assert.equal(g.stage, 'post');
 // Stegkort kan gå in i banken: framåt förbi Bankentré och bakåt från Bankutgång.
-{ const saved = D.SQUARES[33]; D.SQUARES[33] = { kind: 'bor', name: 'Test' }; g = two(); tip(g, (c) => c.t === 'forward'); landOn(g, 33); D.SQUARES[33] = saved; assert.equal(g.players[0].pos, 35); assert.equal(g.players[0].lapDone, true); assert.equal(g.stage, 'post'); }
+{ const saved = D.SQUARES[33]; D.SQUARES[33] = { kind: 'bor', name: 'Test' }; g = two(); tip(g, (c) => c.t === 'forward'); landOn(g, 33); D.SQUARES[33] = saved; assert.equal(g.players[0].pos, 35); assert.equal(g.players[0].lapDone, true); assert.equal(g.stage, 'bonus'); const c = g.players[0].cash; const sh = g.shares[0]; sh.owner = 'a'; Math.random = () => 0; G.apply(g, 'a', { type: 'bonus' }); Math.random = orig; assert.equal(g.players[0].cash, c + 20000 + 12500); assert.equal(g.stage, 'post'); }
 g = two(); tip(g, (c) => c.t === 'gain'); tip(g, (c) => c.t === 'back'); landOn(g, 47); assert.equal(g.players[0].pos, 45);
 // Frikort sparas, tas ur kortleken och kan användas för att slippa fängelset.
 g = two(); { const i = D.BORSTIPS.findIndex((c) => c.t === 'jailfree'); const p = g.players[0]; tip(g, (c) => c.t === 'jailfree'); landOn(g, 2); assert.equal(p.jailFree.length, 1); assert.ok(!g.tipDeck.includes(i));
