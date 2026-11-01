@@ -24,21 +24,26 @@ label{display:block;font-weight:700;margin:0 0 6px;color:var(--mute)}
 .roomrow{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:8px 0;border-top:1px solid var(--line)}
 .code{font:600 36px Fredoka,sans-serif;letter-spacing:3px;color:var(--gold)}
 .game{display:flex;gap:16px;padding:12px;align-items:flex-start;flex-wrap:wrap;justify-content:center}
-.boardwrap{flex:1 1 640px;min-width:0;max-width:1100px}
+.boardwrap{flex:1 1 640px;min-width:0;max-width:990px}
+.landing{flex:0 0 200px;background:var(--panel);border-radius:20px;padding:14px;display:grid;gap:10px;align-content:start}
+.ltile{border-radius:14px;box-shadow:inset 0 0 0 1px rgba(0,0,0,.7);overflow:hidden;font-weight:800;text-align:center}
+.ltile .lh{height:30px;background:rgba(255,255,255,.4);border-bottom:1px solid rgba(0,0,0,.45)}
+.ltile .lb{padding:14px 8px;display:grid;gap:6px;justify-items:center;font:600 19px/1.15 Fredoka,sans-serif}
+.lrow{display:flex;justify-content:space-between;gap:8px;font-size:13.5px}
+@media (max-width:1199px){.landing{flex:1 1 100%;order:-1}}
 .scaler{position:relative;width:100%}
-@media (min-width:900px){.scaler{width:90%;margin:0 auto}}
 .board{position:absolute;left:0;top:0;width:1290px;height:1185px;transform-origin:0 0;background:#1e1b4b;border-radius:28px;overflow:hidden;font-family:Nunito,sans-serif}
-.side{flex:1 1 340px;max-width:440px;display:grid;gap:12px;min-width:0}
-.c{position:absolute;width:105px;height:120px;border-radius:14px;box-shadow:inset 0 0 0 1px rgba(0,0,0,.7),0 2px 6px rgba(0,0,0,.25);color:var(--dark);padding:36px 6px 4px;font:600 13.5px/1.15 Nunito,sans-serif;text-align:center;overflow-wrap:break-word;cursor:pointer;background:none}
+.side{flex:0 1 320px;width:320px;max-width:100%;display:grid;gap:12px;min-width:0}
+.c{position:absolute;width:105px;height:120px;border-radius:14px;box-shadow:inset 0 0 0 1px rgba(0,0,0,.7),0 2px 6px rgba(0,0,0,.25);color:var(--dark);padding:0;font:600 13.5px/1.15 Nunito,sans-serif;text-align:center;overflow-wrap:break-word;cursor:pointer;background:none}
+.lab{position:absolute;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:3px;text-align:center}
 .c:hover{filter:brightness(1.08)}
-.n{position:absolute;top:7px;left:0;right:0;font:700 11px/14px Nunito,sans-serif;opacity:.85}
-.t{font-weight:800;padding-top:54px}
+.n{font:700 11px/14px Nunito,sans-serif;opacity:.85}
+.t{font-weight:800}
 .head{position:absolute;top:1px;left:1px;right:1px;height:30px;border-radius:13px 13px 0 0;background:rgba(255,255,255,.4);border-bottom:1px solid rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;gap:5px}
-.t .n{top:35px}
-.bk{height:105px;padding-top:30px}
-.h{width:120px;height:120px;padding:0}
-.r{position:absolute;inset:0;padding:10px;display:flex;align-items:center;justify-content:center;text-align:center}
-.ic{display:block;margin:0 auto 4px;width:44px;height:30px}
+.bk{height:105px}
+.h{width:120px;height:120px}
+.r{position:absolute;inset:0;padding:10px;display:flex;flex-direction:column;gap:2px;align-items:center;justify-content:center;text-align:center}
+.ic{display:block;margin:0 auto 2px;width:44px;height:30px}
 .own{width:16px;height:16px;border-radius:50%;border:2px solid #000}
 .house{width:18px;height:18px}
 .mort{outline:3px dashed #fff;outline-offset:-6px;opacity:.72}
@@ -65,6 +70,9 @@ label{display:block;font-weight:700;margin:0 0 6px;color:var(--mute)}
 .item{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:8px 10px;border-radius:12px;background:#17153f;margin-top:6px;flex-wrap:wrap}
 .item .btns{display:flex;gap:6px;flex-wrap:wrap}.item button{min-height:44px;padding:6px 12px}
 .group{margin-top:14px;font-weight:800;display:flex;align-items:center;gap:8px}
+.modal.wide{max-width:820px}
+.buygrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px;align-items:start;margin-top:10px}
+.buybox{background:#100e30;border-radius:16px;padding:14px;min-width:0}
 .bondgrid{display:grid;grid-template-columns:repeat(6,1fr);gap:6px}
 #toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:#b91c1c;color:#fff;padding:10px 16px;border-radius:12px;z-index:60;display:none;max-width:90vw}
 </style>
@@ -112,7 +120,6 @@ function rect(n) {
   if (n === 47) return { x: 540, y: 1065, w: 105, h: 120 };
   return { x: 435 - (n - 48) * 105, y: 1065, w: 105, h: 120 };
 }
-const cornerRot = { 52: 45, 9: 135, 20: -135, 30: -45 };
 const breakable = (s) => s.replace('Finanstidning', 'Finans­tidning').replace('Aktieutdelning', 'Aktie­utdelning').replace('obligationsdragningen', 'obligations­dragningen').replace('Försäkringsbolag', 'Försäkrings­bolag').replace('Livsmedelsbutik', 'Livsmedels­butik').replace('Elektronikfirma', 'Elektronik­firma').replace('Ingenjörsbyrå', 'Ingenjörs­byrå').replace('obligationsköp', 'obligations­köp');
 
 function buildBoard() {
@@ -137,8 +144,14 @@ function buildBoard() {
     e.onclick = () => showSquare(n); e.onkeydown = (ev) => { if (ev.key === 'Enter') showSquare(n); };
     const icon = s.kind === 'bor' ? svg(CHART) : s.kind === 'news' ? svg(PAPER) : null;
     const name = s.sub ? [el('strong', {}, breakable(s.name)), el('br'), s.sub] : [breakable(s.name)];
-    if (r.corner) e.append(el('div', { class: 'r', style: `transform:rotate(${cornerRot[n]}deg)` }, el('div', { class: 'n' }, n), el('div', {}, icon, ...name)));
-    else { if (isPlot) e.append(el('div', { class: 'head', id: 'h' + n })); e.append(el('div', { class: 'n' }, n)); if (icon) e.append(icon); e.append(...name); }
+    if (r.corner) e.append(el('div', { class: 'r' }, el('div', { class: 'n' }, n), el('div', {}, icon, ...name)));
+    else {
+      if (isPlot) e.append(el('div', { class: 'head', id: 'h' + n }));
+      // Rutan är vriden så att huvudet pekar inåt, men texten står alltid rak mot skärmen.
+      const rot = r.rot || 0; const areaTop = isPlot ? 31 : 0; const ah = h - areaTop; const sideways = Math.abs(rot) === 90;
+      const W = sideways ? ah : w; const H = sideways ? w : ah;
+      e.append(el('div', { class: 'lab', style: `left:${w / 2 - W / 2}px;top:${areaTop + ah / 2 - H / 2}px;width:${W}px;height:${H}px;transform:rotate(${-rot}deg)` }, el('div', { class: 'n' }, n), icon, el('div', {}, ...name)));
+    }
     b.append(e);
   }
   return b;
@@ -213,7 +226,7 @@ function renderGame() {
   const g = S.game;
   if (!boardEl) {
     boardEl = buildBoard();
-    app.replaceChildren(el('div', { class: 'game' }, el('div', { class: 'boardwrap' }, el('div', { class: 'scaler', id: 'scaler' }, boardEl)), el('div', { class: 'side', id: 'side' })));
+    app.replaceChildren(el('div', { class: 'game' }, el('aside', { class: 'landing', id: 'landing', 'aria-live': 'polite' }), el('div', { class: 'boardwrap' }, el('div', { class: 'scaler', id: 'scaler' }, boardEl)), el('div', { class: 'side', id: 'side' })));
     fit();
   }
   // Ägare, byggnader och belåning på tomterna.
@@ -232,7 +245,7 @@ function renderGame() {
     if (!t) { t = el('div', { class: 'token' + (p.id === S.you ? ' me' : ''), id: 'tk' + p.color, style: 'background:' + COLORS[p.color], title: p.name }, p.name.slice(0, 1).toUpperCase()); boardEl.append(t); }
     t.style.left = r.x + r.w / 2 - 15 + dx + 'px'; t.style.top = r.y + r.h / 2 - 15 + dy + 'px';
   });
-  renderSide(); renderModal();
+  renderLanding(); renderSide(); renderModal();
 }
 function renderSide() {
   const g = S.game; const side = document.getElementById('side'); const me = g.players.find((p) => p.id === S.you);
@@ -240,7 +253,7 @@ function renderSide() {
   const bond = g.bondRound && g.bondRound.queue[0];
   const waiting = debt ? g.players.find((p) => p.id === debt.from) : bond ? g.players.find((p) => p.id === bond) : current;
   const logBox = el('div', { class: 'log', id: 'logbox' }, [...g.log].reverse().slice(0, 40).map((l) => el('div', {}, l)));
-  side.replaceChildren(
+  side.replaceChildren(...[
     el('div', { class: 'card', style: 'margin:0;padding:14px' },
       g.phase === 'over' ? el('h2', {}, g.players.find((p) => p.id === g.winner).name + ' vann!') : el('h2', {}, waiting.id === S.you ? 'Din tur' : waiting.name + ' spelar'),
       g.dice.length ? el('div', { class: 'dice', style: 'margin-top:10px' }, g.dice.map((d) => el('div', { class: 'die' }, d))) : null,
@@ -252,7 +265,7 @@ function renderSide() {
       g.players.map((p) => { const m = S.members.find((x) => x.id === p.id);
         return el('div', { class: 'pl' + (p.id === current.id ? ' on' : '') + (p.out ? ' out' : '') }, el('div', { style: 'display:flex;gap:8px;align-items:center;min-width:0' }, el('span', { class: 'dot', style: 'background:' + COLORS[p.color] }), el('div', {}, p.name + (p.id === S.you ? ' (du)' : ''), el('div', { class: 'small' }, [p.car ? 'bil' : null, p.loans ? p.loans + ' lån' : null, p.skip ? 'i fängelse' : null, m && !m.online ? 'borta' : null].filter(Boolean).join(' · ')))), el('div', { class: 'money' }, kr(p.cash))); })),
     el('div', { class: 'card', style: 'margin:0;padding:14px' }, el('h3', { style: 'margin-bottom:8px' }, 'Händelser'), logBox),
-    el('button', { onclick: () => wsend({ t: 'leave' }) }, 'Lämna spelet'));
+    el('button', { onclick: () => wsend({ t: 'leave' }) }, 'Lämna spelet')].filter(Boolean));
 }
 const canTrade = (p) => p.pos === 12 || (p.pos >= 35 && p.pos <= 46);
 function actionsFor(me, myTurn, debt, bond) {
@@ -282,16 +295,39 @@ function close() { modal = null; renderModal(); }
 function renderModal() {
   document.getElementById('modalbg')?.remove(); if (!modal || !S || !S.game) return;
   const body = modal(); if (!body) { modal = null; return; }
-  const bg = el('div', { class: 'modalbg', id: 'modalbg', onclick: (e) => { if (e.target === bg) close(); } }, el('div', { class: 'modal', role: 'dialog', 'aria-modal': 'true' }, body, el('button', { style: 'margin-top:16px;width:100%', onclick: close }, 'Stäng')));
+  const bg = el('div', { class: 'modalbg', id: 'modalbg', onclick: (e) => { if (e.target === bg) close(); } }, el('div', { class: 'modal' + (modal === buyModal ? ' wide' : ''), role: 'dialog', 'aria-modal': 'true' }, body, el('button', { style: 'margin-top:16px;width:100%', onclick: close }, 'Stäng')));
   document.body.append(bg);
 }
 const ownerName = (id) => S.game.players.find((p) => p.id === id)?.name;
+const SQUARE_TEXT = { bor: 'Dra ett Börstips.', news: 'Dra en Finanstidning.', div: 'Du får utdelning på dina aktier.', lilla: 'Köp en obligation, sedan sker dragningen.', bonddiv: 'Du får utdelning och kan köpa en obligation.', branch: 'Här kan du köpa en tomt och en aktie före ditt kast.', buildsq: 'Här kan du bygga före ditt kast.', repay: 'Du måste betala tillbaka ett lån plus 5 000 kr i ränta.', give: 'Ge motspelarna 20 % på deras aktier i grupper där du har tomter.', prison: 'Slå en tärning. Du står över 1 till 3 kast.', gotoprison: 'Slå en tärning. På 1 eller 2 åker du i fängelse.', entry: 'Slå två tärningar och få 5 000 kr per öga.', exit: 'Betala ränta på dina lån och dra ett Börstips.' };
+function currentRent(n) {
+  const g = S.game; const x = g.plots[n]; if (!x.owner || x.mort) return 0; const i = plotInfo(n); const k = SQUARES[n].group;
+  const full = plotsIn(k).every((m) => g.plots[m].owner === x.owner) && g.shares.filter((s) => s.group === k).every((s) => s.owner === x.owner);
+  return (x.built ? i.rentBuilt : i.rent) * (full ? 2 : 1);
+}
+function renderLanding() {
+  const box = document.getElementById('landing'); if (!box) return; const g = S.game; const L = g.landed;
+  if (!L) { box.replaceChildren(el('h3', {}, 'Senaste rutan'), el('p', { class: 'small', style: 'margin:0' }, 'Här visas rutan som spelaren landar på.')); return; }
+  const p = g.players.find((v) => v.id === L.player); const n = L.pos; const s = SQUARES[n]; const isPlot = s.kind === 'plot'; const gr = isPlot ? GROUPS[s.group] : null;
+  const bg = isPlot ? gr.color : KIND_BG[s.kind]; const fg = isPlot ? gr.text : (s.kind === 'prison' || s.kind === 'gotoprison' ? '#fff' : '#1a1740');
+  const icon = s.kind === 'bor' ? svg(CHART) : s.kind === 'news' ? svg(PAPER) : null;
+  const rows = [];
+  if (isPlot) { const i = plotInfo(n); const x = g.plots[n]; const row = (a, b) => el('div', { class: 'lrow' }, el('span', { class: 'small' }, a), el('b', {}, b));
+    rows.push(el('div', { class: 'small' }, gr.name), row('Ägare', x.owner ? ownerName(x.owner) : 'Banken'));
+    if (x.owner) rows.push(row(x.mort ? 'Belånad' : 'Hyra nu', x.mort ? 'ingen hyra' : kr(currentRent(n))));
+    else rows.push(row('Pris', kr(i.price)), row('Hyra', kr(i.rent)));
+    if (x.built) rows.push(el('div', { class: 'small' }, 'Bebyggd'));
+  } else if (g.lastCard && (s.kind === 'bor' || s.kind === 'news' || s.kind === 'exit')) rows.push(el('div', { class: 'small' }, g.lastCard.deck), el('div', {}, g.lastCard.text));
+  else rows.push(el('div', {}, SQUARE_TEXT[s.kind] || ''));
+  box.replaceChildren(el('h3', {}, p.id === S.you ? 'Du landade på' : p.name + ' landade på'),
+    el('div', { class: 'ltile', style: `background:${bg};color:${fg}` }, isPlot ? el('div', { class: 'lh' }) : null, el('div', { class: 'lb' }, el('div', { class: 'n' }, 'Ruta ' + n), icon, el('div', {}, s.name))), ...rows);
+}
 function showSquare(n) {
   if (!S || !S.game) return;
   open(() => { const s = SQUARES[n]; const box = [el('h2', {}, n + '. ' + s.name)];
     if (s.kind === 'plot') { const i = plotInfo(n); const x = S.game.plots[n]; const g = GROUPS[s.group];
       box.push(el('p', {}, g.name + (g.industry ? ', industritomt' : '')), el('div', { class: 'item' }, 'Pris', el('b', {}, kr(i.price))), el('div', { class: 'item' }, 'Byggkostnad', el('b', {}, kr(i.build))), el('div', { class: 'item' }, 'Hyra obebyggd', el('b', {}, kr(i.rent))), el('div', { class: 'item' }, 'Hyra bebyggd', el('b', {}, kr(i.rentBuilt))), el('div', { class: 'item' }, 'Ägare', el('b', {}, x.owner ? ownerName(x.owner) : 'Banken')), el('p', { class: 'small' }, 'Äger någon hela gruppen med aktier fördubblas hyran.')); }
-    else box.push(el('p', {}, ({ bor: 'Dra ett Börstips.', news: 'Dra en Finanstidning.', div: 'Du får utdelning på dina aktier.', lilla: 'Köp en obligation, sedan sker dragningen.', bonddiv: 'Du får utdelning och kan köpa en obligation.', branch: 'Här kan du köpa en tomt och en aktie före ditt kast.', buildsq: 'Här kan du bygga före ditt kast.', repay: 'Du måste betala tillbaka ett lån plus 5 000 kr i ränta.', give: 'Ge motspelarna 20 % på deras aktier i grupper där du har tomter.', prison: 'Slå en tärning. Du står över 1 till 3 kast.', gotoprison: 'Slå en tärning. På 1 eller 2 åker du i fängelse.', entry: 'Slå två tärningar och få 5 000 kr per öga.', exit: 'Betala ränta på dina lån och dra ett Börstips.' })[s.kind] || ''));
+    else box.push(el('p', {}, SQUARE_TEXT[s.kind] || ''));
     return el('div', {}, box); });
 }
 function grouped(fn) {
@@ -300,9 +336,13 @@ function grouped(fn) {
 }
 const plotsIn = (k) => Object.keys(SQUARES).map(Number).filter((n) => SQUARES[n].group === k);
 function buyModal() { const g = S.game; const me = g.players.find((p) => p.id === S.you);
+  const plots = grouped((k) => plotsIn(k).filter((n) => !g.plots[n].owner).map((n) => el('div', { class: 'item' }, el('span', {}, SQUARES[n].name, el('div', { class: 'small' }, kr(plotInfo(n).price))), el('button', { disabled: g.boughtPlot || me.cash < plotInfo(n).price, onclick: () => act({ type: 'buyPlot', n }) }, 'Köp'))));
+  const shares = grouped((k) => g.shares.filter((s) => s.group === k && !s.owner).map((s) => el('div', { class: 'item' }, el('span', {}, kr(s.value), el('div', { class: 'small' }, 'ger ' + s.pct + ' % i utdelning')), el('button', { disabled: g.boughtShare || me.cash < s.value, onclick: () => act({ type: 'buyShare', id: s.id }) }, 'Köp'))));
+  const none = (t) => el('p', { class: 'small' }, t);
   return el('div', {}, el('h2', {}, 'Köp i banken'), el('p', { class: 'small' }, 'Du får köpa en tomt och en aktie per tur. Kontanter: ' + kr(me.cash)),
-    grouped((k) => [...plotsIn(k).filter((n) => !g.plots[n].owner).map((n) => el('div', { class: 'item' }, 'Tomt: ' + SQUARES[n].name + ', ' + kr(plotInfo(n).price), el('button', { disabled: g.boughtPlot || me.cash < plotInfo(n).price, onclick: () => act({ type: 'buyPlot', n }) }, 'Köp'))),
-      ...g.shares.filter((s) => s.group === k && !s.owner).map((s) => el('div', { class: 'item' }, `Aktie: ${kr(s.value)}, ger ${s.pct} %`, el('button', { disabled: g.boughtShare || me.cash < s.value, onclick: () => act({ type: 'buyShare', id: s.id }) }, 'Köp')))])); }
+    el('div', { class: 'buygrid' },
+      el('section', { class: 'buybox', 'aria-label': 'Tomter' }, el('h3', {}, 'Tomter'), g.boughtPlot ? none('Du har redan köpt en tomt den här turen.') : null, plots.some(Boolean) ? plots : none('Alla tomter är sålda.')),
+      el('section', { class: 'buybox', 'aria-label': 'Aktier' }, el('h3', {}, 'Aktier'), g.boughtShare ? none('Du har redan köpt en aktie den här turen.') : null, shares.some(Boolean) ? shares : none('Alla aktier är sålda.')))); }
 function buildModal() { const g = S.game; const me = g.players.find((p) => p.id === S.you); const list = myPlots().filter((n) => !g.plots[n].built && !g.plots[n].mort);
   return el('div', {}, el('h2', {}, 'Bygg'), el('p', { class: 'small' }, 'Kontanter: ' + kr(me.cash)), list.length ? list.map((n) => el('div', { class: 'item' }, SQUARES[n].name + ', ' + kr(plotInfo(n).build), el('button', { disabled: me.cash < plotInfo(n).build, onclick: () => act({ type: 'build', n }) }, 'Bygg'))) : el('p', {}, 'Du har inga tomter att bygga på.')); }
 function assetsModal() { const g = S.game; const me = g.players.find((p) => p.id === S.you); if (!me) return null; const isTurn = g.players[g.current].id === S.you; const pre = isTurn && g.stage === 'pre' && !g.debts.length && !g.bondRound;

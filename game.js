@@ -9,7 +9,7 @@ const groupPlots = (k) => Object.keys(SQUARES).map(Number).filter((n) => SQUARES
 
 function newGame(players, opts = {}) {
   const g = {
-    phase: 'play', target: opts.target || R.target, doubles: 0, turnNo: 1, current: 0, stage: 'pre', boughtPlot: false, boughtShare: false,
+    phase: 'play', target: opts.target || R.target, doubles: 0, landed: null, turnNo: 1, current: 0, stage: 'pre', boughtPlot: false, boughtShare: false,
     players: players.map((p, i) => ({ id: p.id, name: p.name, bot: !!p.bot, color: i, pos: 47, cash: R.startCash, car: false, loans: 0, skip: 0, fromPrison: false, freeBuild: false, out: false })),
     plots: {}, shares: [], bonds: {}, news: null, dice: [], debts: [], bondRound: null, winner: null, log: [],
     tipDeck: shuffled(BORSTIPS.length), newsDeck: shuffled(FINANS.length), lastCard: null,
@@ -105,6 +105,7 @@ function sendToPrison(g, p) {
 }
 function land(g, p, depth = 0) {
   if (depth > 5) return;
+  g.landed = { player: p.id, pos: p.pos };
   const s = SQUARES[p.pos];
   switch (s.kind) {
     case 'plot': { const x = g.plots[p.pos];
@@ -117,7 +118,7 @@ function land(g, p, depth = 0) {
     case 'gotoprison': {
       if (p.fromPrison) { log(g, `${p.name} kommer direkt från fängelset, rutan gäller inte.`); break; }
       const d = die(); g.dice = [d]; log(g, `${p.name} slår ${d} på Gå direkt i fängelse.`);
-      if (d <= 2) { p.pos = 9; sendToPrison(g, p); }
+      if (d <= 2) { p.pos = 9; g.landed = { player: p.id, pos: 9 }; sendToPrison(g, p); }
       break; }
     case 'entry': { let a = die(); let b = die(); g.dice = [a, b];
       let pips = a + b; if (g.news && g.news.type === 'bad') pips = Math.min(a, b);
@@ -206,7 +207,7 @@ function apply(g, pid, a) {
       if (pair) g.doubles++;
       if (pair && g.doubles >= R.maxDoubles) {
         log(g, `${p.name} slår lika ${R.maxDoubles} gånger i rad och åker i fängelse.`);
-        g.lastCard = null; g.stage = 'post'; p.pos = 9; sendToPrison(g, p); g.dice = [d1, d2]; break;
+        g.lastCard = null; g.stage = 'post'; p.pos = 9; g.landed = { player: p.id, pos: 9 }; sendToPrison(g, p); g.dice = [d1, d2]; break;
       }
       let steps = d1 + (d2 || 0);
       while (steps-- > 0) { p.pos = p.pos === 53 ? 1 : p.pos + 1; if (p.pos === 34 || p.pos === 47) break; }

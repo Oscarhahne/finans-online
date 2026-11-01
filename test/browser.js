@@ -16,7 +16,7 @@ const out = process.argv[2];
   for (let i = 0; i < 400 && bought < 3; i++) {
     for (const p of [A, B]) {
       const buy = p.locator('button:has-text("Köp tomt/aktie")');
-      if (await buy.count()) { await buy.click(); const k = p.locator('.modal .item button:not([disabled])').first(); if (await k.count()) { await k.click(); bought++; await p.waitForTimeout(100); } await p.locator('.modal button:has-text("Stäng")').click(); }
+      if (await buy.count()) { await buy.click(); if (p === A) await p.screenshot({ path: out + '/buy.png' }); const k = p.locator('.modal .item button:not([disabled])').first(); if (await k.count()) { await k.click(); bought++; await p.waitForTimeout(100); } await p.locator('.modal button:has-text("Stäng")').click(); }
       for (const t of ['Slå tärningen', 'Slå två tärningar', 'Avsluta turen', 'Köp ingen']) { const q = p.locator(`.side button:has-text("${t}")`); if (await q.count()) { await q.first().click(); await p.waitForTimeout(40); break; } }
     }
     await A.waitForTimeout(50);
@@ -30,6 +30,7 @@ const out = process.argv[2];
   await A.locator('.modal button:has-text("Stäng")').click();
   const hasOwner = await A.locator('.own').count();
   const overflow = await B.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
+  for (const p of [A, B]) { const t = await p.textContent('body'); if (/\[object |null|undefined/.test(await p.evaluate(() => document.body.innerText))) errors.push('Trasig text på sidan'); }
   console.log(JSON.stringify({ bought, hasOwner, overflow, errors }));
   await b.close();
   if (errors.length) process.exit(1);
