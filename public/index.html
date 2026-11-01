@@ -26,6 +26,7 @@ label{display:block;font-weight:700;margin:0 0 6px;color:var(--mute)}
 .game{display:flex;gap:16px;padding:12px;align-items:flex-start;flex-wrap:wrap;justify-content:center}
 .boardwrap{flex:1 1 640px;min-width:0;max-width:1100px}
 .scaler{position:relative;width:100%}
+@media (min-width:900px){.scaler{width:90%;margin:0 auto}}
 .board{position:absolute;left:0;top:0;width:1290px;height:1185px;transform-origin:0 0;background:#1e1b4b;border-radius:28px;overflow:hidden;font-family:Nunito,sans-serif}
 .side{flex:1 1 340px;max-width:440px;display:grid;gap:12px;min-width:0}
 .c{position:absolute;width:105px;height:120px;border-radius:14px;box-shadow:inset 0 0 0 1px rgba(0,0,0,.7),0 2px 6px rgba(0,0,0,.25);color:var(--dark);padding:36px 6px 4px;font:600 13.5px/1.15 Nunito,sans-serif;text-align:center;overflow-wrap:break-word;cursor:pointer;background:none}
@@ -269,7 +270,7 @@ function actionsFor(me, myTurn, debt, bond) {
   if (!myTurn) return el('div', { class: 'actions' }, el('button', { onclick: () => open(assetsModal) }, 'Mina tillgångar'));
   if (g.stage === 'pre') {
     const trade = canTrade(me); const bld = me.pos === 17 || me.pos === 40 || me.freeBuild;
-    return el('div', { class: 'stack' }, el('button', { class: 'primary', onclick: () => act({ type: 'roll' }) }, me.car && !(me.pos >= 34 && me.pos < 47) ? 'Slå två tärningar' : 'Slå tärningen'),
+    return el('div', { class: 'stack' }, el('button', { class: 'primary', onclick: () => act({ type: 'roll' }) }, (g.doubles ? 'Slå igen: ' : '') + (me.car && !(me.pos >= 34 && me.pos < 47) ? 'Slå två tärningar' : 'Slå tärningen')),
       el('div', { class: 'actions' }, trade ? el('button', { onclick: () => open(buyModal) }, 'Köp tomt/aktie') : null, trade ? el('button', { onclick: () => open(meetingModal) }, 'Bolagsstämma') : null, bld ? el('button', { onclick: () => open(buildModal) }, 'Bygg') : null,
         !me.car ? el('button', { onclick: () => act({ type: 'buyCar' }), disabled: me.cash < RULES.carPrice }, 'Köp bil 50 000 kr') : null,
         el('button', { onclick: () => open(assetsModal) }, 'Mina tillgångar'), el('button', { onclick: () => act({ type: 'loan' }), disabled: me.loans >= RULES.maxLoans }, 'Ta lån 50 000 kr')));

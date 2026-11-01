@@ -37,4 +37,13 @@ G.settle(g); assert.equal(g.phase, 'over'); assert.equal(g.winner, 'a');
 g = two(); g.players[0].cash = 0; g.debts.push({ from: 'a', to: 'b', amount: 900000, why: 'test' }); G.settle(g);
 rejects(g, 'b', { type: 'roll' }, /inte din tur|Vänta/);
 G.apply(g, 'a', { type: 'bankrupt' }); assert.equal(g.players[0].out, true); assert.equal(g.players[g.current].out, false);
+// Lika på två tärningar ger nytt kast, tredje gången blir det fängelse.
+g = two(); { const p = g.players[0]; p.car = true; p.pos = 1; p.cash = 500000; Math.random = () => 0.99; // sexor
+  G.apply(g, 'a', { type: 'roll' }); assert.equal(p.pos, 13); assert.equal(g.stage, 'pre'); assert.equal(g.current, 0);
+  G.apply(g, 'a', { type: 'roll' }); assert.equal(p.pos, 25); assert.equal(g.stage, 'pre');
+  G.apply(g, 'a', { type: 'roll' }); assert.equal(p.pos, 9); assert.equal(g.stage, 'post'); assert.ok(p.skip > 0); Math.random = orig;
+  G.apply(g, 'a', { type: 'end' }); assert.equal(g.current, 1); assert.equal(g.doubles, 0); }
+// Olika tärningar ger inget extra kast, och en tärning räknas aldrig som lika.
+g = two(); { const p = g.players[0]; p.car = true; p.pos = 1; const seq = [0, 0.5]; let i = 0; Math.random = () => seq[i++ % 2];
+  G.apply(g, 'a', { type: 'roll' }); Math.random = orig; assert.equal(g.stage, 'post'); assert.equal(g.doubles, 0); }
 console.log('Alla regeltester klara');

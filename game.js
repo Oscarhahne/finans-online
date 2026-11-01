@@ -9,7 +9,7 @@ const groupPlots = (k) => Object.keys(SQUARES).map(Number).filter((n) => SQUARES
 
 function newGame(players, opts = {}) {
   const g = {
-    phase: 'play', target: opts.target || R.target, turnNo: 1, current: 0, stage: 'pre', boughtPlot: false, boughtShare: false,
+    phase: 'play', target: opts.target || R.target, doubles: 0, turnNo: 1, current: 0, stage: 'pre', boughtPlot: false, boughtShare: false,
     players: players.map((p, i) => ({ id: p.id, name: p.name, bot: !!p.bot, color: i, pos: 47, cash: R.startCash, car: false, loans: 0, skip: 0, fromPrison: false, freeBuild: false, out: false })),
     plots: {}, shares: [], bonds: {}, news: null, dice: [], debts: [], bondRound: null, winner: null, log: [],
     tipDeck: shuffled(BORSTIPS.length), newsDeck: shuffled(FINANS.length), lastCard: null,
@@ -153,7 +153,7 @@ function nextTurn(g) {
     if (p.skip > 0) { p.skip--; log(g, `${p.name} står över sitt kast.`); continue; }
     break;
   }
-  g.stage = 'pre'; g.boughtPlot = false; g.boughtShare = false; g.turnNo++;
+  g.stage = 'pre'; g.boughtPlot = false; g.boughtShare = false; g.doubles = 0; g.turnNo++;
 }
 // Kör allt som kan köras automatiskt: skulder, dragning, vinst.
 function settle(g) {
@@ -202,10 +202,18 @@ function apply(g, pid, a) {
     case 'roll': { pre();
       const inBank = p.pos >= 34 && p.pos < 47; const two = p.car && !inBank;
       const d1 = die(); const d2 = two ? die() : null; g.dice = two ? [d1, d2] : [d1];
+      const pair = two && d1 === d2;
+      if (pair) g.doubles++;
+      if (pair && g.doubles >= R.maxDoubles) {
+        log(g, `${p.name} slår lika ${R.maxDoubles} gånger i rad och åker i fängelse.`);
+        g.lastCard = null; g.stage = 'post'; p.pos = 9; sendToPrison(g, p); g.dice = [d1, d2]; break;
+      }
       let steps = d1 + (d2 || 0);
       while (steps-- > 0) { p.pos = p.pos === 53 ? 1 : p.pos + 1; if (p.pos === 34 || p.pos === 47) break; }
       log(g, `${p.name} slår ${two ? d1 + ' och ' + d2 : d1} och går till ${SQUARES[p.pos].name}.`);
-      g.lastCard = null; g.stage = 'post'; land(g, p); break; }
+      g.lastCard = null; g.stage = 'post'; land(g, p);
+      if (pair && p.skip === 0 && !p.out) { g.stage = 'pre'; log(g, `${p.name} slog lika och får slå igen.`); }
+      break; }
     case 'end': needTurn(); if (g.stage !== 'post') fail('Du måste slå först.'); nextTurn(g); break;
     case 'buyCar': pre(); if (p.car) fail('Du har redan en bil.'); if (p.cash < R.carPrice) fail('Du har inte råd.'); p.cash -= R.carPrice; p.car = true; log(g, `${p.name} köper bil.`); break;
     case 'sellCar': if (!raising) fail('Inte nu.'); if (!p.car) fail('Du har ingen bil.'); p.car = false; p.cash += R.carSell; log(g, `${p.name} säljer bilen.`); break;
