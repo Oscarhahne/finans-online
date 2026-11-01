@@ -74,7 +74,9 @@ function drawTip(g, p, d) {
   else if (c.t === 'bondwin') { const o = g.bonds[c.n] ? P(g, g.bonds[c.n]) : null; if (o) { o.cash += c.a; g.bonds[c.n] = null; log(g, `${o.name} inkasserar ${kr(c.a)} på obligation ${c.n}.`); } else log(g, `Ingen äger obligation ${c.n}.`); }
   else if (c.t === 'smalldraw') startBonds(g, p, false, 'small');
   else if (c.t === 'back') { for (let k = 0; k < c.n; k++) p.pos = p.pos === 1 ? 53 : p.pos - 1; land(g, p, d + 1); }
-  else if (c.t === 'forward') { for (let k = 0; k < c.n; k++) { p.pos = p.pos === 53 ? 1 : p.pos + 1; if (p.pos === 34 || p.pos === 47) break; } land(g, p, d + 1); }
+  else if (c.t === 'forward') { // Stegkort stannar inte vid banken, utan kan gå rakt in i den.
+    for (let k = 0; k < c.n; k++) { p.pos = p.pos === 53 ? 1 : p.pos + 1; if (p.pos === 34) p.lapDone = true; if (p.pos === 47) p.fromPrison = false; }
+    land(g, p, d + 1); }
   else if (c.t === 'jailfree') log(g, `${p.name} sparar ett frikort.`);
   else if (c.t === 'visit') { if (plotsOf(g, p).length) g.stage = 'visit'; else { p.pos = 34; land(g, p, d + 1); } }
   else if (c.t === 'handover') { if (handoverItems(g, p).length && prevPlayer(g, p)) g.stage = 'handover'; else log(g, `${p.name} har inget att lämna över.`); }
