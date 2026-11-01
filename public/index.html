@@ -143,15 +143,15 @@ function buildBoard() {
   return b;
 }
 let S = null, ws = null, modal = null, boardEl = null, lastLogTop = 0, joinedInfo = null;
-const toast = (m) => { const t = document.getElementById('toast'); t.textContent = m; t.style.display = 'block'; clearTimeout(toast.t); toast.t = setTimeout(() => { t.style.display = 'none'; }, 4000); };
+const toast = (m) => { const t = document.getElementById('toast'); t.textContent = m; t.style.display = 'block'; clearTimeout(toast.t); toast.t = setTimeout(() => { t.style.display = 'none'; }, 8000); };
 let rooms = [];
 function connect() {
   ws = new WebSocket((location.protocol === 'https:' ? 'wss://' : 'ws://') + location.host);
-  ws.onopen = () => { const c = store.get('room'), t = store.get('token'); if (c && t) wsend({ t: 'resume', code: c, token: t }); else render(); };
+  ws.onopen = () => { const kod = (new URLSearchParams(location.search).get('kod') || '').toUpperCase(); if (kod && store.get('room') && store.get('room') !== kod) { store.del('room'); store.del('token'); } const c = store.get('room'), t = store.get('token'); if (c && t) wsend({ t: 'resume', code: c, token: t }); else render(); };
   ws.onmessage = (ev) => {
     const m = JSON.parse(ev.data);
     if (m.t === 'list') { rooms = m.rooms; if (!S) render(); }
-    else if (m.t === 'joined') { store.set('room', m.code); store.set('token', m.token); }
+    else if (m.t === 'joined') { store.set('room', m.code); store.set('token', m.token); history.replaceState(null, '', location.pathname); }
     else if (m.t === 'state') { S = m; render(); }
     else if (m.t === 'error') toast(m.msg);
     else if (m.t === 'resumeFailed') { store.del('room'); store.del('token'); S = null; render(); }
@@ -171,12 +171,20 @@ function renderHome() {
   const name = el('input', { id: 'name', maxlength: 16, autocomplete: 'nickname', value: prevName });
   const codeI = el('input', { id: 'code', maxlength: 5, value: prevCode, style: 'text-transform:uppercase' });
   const nm = () => { const v = name.value.trim(); if (!v) { toast('Skriv ditt namn först.'); name.focus(); return null; } store.set('name', v); return v; };
+  const joinCode = () => { const n = nm(); if (n) wsend({ t: 'join', name: n, code: codeI.value }); };
+  if (urlCode) {
+    app.replaceChildren(el('div', { class: 'home' }, el('h1', {}, GAME_NAME), el('p', { class: 'lead' }, 'Du är inbjuden till ett spel. Skriv ditt namn och gå med.'),
+      el('div', { class: 'card stack' }, el('div', { class: 'code' }, urlCode.toUpperCase()), el('div', {}, el('label', { for: 'name' }, 'Ditt namn'), name), el('button', { class: 'primary', onclick: joinCode }, 'Gå med i spelet'),
+        el('button', { onclick: () => { history.replaceState(null, '', location.pathname); codeI.value = ''; document.getElementById('code')?.remove(); render(); } }, 'Till startsidan'))));
+    if (focused) document.getElementById(focused)?.focus();
+    return;
+  }
   app.replaceChildren(el('div', { class: 'home' },
     el('h1', {}, GAME_NAME), el('p', { class: 'lead' }, 'Köp tomter och aktier, ta över företagsgrupper och bli miljonär. 2–6 spelare online.'),
     el('div', { class: 'card stack' },
       el('div', {}, el('label', { for: 'name' }, 'Ditt namn'), name),
       el('button', { class: 'primary', onclick: () => { const n = nm(); if (n) wsend({ t: 'create', name: n, open: true }); } }, 'Skapa nytt spel'),
-      el('div', {}, el('label', { for: 'code' }, 'Har du en kod?'), el('div', { class: 'row' }, codeI, el('button', { onclick: () => { const n = nm(); if (n) wsend({ t: 'join', name: n, code: codeI.value }); } }, 'Gå med')))),
+      el('div', {}, el('label', { for: 'code' }, 'Har du en kod?'), el('div', { class: 'row' }, codeI, el('button', { onclick: joinCode }, 'Gå med')))),
     el('div', { class: 'card' }, el('h2', {}, 'Öppna spel'),
       rooms.length ? rooms.map((r) => el('div', { class: 'roomrow' }, el('div', {}, r.host + 's spel', el('div', { class: 'small' }, r.count + ' av 6 spelare')), el('button', { onclick: () => { const n = nm(); if (n) wsend({ t: 'join', name: n, code: r.code }); } }, 'Gå med'))) : el('p', { class: 'small' }, 'Inga väntande spel just nu. Skapa ett!'))));
   if (focused) document.getElementById(focused)?.focus();
@@ -188,7 +196,7 @@ function renderLobby() {
     el('div', { class: 'card stack', style: 'margin-top:20px' },
       el('div', {}, el('div', { class: 'small' }, 'Spelkod'), el('div', { class: 'code' }, S.code)),
       el('div', { class: 'row' }, el('button', { onclick: () => { try { navigator.clipboard.writeText(link); toast('Länken är kopierad.'); } catch { toast(link); } } }, 'Kopiera inbjudningslänk')),
-      el('div', {}, el('h3', {}, 'Spelare'), S.members.map((m, i) => el('div', { class: 'pl' }, el('div', { class: 'row', style: 'flex:1' }, el('span', { class: 'dot', style: 'flex:0 0 16px;background:' + COLORS[i] }), el('span', {}, m.name + (m.id === S.you ? ' (du)' : '')))))),
+      el('div', {}, el('h3', {}, 'Spelare'), S.members.map((m, i) => el('div', { class: 'pl' }, el('div', { class: 'row', style: 'flex:1' }, el('span', { class: 'dot', style: 'flex:0 0 16px;background:' + COLORS[i] }), el('span', {}, m.name + (m.id === S.you ? ' (du)' : '') + (m.online ? '' : ' (tappat kontakten)')))))),
       host ? el('div', { class: 'stack' },
         el('div', { class: 'row' }, el('button', { onclick: () => wsend({ t: 'addBot' }), disabled: S.members.length >= 6 }, 'Lägg till dator'), el('button', { onclick: () => wsend({ t: 'removeBot' }), disabled: !S.members.some((m) => m.bot) }, 'Ta bort dator')),
         el('div', {}, el('label', { for: 'target' }, 'Vinstkrav i kontanter'), (() => { const s = el('select', { id: 'target', onchange: (e) => wsend({ t: 'config', target: Number(e.target.value) }) }, el('option', { value: 1000000 }, '1 000 000 kr'), el('option', { value: 500000 }, '500 000 kr, kortare spel')); s.value = S.target; return s; })()),

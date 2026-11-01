@@ -13,6 +13,8 @@ const BOT_DELAY = Number(process.env.BOT_DELAY ?? 700);
 const TURN_LIMIT = Number(process.env.TURN_LIMIT ?? 120000); // Tid innan spelet agerar åt en spelare
 const GONE_LIMIT = Number(process.env.GONE_LIMIT ?? 20000); // Kortare tid om spelaren tappat kontakten
 const MAX_ROOMS = 300;
+const LOBBY_GRACE = Number(process.env.LOBBY_GRACE ?? 300000); // Så länge väntar en plats i lobbyn på den som tappat kontakten
+const hostOf = (r) => r.members.find((x) => !x.bot && x.ws) || r.members.find((x) => !x.bot);
 
 const server = http.createServer((req, res) => {
   let p;
@@ -42,7 +44,7 @@ function broadcast(r) {
   const base = {
     t: 'state', code: r.code, open: r.open, target: r.target,
     members: r.members.map((m) => ({ id: m.id, name: m.name, bot: !!m.bot, online: m.bot || !!m.ws })),
-    host: r.members.find((m) => !m.bot)?.id,
+    host: hostOf(r)?.id,
     game: r.game ? G.publicView(r.game) : null,
   };
   for (const m of r.members) if (m.ws) send(m.ws, { ...base, you: m.id });
@@ -63,19 +65,33 @@ function schedule(r) {
     broadcast(r);
   }, delay);
 }
-function leave(ws) {
+function dropIfEmpty(r) {
+  if (r.members.some((x) => !x.bot)) return false;
+  clearTimeout(r.timer); rooms.delete(r.code); return true;
+}
+function leave(ws, explicit) {
   const r = ws.room; if (!r) return;
   const m = r.members.find((x) => x.ws === ws); ws.room = null;
   if (m) {
     m.ws = null;
-    if (!r.game) r.members = r.members.filter((x) => x !== m);
+    if (!r.game && explicit) r.members = r.members.filter((x) => x !== m);
+    else if (!r.game) {
+      // Mobiler tappar anslutningen när man byter app, till exempel för att dela länken.
+      clearTimeout(m.graceTimer);
+      m.graceTimer = setTimeout(() => {
+        if (m.ws || r.game || !rooms.has(r.code)) return;
+        r.members = r.members.filter((x) => x !== m);
+        if (!dropIfEmpty(r)) broadcast(r);
+        broadcastList();
+      }, LOBBY_GRACE);
+      m.graceTimer.unref();
+    }
   }
-  if (!r.members.some((x) => !x.bot)) { clearTimeout(r.timer); rooms.delete(r.code); }
-  else broadcast(r);
+  if (!dropIfEmpty(r)) broadcast(r);
   broadcastList();
 }
 function join(ws, r, name) {
-  if (r.game) return send(ws, { t: 'error', msg: 'Spelet har redan börjat.' });
+  if (r.game) return send(ws, { t: 'error', msg: 'Spelet har redan börjat. Be värden starta ett nytt spel och skicka en ny länk.' });
   if (r.members.length >= 6) return send(ws, { t: 'error', msg: 'Spelet är fullt.' });
   const m = { id: crypto.randomUUID(), token: crypto.randomBytes(16).toString('hex'), name: clean(name, 16) || 'Spelare', ws };
   r.members.push(m); ws.room = r;
@@ -106,16 +122,16 @@ wss.on('connection', (ws) => {
         if (r) return; const nr = rooms.get(clean(a.code, 5).toUpperCase()); const m = nr && nr.members.find((x) => x.token === a.token);
         if (!m) return send(ws, { t: 'resumeFailed' });
         if (m.ws && m.ws !== ws) { m.ws.room = null; m.ws.close(); }
-        m.ws = ws; ws.room = nr; send(ws, { t: 'joined', code: nr.code, token: m.token }); broadcast(nr);
+        clearTimeout(m.graceTimer); m.ws = ws; ws.room = nr; send(ws, { t: 'joined', code: nr.code, token: m.token }); broadcast(nr);
       } else if (a.t === 'list') {
         send(ws, { t: 'list', rooms: lobbyList() });
       } else if (a.t === 'leave') {
         const m = r && r.members.find((x) => x.ws === ws);
         if (m) m.token = null;
-        leave(ws); send(ws, { t: 'left' }); send(ws, { t: 'list', rooms: lobbyList() });
+        leave(ws, true); send(ws, { t: 'left' }); send(ws, { t: 'list', rooms: lobbyList() });
       } else if (r) {
         const me = r.members.find((x) => x.ws === ws); if (!me) return;
-        const host = r.members.find((x) => !x.bot) === me;
+        const host = hostOf(r) === me;
         if (a.t === 'addBot') {
           if (!host || r.game || r.members.length >= 6) return;
           const n = r.members.filter((x) => x.bot).length + 1;
