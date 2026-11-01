@@ -25,12 +25,21 @@ label{display:block;font-weight:700;margin:0 0 6px;color:var(--mute)}
 .code{font:600 36px Fredoka,sans-serif;letter-spacing:3px;color:var(--gold)}
 .game{display:flex;gap:16px;padding:12px;align-items:flex-start;flex-wrap:wrap;justify-content:center}
 .boardwrap{flex:1 1 640px;min-width:0;max-width:990px}
-.landing{flex:0 0 200px;background:var(--panel);border-radius:20px;padding:14px;display:grid;gap:10px;align-content:start}
+.leftcol{flex:0 0 240px;width:240px;max-width:100%;display:grid;gap:12px;align-content:start}
+.landing{background:var(--panel);border-radius:20px;padding:14px;display:grid;gap:10px;align-content:start}
 .ltile{border-radius:14px;box-shadow:inset 0 0 0 1px rgba(0,0,0,.7);overflow:hidden;font-weight:800;text-align:center}
 .ltile .lh{height:30px;background:rgba(255,255,255,.4);border-bottom:1px solid rgba(0,0,0,.45)}
 .ltile .lb{padding:14px 8px;display:grid;gap:6px;justify-items:center;font:600 19px/1.15 Fredoka,sans-serif}
 .lrow{display:flex;justify-content:space-between;gap:8px;font-size:13.5px}
-@media (max-width:1199px){.landing{flex:1 1 100%;order:-1}}
+@media (max-width:1199px){.leftcol{flex:1 1 100%;width:100%;order:-1;grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}}
+.pile{display:grid;gap:5px}.pile h4{margin:0;font:800 13px Nunito,sans-serif;color:var(--mute);display:flex;justify-content:space-between}
+.minis{display:flex;flex-wrap:wrap;gap:4px}
+.mini{min-height:44px;padding:4px 6px;border:0;border-radius:8px;font:800 11.5px/1.1 Nunito,sans-serif;box-shadow:0 2px 3px rgba(0,0,0,.45),inset 0 0 0 1px rgba(0,0,0,.45);text-align:center;width:70px;display:flex;align-items:center;justify-content:center}
+.mini.m{opacity:.65;outline:2px dashed #fff;outline-offset:-3px}
+.note{background:#d9f99d;color:#14532d}.bond{background:#c4b5fd;color:#1a1740;width:38px}
+.events{position:fixed;left:50%;top:14px;transform:translateX(-50%);z-index:42;display:grid;gap:8px;width:min(460px,calc(100vw - 24px));pointer-events:none}
+.evt{background:#fff;color:var(--dark);border-left:0;border-radius:14px;padding:10px 14px;font-weight:800;box-shadow:0 8px 24px rgba(0,0,0,.5);text-align:center;animation:evt .2s ease-out}
+@keyframes evt{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:none}}
 .scaler{position:relative;width:100%}
 .board{position:absolute;left:0;top:0;width:1290px;height:1185px;transform-origin:0 0;background:#1e1b4b;border-radius:28px;overflow:hidden;font-family:Nunito,sans-serif}
 .side{flex:0 1 320px;width:320px;max-width:100%;display:grid;gap:12px;min-width:0}
@@ -40,15 +49,15 @@ label{display:block;font-weight:700;margin:0 0 6px;color:var(--mute)}
 .c:hover{filter:brightness(1.08)}
 .n{font:700 11px/14px Nunito,sans-serif;opacity:.85}
 .t{font-weight:800}
-.head{position:absolute;top:1px;left:1px;right:1px;height:30px;border-radius:13px 13px 0 0;background:rgba(255,255,255,.4);border-bottom:1px solid rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;gap:5px}
-.bk{height:105px}
+.head{position:absolute;top:1px;left:1px;right:1px;height:30px;border-radius:13px 13px 0 0;background:rgba(255,255,255,.4);border-bottom:1px solid rgba(0,0,0,.45);display:flex;align-items:center;justify-content:flex-start;gap:3px;padding:0 3px}
+.bk{height:105px;font-size:12px}
 .h{width:120px;height:120px}
 .r{position:absolute;inset:0;padding:10px;display:flex;flex-direction:column;gap:2px;align-items:center;justify-content:center;text-align:center}
-.ic{display:block;margin:0 auto 2px;width:44px;height:30px}
+.ic{display:block;margin:0 auto 1px;width:38px;height:26px}
 .own{width:16px;height:16px;border-radius:50%;border:2px solid #000}
-.b3d{width:30px;height:30px;flex:none;filter:drop-shadow(0 2px 1px rgba(0,0,0,.45))}
+.b3d{width:38px;height:38px;flex:none;filter:drop-shadow(0 2px 1px rgba(0,0,0,.45))}
 .mort{outline:3px dashed #fff;outline-offset:-6px;opacity:.72}
-.token{position:absolute;width:36px;height:50px;transition:left .35s,top .35s;pointer-events:none;z-index:5}
+.token{position:absolute;width:44px;height:62px;transition:left .35s,top .35s;pointer-events:none;z-index:5}
 .pawn{display:block;width:100%;height:100%;overflow:visible}
 .token.me .pawn{filter:drop-shadow(0 0 4px #fff)}
 .title{position:absolute;left:195px;top:128px;width:900px;text-align:center;font:600 76px/1 Fredoka,sans-serif;color:#fff;text-shadow:0 2px 10px #0f0e3a}
@@ -116,13 +125,13 @@ function el(tag, props, ...kids) {
 function svg(html) { const d = document.createElement('div'); d.innerHTML = html; return d.firstElementChild; }
 const CHART = '<svg class="ic" viewBox="0 0 44 30" aria-hidden="true"><path d="M2 2V28H42" fill="none" stroke="#1a1740" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M6 22L13 14L19 19L27 7L33 13L41 4" fill="none" stroke="#be123c" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 const PAPER = '<svg class="ic" viewBox="0 0 44 30" aria-hidden="true"><rect x="3" y="1" width="38" height="28" rx="3" fill="#fff" stroke="#1a1740" stroke-width="2"/><rect x="8" y="5" width="28" height="5" rx="1" fill="#1a1740"/><rect x="8" y="13" width="12" height="11" fill="#94a3b8"/><path d="M24 14H36M24 18H36M24 22H36" fill="none" stroke="#1a1740" stroke-width="1.6"/></svg>';
-// Tredimensionella byggnader, ritade i isometrisk vy med ljus, mellan och skugga.
-const HOUSE3D = '<svg class="b3d" viewBox="0 0 32 32" role="img" aria-label="Hus"><path d="M4 16L16 22V30L4 24Z" fill="#15803d" stroke="#052e16" stroke-width=".7"/><path d="M28 16L16 22V30L28 24Z" fill="#22c55e" stroke="#052e16" stroke-width=".7"/><path d="M4 16L16 3L16 22Z" fill="#b91c1c" stroke="#450a0a" stroke-width=".7"/><path d="M28 16L16 3L16 22Z" fill="#ef4444" stroke="#450a0a" stroke-width=".7"/><path d="M8 20.5L11 22V26.5L8 25Z" fill="#fde68a"/><path d="M20 22L24 20V24.5L20 26.5Z" fill="#fef9c3"/></svg>';
-const FACTORY3D = '<svg class="b3d" viewBox="0 0 32 32" role="img" aria-label="Industri"><path d="M21 3L25 5V17L21 15Z" fill="#7f1d1d" stroke="#2b0505" stroke-width=".6"/><path d="M25 5L28 3.5V15.5L25 17Z" fill="#b91c1c" stroke="#2b0505" stroke-width=".6"/><path d="M21 3L24 1.5L28 3.5L25 5Z" fill="#fca5a5" stroke="#2b0505" stroke-width=".6"/><path d="M3 15L16 22V30L3 23Z" fill="#991b1b" stroke="#2b0505" stroke-width=".7"/><path d="M29 15L16 22V30L29 23Z" fill="#dc2626" stroke="#2b0505" stroke-width=".7"/><path d="M3 15L16 8L29 15L16 22Z" fill="#f87171" stroke="#2b0505" stroke-width=".7"/><path d="M19 22.5L22 21V25L19 26.5ZM24 20L27 18.5V22.5L24 24Z" fill="#fde68a"/></svg>';
-// Spelpjäs, en rund plupp med skuggning. Färgen följer spelaren.
+// Tredimensionella byggnader med ljus sida, skuggsida, tak och markskugga.
+const HOUSE3D = '<svg class="b3d" viewBox="0 0 40 40" role="img" aria-label="Hus"><ellipse cx="20" cy="35" rx="18" ry="5" fill="#000" opacity=".35"/><path d="M25 8L29 10V19L25 17Z" fill="#7c2d12" stroke="#1c0a03" stroke-width=".6"/><path d="M29 10L32 8.5V17.5L29 19Z" fill="#c2410c" stroke="#1c0a03" stroke-width=".6"/><path d="M25 8L28 6.5L32 8.5L29 10Z" fill="#fdba74" stroke="#1c0a03" stroke-width=".6"/><path d="M4 19L20 27V37L4 29Z" fill="#15803d" stroke="#052e16" stroke-width=".8"/><path d="M36 19L20 27V37L36 29Z" fill="#4ade80" stroke="#052e16" stroke-width=".8"/><path d="M4 19L20 3L20 27Z" fill="#991b1b" stroke="#450a0a" stroke-width=".8"/><path d="M36 19L20 3L20 27Z" fill="#f87171" stroke="#450a0a" stroke-width=".8"/><path d="M7 24L12 26.5V33L7 30.5Z" fill="#14532d"/><path d="M15 28L18 29.5V33.5L15 32Z" fill="#fde68a"/><path d="M24 29.5L31 26V31L24 34.5Z" fill="#fef9c3" stroke="#14532d" stroke-width=".5"/></svg>';
+const FACTORY3D = '<svg class="b3d" viewBox="0 0 40 40" role="img" aria-label="Industri"><ellipse cx="20" cy="35" rx="18" ry="5" fill="#000" opacity=".35"/><circle cx="31" cy="3" r="2.6" fill="#cbd5e1" opacity=".9"/><path d="M26 6L30 8V22L26 20Z" fill="#7f1d1d" stroke="#2b0505" stroke-width=".6"/><path d="M30 8L34 6V20L30 22Z" fill="#ef4444" stroke="#2b0505" stroke-width=".6"/><path d="M26 6L30 4L34 6L30 8Z" fill="#fecaca" stroke="#2b0505" stroke-width=".6"/><path d="M3 20L20 29V37L3 28Z" fill="#7f1d1d" stroke="#2b0505" stroke-width=".8"/><path d="M37 20L20 29V37L37 28Z" fill="#ef4444" stroke="#2b0505" stroke-width=".8"/><path d="M3 20L12 13L20 18L29 13L37 20L20 29Z" fill="#fca5a5" stroke="#2b0505" stroke-width=".8"/><path d="M23 29.5L27 27.5V32L23 34ZM29 26.5L33 24.5V29L29 31Z" fill="#fde68a"/><path d="M7 24L11 26V31L7 29ZM13 27L17 29V34L13 32Z" fill="#450a0a"/></svg>';
+// Spelpjäs: blank plupp med högdager, skuggsida och fot.
 function pawn(i) {
   const c = COLORS[i]; const id = 'pw' + i;
-  return `<svg class="pawn" viewBox="0 0 40 56" role="img" aria-label="Pjäs"><defs><radialGradient id="${id}" cx=".36" cy=".3" r=".8"><stop offset="0" stop-color="#fff"/><stop offset=".3" stop-color="${c}"/><stop offset="1" stop-color="#0b0a24"/></radialGradient><linearGradient id="${id}b" x1="0" x2="1"><stop offset="0" stop-color="#fff" stop-opacity=".75"/><stop offset=".3" stop-color="${c}"/><stop offset="1" stop-color="#0b0a24"/></linearGradient></defs><ellipse cx="20" cy="51" rx="16" ry="4.5" fill="#000" opacity=".4"/><path d="M14 23C13 34 8 41 6 46C6 51 34 51 34 46C32 41 27 34 26 23Z" fill="url(#${id}b)" stroke="#0b0a24" stroke-width="1"/><ellipse cx="20" cy="46.5" rx="14" ry="3.6" fill="url(#${id}b)" stroke="#0b0a24" stroke-width="1"/><circle cx="20" cy="14" r="12" fill="url(#${id})" stroke="#0b0a24" stroke-width="1"/></svg>`;
+  return `<svg class="pawn" viewBox="0 0 44 62" role="img" aria-label="Pjäs"><defs><radialGradient id="${id}" cx=".34" cy=".28" r=".85"><stop offset="0" stop-color="#fff"/><stop offset=".22" stop-color="${c}"/><stop offset=".72" stop-color="${c}"/><stop offset="1" stop-color="#14123a"/></radialGradient><linearGradient id="${id}b" x1="0" x2="1"><stop offset="0" stop-color="#14123a"/><stop offset=".22" stop-color="${c}"/><stop offset=".42" stop-color="#fff"/><stop offset=".62" stop-color="${c}"/><stop offset="1" stop-color="#14123a"/></linearGradient></defs><ellipse cx="22" cy="56" rx="20" ry="6" fill="#000" opacity=".45"/><path d="M17 24C16 36 10 44 7 50H37C34 44 28 36 27 24Z" fill="url(#${id}b)" stroke="#0b0a24" stroke-width="1"/><path d="M15 25.5C18 28 26 28 29 25.5L28 22H16Z" fill="url(#${id}b)" stroke="#0b0a24" stroke-width="1"/><path d="M6 50C6 47 38 47 38 50V53C38 57 6 57 6 53Z" fill="url(#${id}b)" stroke="#0b0a24" stroke-width="1"/><ellipse cx="22" cy="50" rx="16" ry="3.4" fill="${c}" stroke="#0b0a24" stroke-width=".7"/><circle cx="22" cy="14" r="13" fill="url(#${id})" stroke="#0b0a24" stroke-width="1"/><ellipse cx="17" cy="9" rx="4" ry="2.6" fill="#fff" opacity=".85"/></svg>`;
 }
 const CITY = `<svg role="img" aria-label="Illustration av en hög kontorsbyggnad i ett finansdistrikt i skymning" width="1050" height="945" viewBox="0 0 1000 900" style="position:absolute;left:120px;top:120px;filter:blur(1.5px)"><defs><linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0f0e3a"/><stop offset=".55" stop-color="#3730a3"/><stop offset="1" stop-color="#db6a9e"/></linearGradient><pattern id="lit" width="24" height="30" patternUnits="userSpaceOnUse"><rect x="6" y="7" width="12" height="16" fill="#fde68a" opacity=".7"/></pattern><pattern id="glass" width="18" height="24" patternUnits="userSpaceOnUse"><rect x="4" y="5" width="10" height="14" fill="#93c5fd" opacity=".5"/></pattern></defs><rect width="1000" height="900" fill="url(#sky)"/><rect y="520" width="100" height="380" fill="#2e2a6b"/><rect x="340" y="560" width="70" height="340" fill="#2e2a6b"/><rect x="710" y="460" width="60" height="440" fill="#2e2a6b"/><rect x="930" y="480" width="70" height="420" fill="#2e2a6b"/><rect y="520" width="100" height="380" fill="url(#glass)"/><rect x="930" y="480" width="70" height="420" fill="url(#glass)"/><rect x="198" y="300" width="4" height="110" fill="#14123f"/><rect x="165" y="400" width="70" height="70" fill="#14123f"/><rect x="130" y="460" width="140" height="80" fill="#14123f"/><rect x="90" y="530" width="220" height="290" fill="#14123f"/><rect x="130" y="460" width="140" height="80" fill="url(#lit)"/><rect x="96" y="535" width="208" height="280" fill="url(#lit)"/><polygon points="80,820 200,780 320,820" fill="#1b1950"/><rect x="80" y="820" width="240" height="80" fill="#1b1950"/><rect x="100" y="826" width="14" height="74" fill="#c7d2fe"/><rect x="140" y="826" width="14" height="74" fill="#c7d2fe"/><rect x="180" y="826" width="14" height="74" fill="#c7d2fe"/><rect x="220" y="826" width="14" height="74" fill="#c7d2fe"/><rect x="260" y="826" width="14" height="74" fill="#c7d2fe"/><rect x="300" y="826" width="14" height="74" fill="#c7d2fe"/><polygon points="760,560 930,470 930,900 760,900" fill="#1b1950"/><rect x="772" y="590" width="146" height="310" fill="url(#glass)"/></svg>`;
 const KIND_BG = { bor: '#7dd3fc', news: '#fde047', div: '#4ade80', lilla: '#c4b5fd', bonddiv: '#4ade80', branch: '#fbbf24', entry: '#fbbf24', exit: '#fbbf24', buildsq: '#fdba74', repay: '#fda4af', give: '#fda4af', prison: '#0f172a', gotoprison: '#0f172a' };
@@ -168,13 +177,16 @@ function buildBoard() {
     e.onclick = () => showSquare(n); e.onkeydown = (ev) => { if (ev.key === 'Enter') showSquare(n); };
     const icon = s.kind === 'bor' ? svg(CHART) : s.kind === 'news' ? svg(PAPER) : null;
     const name = s.sub ? [el('strong', {}, breakable(s.name)), el('br'), s.sub] : [breakable(s.name)];
-    if (r.corner) e.append(el('div', { class: 'r' }, el('div', { class: 'n' }, n), el('div', {}, icon, ...name)));
+    if (r.corner) e.append(el('div', { class: 'r', style: 'justify-content:flex-start;padding-top:8px' }, el('div', { class: 'n' }, n), el('div', {}, icon, ...name)));
     else {
-      if (isPlot) e.append(el('div', { class: 'head', id: 'h' + n }));
-      // Rutan är vriden så att huvudet pekar inåt, men texten står alltid rak mot skärmen.
-      const rot = r.rot || 0; const areaTop = isPlot ? 31 : 0; const ah = h - areaTop; const sideways = Math.abs(rot) === 90;
-      const W = sideways ? ah : w; const H = sideways ? w : ah;
-      e.append(el('div', { class: 'lab', style: `left:${w / 2 - W / 2}px;top:${areaTop + ah / 2 - H / 2}px;width:${W}px;height:${H}px;transform:rotate(${-rot}deg)` }, el('div', { class: 'n' }, n), icon, el('div', {}, ...name), isPlot ? el('div', { class: 'pr' }, kr(g.plot)) : null));
+      const rot = r.rot || 0; const sideways = Math.abs(rot) === 90;
+      if (isPlot) e.append(el('div', { class: 'head', id: 'h' + n, style: rot === -90 ? 'justify-content:flex-end' : '' }));
+      // Rutan är vriden så att huvudet pekar inåt, men texten står rak mot skärmen. Pjäsen får en egen del av rutan.
+      let lx = 0, ly = 0, W = w, H = h, just = 'center';
+      if (r.bank) { const res = 36; if (r.w > 105) { W = w - res - 4; } else if (r.x < 645) { W = w - res; } else { lx = res; W = w - res; } }
+      else if (sideways) { const top = isPlot ? 31 : 36; const ah = h - top; W = ah; H = w; lx = w / 2 - W / 2; ly = top + ah / 2 - H / 2; }
+      else { const top = isPlot ? 31 : 0; ly = top; H = h - top; just = rot === 180 ? 'flex-start' : 'flex-end'; }
+      e.append(el('div', { class: 'lab', style: `left:${lx}px;top:${ly}px;width:${W}px;height:${H}px;justify-content:${just};transform:rotate(${-rot}deg)` }, el('div', { class: 'n' }, n), icon, el('div', {}, ...name), isPlot ? el('div', { class: 'pr' }, kr(g.plot)) : null));
     }
     b.append(e);
   }
@@ -193,7 +205,7 @@ function connect() {
     else if (m.t === 'state') onState(m);
     else if (m.t === 'error') toast(m.msg);
     else if (m.t === 'resumeFailed') { store.del('room'); store.del('token'); S = null; render(); }
-    else if (m.t === 'left') { store.del('room'); store.del('token'); endCelebration(); S = null; seenCard = null; seenRoll = null; animating = false; pendingState = null; seenRoll = null; document.getElementById('cardpop')?.remove(); boardEl = null; modal = null; render(); }
+    else if (m.t === 'left') { store.del('room'); store.del('token'); endCelebration(); S = null; seenCard = null; seenEvent = null; document.getElementById('events')?.remove(); seenRoll = null; animating = false; pendingState = null; seenRoll = null; document.getElementById('cardpop')?.remove(); boardEl = null; modal = null; render(); }
   };
   ws.onclose = () => setTimeout(connect, 1500);
 }
@@ -276,7 +288,7 @@ function makeCube(v, i) {
 }
 function playDice(g, r, done) {
   const p = g.players.find((v) => v.id === r.player);
-  const stage = el('div', { class: 'dicestage', role: 'status', 'aria-label': (p ? p.name : '') + ' slår ' + r.dice.join(' och ') }, el('h2', {}, p && p.id === S.you ? 'Du slår' : (p ? p.name : '') + ' slår'), el('div', { class: 'dicerow' }, r.dice.map(makeCube)));
+  const stage = el('div', { class: 'dicestage', role: 'status', 'aria-label': (p ? p.name : '') + ' slår ' + r.dice.join(' och ') }, el('h2', {}, (p && p.id === S.you ? 'Du ' : (p ? p.name + ' ' : '')) + (r.label || 'slår')), el('div', { class: 'dicerow' }, r.dice.map(makeCube)));
   document.body.append(stage); document.body.classList.add('rolling');
   setTimeout(() => { stage.remove(); document.body.classList.remove('rolling'); done(); }, 1550);
 }
@@ -332,7 +344,7 @@ function renderGame() {
   const g = S.game; showCardPopup(g);
   if (!boardEl) {
     boardEl = buildBoard();
-    app.replaceChildren(el('div', { class: 'game' }, el('aside', { class: 'landing', id: 'landing', 'aria-live': 'polite' }), el('div', { class: 'boardwrap' }, el('div', { class: 'scaler', id: 'scaler' }, boardEl)), el('div', { class: 'side', id: 'side' })));
+    app.replaceChildren(el('div', { class: 'game' }, el('div', { class: 'leftcol' }, el('aside', { class: 'landing', id: 'landing' }), el('aside', { class: 'landing', id: 'piles', 'aria-label': 'Mina tillgångar' })), el('div', { class: 'boardwrap' }, el('div', { class: 'scaler', id: 'scaler' }, boardEl)), el('div', { class: 'side', id: 'side' })));
     fit();
   }
   // Ägare, byggnader och belåning på tomterna.
@@ -349,17 +361,17 @@ function renderGame() {
     let t = document.getElementById('tk' + p.color);
     if (!t) { t = el('div', { class: 'token' + (p.id === S.you ? ' me' : ''), id: 'tk' + p.color, title: p.name }, svg(pawn(p.color))); boardEl.append(t); }
     // Pjäsen står vid rutans inre kant så att namn och pris syns.
-    const spread = ((i - 1) % 6 - 1) * 20; const mx = r.x + r.w / 2 - 18, my = r.y + r.h / 2 - 25; let tx = mx + spread, ty = my;
-    if (r.corner) { tx = mx + spread; ty = my - 18; }
-    else if (r.bank && r.w > 105) { ty = r.y - 34; }
-    else if (r.bank) { tx = r.x < 645 ? r.x - 24 : r.x + r.w - 12; ty = my + spread; }
-    else if (r.rot === 90) { tx = r.x + r.w - 20; ty = my + spread; }
-    else if (r.rot === -90) { tx = r.x - 16; ty = my + spread; }
-    else if (r.rot === 180) { ty = r.y + r.h - 28; }
-    else { ty = r.y - 22; }
+    const step = (i - 1) * 14; let tx, ty;
+    if (r.corner) { tx = r.x + 38 + step - 14; ty = r.y + r.h - 62; }
+    else if (r.bank && r.w > 105) { tx = r.x + r.w - 42; ty = r.y + 26 - step / 2; }
+    else if (r.bank) { tx = (r.x < 645 ? r.x + r.w - 40 : r.x - 4) + (r.x < 645 ? -1 : 1) * step; ty = r.y + 28; }
+    else if (r.rot === 90) { tx = r.x + r.w - 42 - step; ty = r.y + r.h - 62; }
+    else if (r.rot === -90) { tx = r.x - 2 + step; ty = r.y + r.h - 62; }
+    else if (r.rot === 180) { tx = r.x + 4 + step; ty = r.y + r.h - 63; }
+    else { tx = r.x + r.w - 46 - step; ty = r.y + 1; }
     t.style.left = tx + 'px'; t.style.top = ty + 'px';
   });
-  renderLanding(); renderSide(); renderModal(); celebrate(g);
+  renderLanding(); renderPiles(); renderSide(); renderModal(); showEvents(g); celebrate(g);
 }
 function renderSide() {
   const g = S.game; const side = document.getElementById('side'); const me = g.players.find((p) => p.id === S.you);
@@ -378,11 +390,11 @@ function renderSide() {
       g.news ? el('div', { class: 'small' }, 'Just nu: ' + (g.news.type === 'good' ? 'Goda tider' : 'Dåliga tider')) : null) : null,
     el('div', { class: 'card', style: 'margin:0;padding:14px' }, el('h3', {}, 'Spelare · mål ' + kr(g.target)),
       g.players.map((p) => { const m = S.members.find((x) => x.id === p.id);
-        return el('div', { class: 'pl' + (p.id === current.id ? ' on' : '') + (p.out ? ' out' : '') }, el('div', { style: 'display:flex;gap:8px;align-items:center;min-width:0' }, el('span', { class: 'dot', style: 'background:' + COLORS[p.color] }), el('div', {}, p.name + (p.id === S.you ? ' (du)' : ''), el('div', { class: 'small' }, [p.car ? 'bil' : null, p.loans ? p.loans + ' lån' : null, p.skip ? 'i fängelse' : null, m && !m.online ? 'borta' : null].filter(Boolean).join(' · ')))), el('div', { class: 'money' }, kr(p.cash))); })),
+        return el('div', { class: 'pl' + (p.id === current.id ? ' on' : '') + (p.out ? ' out' : '') }, el('div', { style: 'display:flex;gap:8px;align-items:center;min-width:0' }, el('span', { class: 'dot', style: 'background:' + COLORS[p.color] }), el('div', {}, p.name + (p.id === S.you ? ' (du)' : ''), el('div', { class: 'small' }, [p.car ? 'bil' : null, p.loans ? p.loans + ' lån' : null, p.jail ? 'i fängelse ' + p.jail + ' år' : null, m && !m.online ? 'borta' : null].filter(Boolean).join(' · ')))), el('div', { class: 'money' }, kr(p.cash))); })),
     el('div', { class: 'card', style: 'margin:0;padding:14px' }, el('h3', { style: 'margin-bottom:8px' }, 'Händelser'), logBox),
     el('button', { onclick: () => wsend({ t: 'leave' }) }, 'Lämna spelet')].filter(Boolean));
 }
-const canTrade = (p) => p.pos === 12 || (p.pos >= 35 && p.pos <= 46);
+const canTrade = (p) => p.lapDone && (p.pos === 12 || (p.pos >= 35 && p.pos <= 46));
 function actionsFor(me, myTurn, debt, bond) {
   const g = S.game;
   if (g.phase === 'over') return el('button', { class: 'primary', onclick: () => wsend({ t: 'leave' }) }, 'Till startsidan');
@@ -396,9 +408,11 @@ function actionsFor(me, myTurn, debt, bond) {
     el('div', { class: 'bondgrid' }, Object.keys(g.bonds).map((n) => el('button', { disabled: !!g.bonds[n], onclick: () => act({ type: 'buyBond', n: Number(n) }) }, n))), el('button', { onclick: () => act({ type: 'skipBond' }) }, 'Köp ingen'));
   if (bond) return el('p', { class: 'small' }, 'Väntar på obligationsköp.');
   if (!myTurn) return el('div', { class: 'actions' }, el('button', { onclick: () => open(assetsModal) }, 'Mina tillgångar'));
+  if (g.stage === 'bonus') return el('button', { class: 'primary', style: 'width:100%', onclick: () => act({ type: 'bonus' }) }, 'Slå gratifikation');
+  if (g.stage === 'sentence') return el('button', { class: 'primary', style: 'width:100%', onclick: () => act({ type: 'sentence' }) }, 'Slå hur länge du ska sitta');
   if (g.stage === 'pre') {
     const trade = canTrade(me); const bld = me.pos === 17 || me.pos === 40 || me.freeBuild;
-    return el('div', { class: 'stack' }, el('button', { class: 'primary', onclick: () => act({ type: 'roll' }) }, (g.doubles ? 'Slå igen: ' : '') + (me.car && !(me.pos >= 34 && me.pos < 47) ? 'Slå två tärningar' : 'Slå tärningen')),
+    return el('div', { class: 'stack' }, el('button', { class: 'primary', onclick: () => act({ type: 'roll' }) }, me.jail ? 'Slå för att komma ut' : (g.doubles ? 'Slå igen: ' : '') + (me.car && !(me.pos >= 34 && me.pos < 47) ? 'Slå två tärningar' : 'Slå tärningen')),
       el('div', { class: 'actions' }, trade ? el('button', { onclick: () => open(buyModal) }, 'Köp tomt/aktie') : null, trade ? el('button', { onclick: () => open(meetingModal) }, 'Bolagsstämma') : null, bld ? el('button', { onclick: () => open(buildModal) }, 'Bygg') : null,
         !me.car ? el('button', { onclick: () => act({ type: 'buyCar' }), disabled: me.cash < RULES.carPrice }, 'Köp bil 50 000 kr') : null,
         el('button', { onclick: () => open(assetsModal) }, 'Mina tillgångar'), el('button', { onclick: () => act({ type: 'loan' }), disabled: me.loans >= RULES.maxLoans }, 'Ta lån 50 000 kr')));
@@ -414,7 +428,7 @@ function renderModal() {
   document.body.append(bg);
 }
 const ownerName = (id) => S.game.players.find((p) => p.id === id)?.name;
-const SQUARE_TEXT = { bor: 'Dra ett Börstips.', news: 'Dra en Finanstidning.', div: 'Du får utdelning på dina aktier.', lilla: 'Köp en obligation, sedan sker dragningen.', bonddiv: 'Du får utdelning och kan köpa en obligation.', branch: 'Här kan du köpa en tomt och en aktie före ditt kast.', buildsq: 'Här kan du bygga före ditt kast.', repay: 'Du måste betala tillbaka ett lån plus 5 000 kr i ränta.', give: 'Ge motspelarna 20 % på deras aktier i grupper där du har tomter.', prison: 'Slå en tärning. Du står över 1 till 3 kast.', gotoprison: 'Slå en tärning. På 1 eller 2 åker du i fängelse.', entry: 'Slå två tärningar och få 5 000 kr per öga.', exit: 'Betala ränta på dina lån och dra ett Börstips.' };
+const SQUARE_TEXT = { bor: 'Dra ett Börstips.', news: 'Dra en Finanstidning.', div: 'Du får utdelning på dina aktier.', lilla: 'Köp en obligation, sedan sker dragningen.', bonddiv: 'Du får utdelning och kan köpa en obligation.', branch: 'Här kan du köpa en tomt och en aktie före ditt kast.', buildsq: 'Här kan du bygga före ditt kast.', repay: 'Du måste betala tillbaka ett lån plus 5 000 kr i ränta.', give: 'Ge motspelarna 20 % på deras aktier i grupper där du har tomter.', prison: 'Slå en tärning för hur länge du ska sitta, högst 3 år. Slår du lika på din tur går du ut.', gotoprison: 'Du åker i fängelse, om du inte redan har suttit där under det här varvet.', entry: 'Slå två tärningar och få 10 000 kr per öga.', exit: 'Betala ränta på dina lån och dra ett Börstips.' };
 function currentRent(n) {
   const g = S.game; const x = g.plots[n]; if (!x.owner || x.mort) return 0; const i = plotInfo(n); const k = SQUARES[n].group;
   const full = plotsIn(k).every((m) => g.plots[m].owner === x.owner) && g.shares.filter((s) => s.group === k).every((s) => s.owner === x.owner);
@@ -436,6 +450,28 @@ function renderLanding() {
   else rows.push(el('div', {}, SQUARE_TEXT[s.kind] || ''));
   box.replaceChildren(el('h3', {}, p.id === S.you ? 'Du landade på' : p.name + ' landade på'),
     el('div', { class: 'ltile', style: `background:${bg};color:${fg}` }, isPlot ? el('div', { class: 'lh' }) : null, el('div', { class: 'lb' }, el('div', { class: 'n' }, 'Ruta ' + n), icon, el('div', {}, s.name))), ...rows);
+}
+// Egna högar till vänster: tomter, aktier, obligationer och pengar.
+function renderPiles() {
+  const box = document.getElementById('piles'); if (!box) return; const g = S.game; const me = g.players.find((p) => p.id === S.you);
+  if (!me) { box.replaceChildren(); return; }
+  const mine = Object.keys(g.plots).map(Number).filter((n) => g.plots[n].owner === S.you).sort((a, b) => a - b);
+  const shares = g.shares.filter((v) => v.owner === S.you); const bonds = Object.keys(g.bonds).filter((n) => g.bonds[n] === S.you);
+  const notes = []; let left = me.cash; for (const v of [100000, 50000, 10000, 5000, 1000, 500]) { const c = Math.floor(left / v); if (c) { notes.push(el('div', { class: 'mini note', title: c + ' sedlar' }, (v / 1000) + 'k × ' + c)); left -= c * v; } }
+  const pile = (title, count, items, empty) => el('section', { class: 'pile' }, el('h4', {}, title, el('span', {}, count)), items.length ? el('div', { class: 'minis' }, items) : el('div', { class: 'small' }, empty));
+  box.replaceChildren(el('h3', {}, 'Mina högar'),
+    pile('Tomter', mine.length, mine.map((n) => { const gr = GROUPS[SQUARES[n].group]; return el('button', { class: 'mini' + (g.plots[n].mort ? ' m' : ''), style: `background:${gr.color};color:${gr.text}`, title: SQUARES[n].name + (g.plots[n].built ? ', bebyggd' : ''), onclick: () => showSquare(n) }, breakable(SQUARES[n].name)); }), 'Inga tomter än'),
+    pile('Aktier', shares.length, shares.map((v) => { const gr = GROUPS[v.group]; return el('div', { class: 'mini', style: `background:${gr.color};color:${gr.text}`, title: gr.name }, (v.value / 1000) + 'k ' + v.pct + ' %'); }), 'Inga aktier än'),
+    pile('Obligationer', bonds.length, bonds.map((n) => el('div', { class: 'mini bond' }, n)), 'Inga obligationer än'),
+    pile('Pengar', kr(me.cash), notes, 'Inga pengar'));
+}
+// Varje händelse visas i 3 sekunder hos alla spelare.
+let seenEvent = null;
+function showEvents(g) {
+  const no = g.eventNo || 0; if (seenEvent === null) { seenEvent = no; return; }
+  const fresh = (g.events || []).filter((e) => e.id > seenEvent); seenEvent = no; if (!fresh.length) return;
+  let box = document.getElementById('events'); if (!box) { box = el('div', { class: 'events', id: 'events', role: 'status', 'aria-live': 'polite' }); document.body.append(box); }
+  fresh.slice(-4).forEach((e) => { const d = el('div', { class: 'evt' }, e.text); box.append(d); setTimeout(() => d.remove(), 3000); });
 }
 function showSquare(n) {
   if (!S || !S.game) return;

@@ -6,13 +6,15 @@ const rejects = (g, id, a, re) => assert.throws(() => G.apply(g, id, a), re);
 let g = two();
 rejects(g, 'b', { type: 'roll' }, /inte din tur/);
 rejects(g, 'a', { type: 'end' }, /slå först/);
-rejects(g, 'a', { type: 'buyPlot', n: 1 }, /banken/);
 g.players[0].pos = 12;
+rejects(g, 'a', { type: 'buyPlot', n: 5 }, /första varvet/);
+rejects(g, 'a', { type: 'buyShare', id: 'A0' }, /första varvet/);
+g.players[0].lapDone = true;
 G.apply(g, 'a', { type: 'buyPlot', n: 5 });
 rejects(g, 'a', { type: 'buyPlot', n: 7 }, /en tomt/);
 assert.equal(g.players[0].cash, 55000);
 // Bolagsstämma med full avgift lyckas alltid, köpesumma enligt regelbokens exempel.
-g = two(); const [A, B, C] = g.players; A.pos = 40; A.cash = 500000; B.cash = 0; C.cash = 0;
+g = two(); const [A, B, C] = g.players; A.lapDone = true; A.pos = 40; A.cash = 500000; B.cash = 0; C.cash = 0;
 g.plots[5] = { owner: 'b', built: true, mort: false }; g.plots[7].owner = 'a'; g.plots[8].owner = 'a';
 g.shares.find((s) => s.id === 'A0').owner = 'a'; g.shares.find((s) => s.id === 'A1').owner = 'b'; g.shares.find((s) => s.id === 'A2').owner = 'c';
 G.apply(g, 'a', { type: 'meeting', group: 'A', fee: 120000 });
@@ -44,9 +46,28 @@ G.apply(g, 'a', { type: 'bankrupt' }); assert.equal(g.players[0].out, true); ass
 g = two(); { const p = g.players[0]; p.car = true; p.pos = 1; p.cash = 500000; Math.random = () => 0.99; // sexor
   G.apply(g, 'a', { type: 'roll' }); assert.equal(p.pos, 13); assert.equal(g.stage, 'pre'); assert.equal(g.current, 0);
   G.apply(g, 'a', { type: 'roll' }); assert.equal(p.pos, 25); assert.equal(g.stage, 'pre');
-  G.apply(g, 'a', { type: 'roll' }); assert.equal(p.pos, 9); assert.equal(g.stage, 'post'); assert.ok(p.skip > 0); Math.random = orig;
+  G.apply(g, 'a', { type: 'roll' }); assert.equal(p.pos, 9); assert.equal(g.stage, 'sentence');
+  G.apply(g, 'a', { type: 'sentence' }); assert.equal(p.jail, 3); assert.equal(g.stage, 'post'); Math.random = orig;
   G.apply(g, 'a', { type: 'end' }); assert.equal(g.current, 1); assert.equal(g.doubles, 0); }
 // Olika tärningar ger inget extra kast, och en tärning räknas aldrig som lika.
 g = two(); { const p = g.players[0]; p.car = true; p.pos = 1; const seq = [0, 0.5]; let i = 0; Math.random = () => seq[i++ % 2];
   G.apply(g, 'a', { type: 'roll' }); Math.random = orig; assert.equal(g.stage, 'post'); assert.equal(g.doubles, 0); }
+// Gratifikation: 10 000 kr per öga, dubbelt vid goda tider och hälften vid dåliga.
+for (const [news, want] of [[null, 120000], ['good', 240000], ['bad', 60000]]) {
+  g = two(); const p = g.players[0]; p.pos = 33; p.cash = 0; g.news = news ? { type: news } : null; Math.random = () => 0;
+  G.apply(g, 'a', { type: 'roll' }); assert.equal(p.pos, 34); assert.equal(g.stage, 'bonus'); assert.equal(p.lapDone, true);
+  Math.random = () => 0.99; G.apply(g, 'a', { type: 'bonus' }); Math.random = orig; assert.equal(p.cash, want); assert.equal(g.stage, 'post');
+}
+// Lika tärningar in till Bankentré ger både gratifikation och nytt kast.
+g = two(); { const p = g.players[0]; p.car = true; p.pos = 32; Math.random = () => 0; G.apply(g, 'a', { type: 'roll' }); assert.equal(p.pos, 34); assert.equal(g.stage, 'bonus'); G.apply(g, 'a', { type: 'bonus' }); Math.random = orig; assert.equal(g.stage, 'pre'); }
+// Gå direkt i fängelse gäller alltid, utom efter fängelse under samma varv.
+g = two(); { const p = g.players[0]; p.pos = 29; Math.random = () => 0; G.apply(g, 'a', { type: 'roll' }); Math.random = orig; assert.equal(p.pos, 9); assert.equal(g.stage, 'sentence'); }
+g = two(); { const p = g.players[0]; p.pos = 29; p.fromPrison = true; Math.random = () => 0; G.apply(g, 'a', { type: 'roll' }); Math.random = orig; assert.equal(p.pos, 30); assert.equal(g.stage, 'post'); }
+// I fängelset: lika släpper ut. Med bil gäller båda tärningarna, utan bil en.
+g = two(); { const p = g.players[0]; p.pos = 9; p.jail = 2; Math.random = () => 0.5; G.apply(g, 'a', { type: 'roll' }); Math.random = orig; assert.equal(p.jail, 0); assert.equal(p.pos, 13); }
+g = two(); { const p = g.players[0]; p.pos = 9; p.jail = 2; p.car = true; Math.random = () => 0.5; G.apply(g, 'a', { type: 'roll' }); Math.random = orig; assert.equal(p.jail, 0); assert.equal(p.pos, 17); }
+// Olika tärningar: kvar, ett år mindre.
+g = two(); { const p = g.players[0]; p.pos = 9; p.jail = 2; const q = [0, 0.5]; let i = 0; Math.random = () => q[i++ % 2]; G.apply(g, 'a', { type: 'roll' }); Math.random = orig; assert.equal(p.jail, 1); assert.equal(p.pos, 9); assert.equal(g.stage, 'post'); }
+// Händelser skapas för utdelning.
+g = two(); { const p = g.players[0]; g.shares[0].owner = 'a'; p.pos = 3; Math.random = () => 0; const n = g.eventNo; G.apply(g, 'a', { type: 'roll' }); Math.random = orig; assert.ok(g.eventNo > n); assert.match(g.events[g.events.length - 1].text, /aktieutdelning/); }
 console.log('Alla regeltester klara');

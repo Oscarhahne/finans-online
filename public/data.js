@@ -74,8 +74,8 @@
   ];
   const BORSTIPS = TIPS.concat(TIPS); // 40 kort
   const FINANS = [].concat(
-    Array(3).fill({ t: 'good', until: true, x: 'Goda tider! Gratifikationen fördubblas och utdelningsrutan gäller alla. Gäller tills nästa tidning.' }),
-    Array(3).fill({ t: 'bad', until: true, x: 'Dåliga tider! Vid Bankentré räknas bara den lägsta tärningen. Gäller tills nästa tidning.' }),
+    Array(3).fill({ t: 'good', until: true, x: 'Goda tider! Gratifikationen räknas dubbelt och utdelningsrutan gäller alla. Gäller tills nästa tidning.' }),
+    Array(3).fill({ t: 'bad', until: true, x: 'Dåliga tider! Gratifikationen räknas till hälften. Gäller tills nästa tidning.' }),
     Array(2).fill({ t: 'largedraw', x: 'Stora obligationsdragningen! Alla får köpa en obligation före dragningen.' }),
     Array(3).fill({ t: 'alldiv', x: 'Hausse på börsen! Alla spelare får aktieutdelning.' }),
     Array(2).fill({ t: 'inflation', x: 'Inflation och kursfall! Alla betalar 10 % av sitt aktiekapital.' }),
@@ -87,7 +87,7 @@
 
   const RULES = {
     startCash: 75000, carPrice: 50000, carSell: 25000, loan: 50000, loanInterest: 5000, maxLoans: 3, bankLoans: 6,
-    bondPrice: 500, bonusPerPip: 5000, largeDraw: [100000, 50000, 25000], smallDraw: [50000, 25000, 15000],
+    bondPrice: 500, bonusPerPip: 10000, largeDraw: [100000, 50000, 25000], smallDraw: [50000, 25000, 15000],
     redeemPct: 1.1, givePct: 0.2, target: 1000000, feeMin: 30000, feeMax: 120000, feeBank: 30000, groupsToWin: 0, maxDoubles: 3,
   };
   const round500 = (v) => Math.round(v / 500) * 500;
