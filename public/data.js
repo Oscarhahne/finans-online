@@ -86,7 +86,7 @@
   );
 
   const RULES = {
-    startCash: 75000, carPrice: 50000, carSell: 25000, loan: 50000, loanInterest: 5000, maxLoans: 3, bankLoans: 6,
+    startCash: 75000, carPrice: 50000, carSell: 25000, loan: 50000, loanInterest: 5000, maxLoans: 3,
     bondPrice: 500, bonusPerPip: 10000, largeDraw: [100000, 50000, 25000], smallDraw: [50000, 25000, 15000],
     redeemPct: 1.1, givePct: 0.2, target: 1000000, feeMin: 30000, feeMax: 120000, feeBank: 30000, groupsToWin: 0, maxDoubles: 3,
   };

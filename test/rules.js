@@ -58,8 +58,8 @@ for (const [news, want] of [[null, 120000], ['good', 240000], ['bad', 60000]]) {
   G.apply(g, 'a', { type: 'roll' }); assert.equal(p.pos, 34); assert.equal(g.stage, 'bonus'); assert.equal(p.lapDone, true);
   Math.random = () => 0.99; G.apply(g, 'a', { type: 'bonus' }); Math.random = orig; assert.equal(p.cash, want); assert.equal(g.stage, 'post');
 }
-// Lika tärningar in till Bankentré ger både gratifikation och nytt kast.
-g = two(); { const p = g.players[0]; p.car = true; p.pos = 32; Math.random = () => 0; G.apply(g, 'a', { type: 'roll' }); assert.equal(p.pos, 34); assert.equal(g.stage, 'bonus'); G.apply(g, 'a', { type: 'bonus' }); Math.random = orig; assert.equal(g.stage, 'pre'); }
+// Bankentré avslutar turen även efter lika tärningar.
+g = two(); { const p = g.players[0]; p.car = true; p.pos = 32; Math.random = () => 0; G.apply(g, 'a', { type: 'roll' }); assert.equal(p.pos, 34); assert.equal(g.stage, 'bonus'); G.apply(g, 'a', { type: 'bonus' }); Math.random = orig; assert.equal(g.stage, 'post'); rejects(g, 'a', { type: 'roll' }, /före ditt kast/); }
 // Gå direkt i fängelse gäller alltid, utom efter fängelse under samma varv.
 g = two(); { const p = g.players[0]; p.pos = 29; Math.random = () => 0; G.apply(g, 'a', { type: 'roll' }); Math.random = orig; assert.equal(p.pos, 9); assert.equal(g.stage, 'sentence'); }
 g = two(); { const p = g.players[0]; p.pos = 29; p.fromPrison = true; Math.random = () => 0; G.apply(g, 'a', { type: 'roll' }); Math.random = orig; assert.equal(p.pos, 30); assert.equal(g.stage, 'post'); }
@@ -70,4 +70,10 @@ g = two(); { const p = g.players[0]; p.pos = 9; p.jail = 2; p.car = true; Math.r
 g = two(); { const p = g.players[0]; p.pos = 9; p.jail = 2; const q = [0, 0.5]; let i = 0; Math.random = () => q[i++ % 2]; G.apply(g, 'a', { type: 'roll' }); Math.random = orig; assert.equal(p.jail, 1); assert.equal(p.pos, 9); assert.equal(g.stage, 'post'); }
 // Händelser skapas för utdelning.
 g = two(); { const p = g.players[0]; g.shares[0].owner = 'a'; p.pos = 3; Math.random = () => 0; const n = g.eventNo; G.apply(g, 'a', { type: 'roll' }); Math.random = orig; assert.ok(g.eventNo > n); assert.match(g.events[g.events.length - 1].text, /aktieutdelning/); }
+// Varje spelare kan ha tre lån, oavsett hur många andra har.
+g = two(); ['a'].forEach(() => { for (let i = 0; i < 3; i++) G.apply(g, 'a', { type: 'loan' }); }); rejects(g, 'a', { type: 'loan' }, /tre lån/);
+g.stage = 'post'; G.apply(g, 'a', { type: 'end' }); for (let i = 0; i < 3; i++) G.apply(g, 'b', { type: 'loan' }); g.stage = 'post'; G.apply(g, 'b', { type: 'end' }); for (let i = 0; i < 3; i++) G.apply(g, 'c', { type: 'loan' }); assert.equal(g.players[2].loans, 3);
+// Dragningen sparar tärningar, vinnare och priser. Obligationer utan ägare visas utan vinnare.
+g = two(); g.players[0].pos = 40; g.bonds[2] = 'a'; g.bonds[12] = 'c'; Math.random = () => 0; G.apply(g, 'a', { type: 'roll' }); G.apply(g, 'a', { type: 'skipBond' }); Math.random = orig;
+assert.deepEqual(g.lastDraw.dice, [1, 1]); assert.deepEqual(g.lastDraw.results.map((r) => [r.num, r.prize, r.winner]), [[2, 50000, 'A'], [1, 25000, null], [12, 15000, 'C']]);
 console.log('Alla regeltester klara');

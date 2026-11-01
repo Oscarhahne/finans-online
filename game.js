@@ -9,7 +9,7 @@ const groupPlots = (k) => Object.keys(SQUARES).map(Number).filter((n) => SQUARES
 
 function newGame(players, opts = {}) {
   const g = {
-    phase: 'play', target: opts.target || R.target, doubles: 0, extraRoll: false, eventNo: 0, events: [], finalRound: null, landed: null, cardNo: 0, rollNo: 0, lastRoll: null, turnNo: 1, current: 0, stage: 'pre', boughtPlot: false, boughtShare: false,
+    phase: 'play', target: opts.target || R.target, doubles: 0, drawNo: 0, lastDraw: null, extraRoll: false, eventNo: 0, events: [], finalRound: null, landed: null, cardNo: 0, rollNo: 0, lastRoll: null, turnNo: 1, current: 0, stage: 'pre', boughtPlot: false, boughtShare: false,
     players: players.map((p, i) => ({ id: p.id, name: p.name, bot: !!p.bot, color: i, pos: 47, cash: R.startCash, car: false, loans: 0, jail: 0, lapDone: false, fromPrison: false, freeBuild: false, out: false })),
     plots: {}, shares: [], bonds: {}, news: null, dice: [], debts: [], bondRound: null, winner: null, log: [],
     tipDeck: shuffled(BORSTIPS.length), newsDeck: shuffled(FINANS.length), lastCard: null,
@@ -32,7 +32,6 @@ const alive = (g) => g.players.filter((p) => !p.out);
 const shareCapital = (g, p) => g.shares.filter((s) => s.owner === p.id).reduce((a, s) => a + s.value, 0);
 const buildingsOf = (g, p) => Object.values(g.plots).filter((x) => x.owner === p.id && x.built).length;
 const plotsOf = (g, p) => Object.keys(g.plots).map(Number).filter((n) => g.plots[n].owner === p.id);
-const loansOut = (g) => g.players.reduce((a, p) => a + p.loans, 0);
 
 function completeGroup(g, k, p) {
   return groupPlots(k).every((n) => g.plots[n].owner === p.id) && g.shares.filter((s) => s.group === k).every((s) => s.owner === p.id);
@@ -97,12 +96,14 @@ function runDraw(g, kind) {
   g.dice = [a, b];
   const low = Math.min(a, b); const hi = Math.max(a, b);
   const lowNum = a === b ? (low === 1 ? 12 : low - 1) : low;
-  log(g, `${kind === 'large' ? 'Stora' : 'Lilla'} dragningen: tärningarna visar ${a} och ${b}.`);
-  [a + b, hi, lowNum].forEach((num, i) => {
-    const o = g.bonds[num]; if (!o) return;
-    const q = P(g, o); if (q && !q.out) { q.cash += prizes[i]; log(g, `Obligation ${num} ger ${q.name} ${kr(prizes[i])}.`); }
-    g.bonds[num] = null;
+  log(g, `${kind === 'large' ? 'Stora' : 'Lilla'} obligationsdragningen: tärningarna visar ${a} och ${b}.`, true);
+  const results = [a + b, hi, lowNum].map((num, i) => {
+    const o = g.bonds[num]; const q = o ? P(g, o) : null; const paid = q && !q.out;
+    if (paid) { q.cash += prizes[i]; log(g, `Obligation ${num} ger ${q.name} ${kr(prizes[i])}.`, true); }
+    if (o) g.bonds[num] = null;
+    return { num, prize: prizes[i], winner: paid ? q.name : null, color: paid ? q.color : null };
   });
+  g.drawNo++; g.lastDraw = { id: g.drawNo, kind, dice: [a, b], results };
 }
 // Spelaren hamnar i fängelset och slår själv hur länge det blir.
 function sendToPrison(g, p) {
@@ -128,7 +129,7 @@ function land(g, p, depth = 0) {
     case 'gotoprison':
       if (p.fromPrison) { log(g, `${p.name} har redan suttit i fängelse under det här varvet och klarar sig.`); break; }
       sendToPrison(g, p); break;
-    case 'entry': p.lapDone = true; g.stage = 'bonus'; break;
+    case 'entry': p.lapDone = true; g.extraRoll = false; g.stage = 'bonus'; break; // Turen slutar här, även efter lika tärningar.
     case 'exit': {
       p.fromPrison = false;
       if (p.loans) { pay(g, p, null, p.loans * R.loanInterest, 'låneränta'); log(g, `${p.name} betalar ränta på ${p.loans} lån.`); }
@@ -264,7 +265,7 @@ function apply(g, pid, a) {
     case 'redeem': { pre(); const x = needOwnPlot(a.n); if (!x.mort) fail('Tomten är inte belånad.'); const i = plotInfo(a.n); const c = Math.round((x.built ? i.mortgageBuilt : i.mortgage) * R.redeemPct); if (p.cash < c) fail('Du har inte råd.'); p.cash -= c; x.mort = false; log(g, `${p.name} löser lånet på ${SQUARES[a.n].name}.`); break; }
     case 'sellPlot': { if (!raising) fail('Inte nu.'); const x = needOwnPlot(a.n); if (x.mort) fail('Lös belåningen först.'); const i = plotInfo(a.n); p.cash += x.built ? i.sellBuilt : i.sell; x.owner = null; x.built = false; log(g, `${p.name} säljer ${SQUARES[a.n].name} till banken.`); break; }
     case 'sellShare': { if (!raising) fail('Inte nu.'); const s = g.shares.find((v) => v.id === a.id); if (!s || s.owner !== pid) fail('Du äger inte aktien.'); p.cash += Math.round(s.value * 0.75 / 500) * 500; s.owner = null; log(g, `${p.name} säljer en aktie till banken.`); break; }
-    case 'loan': if (!raising) fail('Inte nu.'); if (p.pos === 38) fail('Du får inte låna på den här rutan.'); if (p.loans >= R.maxLoans) fail('Du har redan tre lån.'); if (loansOut(g) >= R.bankLoans) fail('Banken har inga lån kvar.'); p.loans++; p.cash += R.loan; log(g, `${p.name} tar ett banklån.`); break;
+    case 'loan': if (!raising) fail('Inte nu.'); if (p.pos === 38) fail('Du får inte låna på den här rutan.'); if (p.loans >= R.maxLoans) fail('Du har redan tre lån.'); p.loans++; p.cash += R.loan; log(g, `${p.name} tar ett banklån.`); break;
     case 'repay': needTurn(); if (!p.loans) fail('Du har inga lån.'); if (p.cash < R.loan) fail('Du har inte råd.'); p.cash -= R.loan; p.loans--; log(g, `${p.name} betalar tillbaka ett lån.`); break;
     case 'meeting': { pre(); if (!canTrade(p)) fail(tradeFail(p)); const k = a.group; if (!GROUPS[k]) fail('Okänd företagsgrupp.');
       const fee = Number(a.fee); if (!Number.isInteger(fee) || fee % 10000 || fee < R.feeMin || fee > R.feeMax) fail('Ogiltig förmedlingsavgift.');
@@ -297,7 +298,7 @@ function actor(g) {
 function botAction(g, pid, passive) {
   const p = P(g, pid);
   if (g.debts.length && g.debts[0].from === pid) {
-    if (p.pos !== 38 && p.loans < R.maxLoans && loansOut(g) < R.bankLoans) return { type: 'loan' };
+    if (p.pos !== 38 && p.loans < R.maxLoans) return { type: 'loan' };
     const free = plotsOf(g, p).find((n) => !g.plots[n].mort); if (free) return { type: 'mortgage', n: free };
     const sh = g.shares.find((s) => s.owner === pid); if (sh) return { type: 'sellShare', id: sh.id };
     if (p.car) return { type: 'sellCar' };

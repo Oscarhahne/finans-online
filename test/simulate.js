@@ -14,7 +14,6 @@ for (let i = 0; i < N; i++) {
       if (p.pos < 1 || p.pos > 53) throw new Error('Ogiltig ruta ' + p.pos);
       if (p.loans > 3) throw new Error('För många lån');
     }
-    if (g.players.reduce((a, p) => a + p.loans, 0) > 6) throw new Error('Banken har lånat ut för mycket');
     steps++;
   }
   if (g.phase === 'over') { wins++; turns.push(g.turnNo); } else stuck++;

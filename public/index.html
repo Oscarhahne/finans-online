@@ -100,6 +100,11 @@ body.rolling .side{pointer-events:none}
 .winner{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);z-index:71;width:min(480px,calc(100vw - 32px));background:rgba(20,18,58,.94);border:3px solid var(--gold);border-radius:28px;padding:32px;text-align:center;display:grid;gap:14px}
 .winner h2{font-size:42px;line-height:1.1;color:var(--gold)}
 .lastround{background:var(--gold);color:var(--dark);border-radius:12px;padding:10px 12px;font-weight:800;margin-top:10px}
+.drawbox{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);z-index:44;width:min(500px,calc(100vw - 24px));max-height:92vh;overflow:auto;background:#1e1b4b;border:3px solid #c4b5fd;border-radius:24px;padding:22px;display:grid;gap:12px;box-shadow:0 18px 60px rgba(0,0,0,.7)}
+.drawbox h2{font-size:26px;text-align:center}.drawbox .dice{justify-content:center}
+.drawrow{display:grid;grid-template-columns:48px 1fr auto;gap:12px;align-items:center;background:#c4b5fd;color:var(--dark);border-radius:14px;padding:10px 14px}
+.drawrow .small{color:#312e81}.drawrow.none{background:#17153f;color:#e0e7ff}.drawrow.none .small{color:var(--mute)}
+.drawno{width:44px;height:44px;border-radius:50%;background:#fff;color:var(--dark);display:flex;align-items:center;justify-content:center;font:600 22px Fredoka,sans-serif}
 #toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:#b91c1c;color:#fff;padding:10px 16px;border-radius:12px;z-index:60;display:none;max-width:90vw}
 </style>
 </head>
@@ -205,7 +210,7 @@ function connect() {
     else if (m.t === 'state') onState(m);
     else if (m.t === 'error') toast(m.msg);
     else if (m.t === 'resumeFailed') { store.del('room'); store.del('token'); S = null; render(); }
-    else if (m.t === 'left') { store.del('room'); store.del('token'); endCelebration(); S = null; seenCard = null; seenEvent = null; document.getElementById('events')?.remove(); seenRoll = null; animating = false; pendingState = null; seenRoll = null; document.getElementById('cardpop')?.remove(); boardEl = null; modal = null; render(); }
+    else if (m.t === 'left') { store.del('room'); store.del('token'); endCelebration(); S = null; seenCard = null; seenEvent = null; seenDraw = null; clearTimeout(drawTimer); document.getElementById('drawbox')?.remove(); document.getElementById('events')?.remove(); seenRoll = null; animating = false; pendingState = null; seenRoll = null; document.getElementById('cardpop')?.remove(); boardEl = null; modal = null; render(); }
   };
   ws.onclose = () => setTimeout(connect, 1500);
 }
@@ -261,7 +266,7 @@ window.addEventListener('resize', fit);
 // Nya kort visas stort i 5 sekunder och ligger sedan kvar i panelen till höger.
 let seenCard = null, cardTimer = null;
 // Tärningarna rullas för alla spelare. Resultatet visas först när de stannat.
-let seenRoll = null, animating = false, pendingState = null;
+let seenRoll = null, seenDraw = null, drawTimer = null, animating = false, pendingState = null;
 const FACE_POS = { 1: [4], 2: [0, 8], 3: [0, 4, 8], 4: [0, 2, 6, 8], 5: [0, 2, 4, 6, 8], 6: [0, 2, 3, 5, 6, 8] };
 const FACE_TF = { 1: 'rotateY(0deg)', 6: 'rotateY(180deg)', 2: 'rotateY(90deg)', 5: 'rotateY(-90deg)', 3: 'rotateX(90deg)', 4: 'rotateX(-90deg)' };
 const SHOW = { 1: [0, 0], 6: [0, 180], 2: [0, -90], 5: [0, 90], 3: [-90, 0], 4: [90, 0] };
@@ -288,7 +293,7 @@ function makeCube(v, i) {
 }
 function playDice(g, r, done) {
   const p = g.players.find((v) => v.id === r.player);
-  const stage = el('div', { class: 'dicestage', role: 'status', 'aria-label': (p ? p.name : '') + ' slår ' + r.dice.join(' och ') }, el('h2', {}, (p && p.id === S.you ? 'Du ' : (p ? p.name + ' ' : '')) + (r.label || 'slår')), el('div', { class: 'dicerow' }, r.dice.map(makeCube)));
+  const stage = el('div', { class: 'dicestage', role: 'status', 'aria-label': (r.title || (p ? p.name + ' slår' : '')) + ' ' + r.dice.join(' och ') }, el('h2', {}, r.title || (p && p.id === S.you ? 'Du ' : (p ? p.name + ' ' : '')) + (r.label || 'slår')), el('div', { class: 'dicerow' }, r.dice.map(makeCube)));
   document.body.append(stage); document.body.classList.add('rolling');
   setTimeout(() => { stage.remove(); document.body.classList.remove('rolling'); done(); }, 1550);
 }
@@ -301,7 +306,23 @@ function onState(m) {
     playDice(m.game, r, () => { animating = false; const q = pendingState || m; pendingState = null; onState(q); });
     return;
   }
+  const d = m.game && m.game.lastDraw;
+  if (seenDraw === null || (!S || !S.game)) seenDraw = d ? d.id : 0;
+  else if (d && d.id !== seenDraw) {
+    seenDraw = d.id; animating = true;
+    playDice(m.game, { dice: d.dice, title: (d.kind === 'large' ? 'Stora' : 'Lilla') + ' obligationsdragningen' }, () => { animating = false; const q = pendingState || m; pendingState = null; S = q; render(); showDraw(d); });
+    return;
+  }
   S = m; render();
+}
+// Resultatet av obligationsdragningen visas stort för alla.
+function showDraw(d) {
+  document.getElementById('drawbox')?.remove(); clearTimeout(drawTimer);
+  const box = el('div', { class: 'drawbox', id: 'drawbox', role: 'status' }, el('h2', {}, (d.kind === 'large' ? 'Stora' : 'Lilla') + ' obligationsdragningen'),
+    el('div', { class: 'dice' }, d.dice.map((v) => el('div', { class: 'die' }, v))),
+    d.results.map((r, i) => el('div', { class: 'drawrow' + (r.winner ? '' : ' none') }, el('span', { class: 'drawno' }, r.num), el('div', {}, el('div', { class: 'small' }, ['Högsta vinsten', 'Andra vinsten', 'Tredje vinsten'][i]), r.winner ? el('b', {}, r.winner) : 'Ingen äger obligationen'), el('b', { class: 'money' }, kr(r.prize)))),
+    el('button', { onclick: () => { box.remove(); clearTimeout(drawTimer); } }, 'Stäng'));
+  document.body.append(box); drawTimer = setTimeout(() => box.remove(), 8000);
 }
 function showCardPopup(g) {
   const no = g.cardNo || 0;
