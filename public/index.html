@@ -1,0 +1,315 @@
+<!doctype html>
+<html lang="sv">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Affärsspel online</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600&family=Nunito:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#14123a;--panel:#1e1b4b;--line:#3b3780;--ink:#fff;--mute:#c7d2fe;--dark:#1a1740;--gold:#fbbf24}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;background:var(--bg);color:var(--ink);font:600 15px/1.35 Nunito,system-ui,sans-serif}
+h1,h2,h3{font-family:Fredoka,Nunito,sans-serif;font-weight:600;margin:0}
+button{font:800 15px Nunito,sans-serif;min-height:44px;padding:8px 16px;border:0;border-radius:12px;background:#312e81;color:#fff;cursor:pointer}
+button:hover{background:#3f3ba3}button:disabled{opacity:.5;cursor:default}
+button.primary{background:var(--gold);color:var(--dark)}button.primary:hover{background:#fcd34d}
+button.danger{background:#b91c1c}
+input,select{font:700 16px Nunito,sans-serif;min-height:44px;padding:8px 12px;border-radius:12px;border:1px solid var(--line);background:#100e30;color:#fff;width:100%}
+label{display:block;font-weight:700;margin:0 0 6px;color:var(--mute)}
+.home{max-width:560px;margin:0 auto;padding:40px 16px}
+.home h1{font-size:60px;line-height:1}.home .lead{color:var(--mute);margin:8px 0 28px}
+.card{background:var(--panel);border-radius:20px;padding:20px;margin-bottom:16px}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}.row>*{flex:1 1 140px}.stack{display:grid;gap:12px}
+.roomrow{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:8px 0;border-top:1px solid var(--line)}
+.code{font:600 36px Fredoka,sans-serif;letter-spacing:3px;color:var(--gold)}
+.game{display:flex;gap:16px;padding:12px;align-items:flex-start;flex-wrap:wrap;justify-content:center}
+.boardwrap{flex:1 1 640px;min-width:0;max-width:1100px}
+.scaler{position:relative;width:100%}
+.board{position:absolute;left:0;top:0;width:1290px;height:1185px;transform-origin:0 0;background:#1e1b4b;border-radius:28px;overflow:hidden;font-family:Nunito,sans-serif}
+.side{flex:1 1 340px;max-width:440px;display:grid;gap:12px;min-width:0}
+.c{position:absolute;width:105px;height:120px;border-radius:14px;box-shadow:inset 0 0 0 1px rgba(0,0,0,.7),0 2px 6px rgba(0,0,0,.25);color:var(--dark);padding:36px 6px 4px;font:600 13.5px/1.15 Nunito,sans-serif;text-align:center;overflow-wrap:break-word;cursor:pointer;background:none}
+.c:hover{filter:brightness(1.08)}
+.n{position:absolute;top:7px;left:0;right:0;font:700 11px/14px Nunito,sans-serif;opacity:.85}
+.t{font-weight:800;padding-top:54px}
+.head{position:absolute;top:1px;left:1px;right:1px;height:30px;border-radius:13px 13px 0 0;background:rgba(255,255,255,.4);border-bottom:1px solid rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;gap:5px}
+.t .n{top:35px}
+.bk{height:105px;padding-top:30px}
+.h{width:120px;height:120px;padding:0}
+.r{position:absolute;inset:0;padding:10px;display:flex;align-items:center;justify-content:center;text-align:center}
+.ic{display:block;margin:0 auto 4px;width:44px;height:30px}
+.own{width:16px;height:16px;border-radius:50%;border:2px solid #000}
+.house{width:18px;height:18px}
+.mort{outline:3px dashed #fff;outline-offset:-6px;opacity:.72}
+.token{position:absolute;width:30px;height:30px;border-radius:50%;border:3px solid #111;display:flex;align-items:center;justify-content:center;font:800 13px Nunito,sans-serif;color:#111;box-shadow:0 2px 6px rgba(0,0,0,.6);transition:left .35s,top .35s;pointer-events:none;z-index:5}
+.token.me{outline:3px solid #fff}
+.title{position:absolute;left:195px;top:128px;width:900px;text-align:center;font:600 76px/1 Fredoka,sans-serif;color:#fff;text-shadow:0 2px 10px #0f0e3a}
+.mid{position:absolute;left:645px;top:540px;width:105px;height:645px;border-radius:14px;box-shadow:inset 0 0 0 1px rgba(0,0,0,.7);background:var(--gold);color:var(--dark);display:flex;align-items:center;justify-content:center;writing-mode:vertical-rl;font:600 36px/1 Fredoka,sans-serif}
+.legend{position:absolute;left:195px;top:220px;width:900px;padding:14px 18px;border-radius:24px;background:rgba(15,14,58,.88);display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px 18px}
+.l{display:flex;align-items:center;gap:9px;font:700 14px/1.2 Nunito,sans-serif}
+.s{width:22px;height:22px;flex:none;border-radius:50%}
+.deck{position:absolute;width:170px;height:100px;border-radius:16px;display:flex;flex-direction:column;gap:6px;align-items:center;justify-content:center;font:600 19px/1 Fredoka,sans-serif;color:var(--dark);box-shadow:0 6px 16px rgba(0,0,0,.45)}
+.deck svg{width:66px;height:45px}
+.pl{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:8px 10px;border-radius:12px;background:#17153f;margin-top:6px}
+.pl.on{outline:2px solid var(--gold)}.pl.out{opacity:.45;text-decoration:line-through}
+.dot{width:16px;height:16px;border-radius:50%;flex:none;border:2px solid #111}
+.money{font-weight:800;white-space:nowrap}
+.small{font-size:13px;color:var(--mute)}
+.dice{display:flex;gap:8px}.die{width:44px;height:44px;border-radius:10px;background:#fff;color:var(--dark);font:600 26px Fredoka,sans-serif;display:flex;align-items:center;justify-content:center}
+.log{max-height:230px;overflow:auto;font-size:13.5px;display:grid;gap:5px;color:#e0e7ff}
+.news{padding:10px 12px;border-radius:12px;color:var(--dark);font-weight:700}
+.actions{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px}
+.modalbg{position:fixed;inset:0;background:rgba(5,4,25,.72);display:flex;align-items:center;justify-content:center;padding:16px;z-index:50}
+.modal{background:var(--panel);border-radius:20px;padding:20px;width:100%;max-width:620px;max-height:88vh;overflow:auto}
+.item{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:8px 10px;border-radius:12px;background:#17153f;margin-top:6px;flex-wrap:wrap}
+.item .btns{display:flex;gap:6px;flex-wrap:wrap}.item button{min-height:44px;padding:6px 12px}
+.group{margin-top:14px;font-weight:800;display:flex;align-items:center;gap:8px}
+.bondgrid{display:grid;grid-template-columns:repeat(6,1fr);gap:6px}
+#toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:#b91c1c;color:#fff;padding:10px 16px;border-radius:12px;z-index:60;display:none;max-width:90vw}
+</style>
+</head>
+<body>
+<div id="app"></div><div id="toast" role="alert"></div>
+<script src="data.js"></script>
+<script>
+const { GAME_NAME, GROUPS, SQUARES, RULES, plotInfo } = window.GAME_DATA;
+document.title = GAME_NAME + ' online';
+const COLORS = ['#fb7185', '#22d3ee', '#a3e635', '#fde047', '#e879f9', '#f8fafc'];
+const kr = (v) => Number(v).toLocaleString('sv-SE') + ' kr';
+const app = document.getElementById('app');
+const store = { get(k) { try { return localStorage.getItem(k); } catch { return null; } }, set(k, v) { try { localStorage.setItem(k, v); } catch {} }, del(k) { try { localStorage.removeItem(k); } catch {} } };
+function el(tag, props, ...kids) {
+  const e = document.createElement(tag);
+  for (const [k, v] of Object.entries(props || {})) {
+    if (k === 'class') e.className = v; else if (k === 'style') e.style.cssText = v;
+    else if (k.startsWith('on')) e[k] = v; else if (v !== undefined && v !== false) e.setAttribute(k, v === true ? '' : v);
+  }
+  for (const c of kids.flat()) if (c != null && c !== false) e.append(c.nodeType ? c : String(c));
+  return e;
+}
+function svg(html) { const d = document.createElement('div'); d.innerHTML = html; return d.firstElementChild; }
+const CHART = '<svg class="ic" viewBox="0 0 44 30" aria-hidden="true"><path d="M2 2V28H42" fill="none" stroke="#1a1740" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M6 22L13 14L19 19L27 7L33 13L41 4" fill="none" stroke="#be123c" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+const PAPER = '<svg class="ic" viewBox="0 0 44 30" aria-hidden="true"><rect x="3" y="1" width="38" height="28" rx="3" fill="#fff" stroke="#1a1740" stroke-width="2"/><rect x="8" y="5" width="28" height="5" rx="1" fill="#1a1740"/><rect x="8" y="13" width="12" height="11" fill="#94a3b8"/><path d="M24 14H36M24 18H36M24 22H36" fill="none" stroke="#1a1740" stroke-width="1.6"/></svg>';
+const HOUSE = (c) => `<svg class="house" viewBox="0 0 20 20" role="img" aria-label="Byggnad"><path d="M2 10L10 3L18 10V18H2Z" fill="${c}" stroke="#000" stroke-width="1.5" stroke-linejoin="round"/></svg>`;
+const CITY = `<svg role="img" aria-label="Illustration av en hög kontorsbyggnad i ett finansdistrikt i skymning" width="1050" height="945" viewBox="0 0 1000 900" style="position:absolute;left:120px;top:120px;filter:blur(1.5px)"><defs><linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0f0e3a"/><stop offset=".55" stop-color="#3730a3"/><stop offset="1" stop-color="#db6a9e"/></linearGradient><pattern id="lit" width="24" height="30" patternUnits="userSpaceOnUse"><rect x="6" y="7" width="12" height="16" fill="#fde68a" opacity=".7"/></pattern><pattern id="glass" width="18" height="24" patternUnits="userSpaceOnUse"><rect x="4" y="5" width="10" height="14" fill="#93c5fd" opacity=".5"/></pattern></defs><rect width="1000" height="900" fill="url(#sky)"/><rect y="520" width="100" height="380" fill="#2e2a6b"/><rect x="340" y="560" width="70" height="340" fill="#2e2a6b"/><rect x="710" y="460" width="60" height="440" fill="#2e2a6b"/><rect x="930" y="480" width="70" height="420" fill="#2e2a6b"/><rect y="520" width="100" height="380" fill="url(#glass)"/><rect x="930" y="480" width="70" height="420" fill="url(#glass)"/><rect x="198" y="300" width="4" height="110" fill="#14123f"/><rect x="165" y="400" width="70" height="70" fill="#14123f"/><rect x="130" y="460" width="140" height="80" fill="#14123f"/><rect x="90" y="530" width="220" height="290" fill="#14123f"/><rect x="130" y="460" width="140" height="80" fill="url(#lit)"/><rect x="96" y="535" width="208" height="280" fill="url(#lit)"/><polygon points="80,820 200,780 320,820" fill="#1b1950"/><rect x="80" y="820" width="240" height="80" fill="#1b1950"/><rect x="100" y="826" width="14" height="74" fill="#c7d2fe"/><rect x="140" y="826" width="14" height="74" fill="#c7d2fe"/><rect x="180" y="826" width="14" height="74" fill="#c7d2fe"/><rect x="220" y="826" width="14" height="74" fill="#c7d2fe"/><rect x="260" y="826" width="14" height="74" fill="#c7d2fe"/><rect x="300" y="826" width="14" height="74" fill="#c7d2fe"/><polygon points="760,560 930,470 930,900 760,900" fill="#1b1950"/><rect x="772" y="590" width="146" height="310" fill="url(#glass)"/></svg>`;
+const KIND_BG = { bor: '#7dd3fc', news: '#fde047', div: '#4ade80', lilla: '#c4b5fd', bonddiv: '#4ade80', branch: '#fbbf24', entry: '#fbbf24', exit: '#fbbf24', buildsq: '#fdba74', repay: '#fda4af', give: '#fda4af', prison: '#0f172a', gotoprison: '#0f172a' };
+
+// Rutans plats på brädet: x, y, bredd, höjd och vridning.
+function rect(n) {
+  const C = (x, y) => ({ x, y, w: 120, h: 120, corner: true });
+  if (n === 9) return C(0, 0); if (n === 20) return C(1170, 0); if (n === 30) return C(1170, 1065); if (n === 52) return C(0, 1065);
+  if (n === 53) return { x: 0, y: 960, w: 120, h: 105, rot: 90 };
+  if (n <= 8) return { x: 0, y: 855 - (n - 1) * 105, w: 120, h: 105, rot: 90 };
+  if (n <= 19) return { x: 120 + (n - 10) * 105, y: 0, w: 105, h: 120, rot: 180 };
+  if (n <= 29) return { x: 1170, y: 120 + (n - 21) * 105, w: 120, h: 105, rot: -90 };
+  if (n <= 33) return { x: 1065 - (n - 31) * 105, y: 1065, w: 105, h: 120 };
+  if (n === 34) return { x: 750, y: 1065, w: 105, h: 120 };
+  if (n <= 39) return { x: 750, y: 960 - (n - 35) * 105, w: 105, h: 105, bank: true };
+  if (n === 40) return { x: 697.5, y: 435, w: 157.5, h: 105, bank: true };
+  if (n === 41) return { x: 540, y: 435, w: 157.5, h: 105, bank: true };
+  if (n <= 46) return { x: 540, y: 540 + (n - 42) * 105, w: 105, h: 105, bank: true };
+  if (n === 47) return { x: 540, y: 1065, w: 105, h: 120 };
+  return { x: 435 - (n - 48) * 105, y: 1065, w: 105, h: 120 };
+}
+const cornerRot = { 52: 45, 9: 135, 20: -135, 30: -45 };
+const breakable = (s) => s.replace('Finanstidning', 'Finans­tidning').replace('Aktieutdelning', 'Aktie­utdelning').replace('obligationsdragningen', 'obligations­dragningen').replace('Försäkringsbolag', 'Försäkrings­bolag').replace('Livsmedelsbutik', 'Livsmedels­butik').replace('Elektronikfirma', 'Elektronik­firma').replace('Ingenjörsbyrå', 'Ingenjörs­byrå').replace('obligationsköp', 'obligations­köp');
+
+function buildBoard() {
+  const b = el('div', { class: 'board' });
+  b.append(svg(CITY));
+  b.append(el('div', { class: 'title' }, GAME_NAME));
+  const lg = el('div', { class: 'legend' });
+  Object.values(GROUPS).forEach((g) => lg.append(el('div', { class: 'l' }, el('div', { class: 's', style: 'background:' + g.color }), g.name)));
+  [['#fbbf24', 'Bank och handel'], ['#7dd3fc', 'Börstips'], ['#fde047', 'Finanstidning'], ['#4ade80', 'Aktieutdelning'], ['#c4b5fd', 'Obligationer']].forEach(([c, t]) => lg.append(el('div', { class: 'l' }, el('div', { class: 's', style: 'background:' + c }), t)));
+  b.append(lg);
+  b.append(el('div', { class: 'mid' }, 'Bankens huvudkontor'));
+  b.append(el('div', { class: 'deck', style: 'left:150px;top:560px;background:#7dd3fc;transform:rotate(-4deg)' }, svg(CHART), 'Börstips'));
+  b.append(el('div', { class: 'deck', style: 'left:950px;top:540px;background:#fde047;transform:rotate(4deg)' }, svg(PAPER), 'Finanstidningen'));
+  for (let n = 1; n <= 53; n++) {
+    const s = SQUARES[n]; const r = rect(n); const isPlot = s.kind === 'plot';
+    const g = isPlot ? GROUPS[s.group] : null;
+    const bg = isPlot ? g.color : KIND_BG[s.kind]; const fg = isPlot ? g.text : (s.kind === 'prison' || s.kind === 'gotoprison' ? '#fff' : '#1a1740');
+    let w = 105, h = r.bank ? 105 : 120; if (r.corner) { w = 120; h = 120; } if (r.w === 157.5) w = 157.5;
+    const left = r.x + r.w / 2 - w / 2; const top = r.y + r.h / 2 - h / 2;
+    const cls = 'c' + (isPlot ? ' t' : '') + (r.bank ? ' bk' : '') + (r.corner ? ' h' : '');
+    const e = el('div', { class: cls, id: 'sq' + n, role: 'button', tabindex: 0, 'aria-label': n + ' ' + s.name, style: `left:${left}px;top:${top}px;width:${w}px;height:${h}px;background:${bg};color:${fg};` + (r.rot ? `transform:rotate(${r.rot}deg);` : '') });
+    e.onclick = () => showSquare(n); e.onkeydown = (ev) => { if (ev.key === 'Enter') showSquare(n); };
+    const icon = s.kind === 'bor' ? svg(CHART) : s.kind === 'news' ? svg(PAPER) : null;
+    const name = s.sub ? [el('strong', {}, breakable(s.name)), el('br'), s.sub] : [breakable(s.name)];
+    if (r.corner) e.append(el('div', { class: 'r', style: `transform:rotate(${cornerRot[n]}deg)` }, el('div', { class: 'n' }, n), el('div', {}, icon, ...name)));
+    else { if (isPlot) e.append(el('div', { class: 'head', id: 'h' + n })); e.append(el('div', { class: 'n' }, n)); if (icon) e.append(icon); e.append(...name); }
+    b.append(e);
+  }
+  return b;
+}
+let S = null, ws = null, modal = null, boardEl = null, lastLogTop = 0, joinedInfo = null;
+const toast = (m) => { const t = document.getElementById('toast'); t.textContent = m; t.style.display = 'block'; clearTimeout(toast.t); toast.t = setTimeout(() => { t.style.display = 'none'; }, 4000); };
+let rooms = [];
+function connect() {
+  ws = new WebSocket((location.protocol === 'https:' ? 'wss://' : 'ws://') + location.host);
+  ws.onopen = () => { const c = store.get('room'), t = store.get('token'); if (c && t) wsend({ t: 'resume', code: c, token: t }); else render(); };
+  ws.onmessage = (ev) => {
+    const m = JSON.parse(ev.data);
+    if (m.t === 'list') { rooms = m.rooms; if (!S) render(); }
+    else if (m.t === 'joined') { store.set('room', m.code); store.set('token', m.token); }
+    else if (m.t === 'state') { S = m; render(); }
+    else if (m.t === 'error') toast(m.msg);
+    else if (m.t === 'resumeFailed') { store.del('room'); store.del('token'); S = null; render(); }
+    else if (m.t === 'left') { store.del('room'); store.del('token'); S = null; boardEl = null; modal = null; render(); }
+  };
+  ws.onclose = () => setTimeout(connect, 1500);
+}
+const wsend = (o) => { if (ws && ws.readyState === 1) ws.send(JSON.stringify(o)); };
+const act = (a) => wsend({ t: 'action', action: a });
+
+function render() { if (!S) renderHome(); else if (!S.game) renderLobby(); else renderGame(); }
+function renderHome() {
+  boardEl = null;
+  const urlCode = new URLSearchParams(location.search).get('kod') || '';
+  const focused = document.activeElement && document.activeElement.id;
+  const prevName = document.getElementById('name')?.value ?? store.get('name') ?? ''; const prevCode = document.getElementById('code')?.value ?? urlCode;
+  const name = el('input', { id: 'name', maxlength: 16, autocomplete: 'nickname', value: prevName });
+  const codeI = el('input', { id: 'code', maxlength: 5, value: prevCode, style: 'text-transform:uppercase' });
+  const nm = () => { const v = name.value.trim(); if (!v) { toast('Skriv ditt namn först.'); name.focus(); return null; } store.set('name', v); return v; };
+  app.replaceChildren(el('div', { class: 'home' },
+    el('h1', {}, GAME_NAME), el('p', { class: 'lead' }, 'Köp tomter och aktier, ta över företagsgrupper och bli miljonär. 2–6 spelare online.'),
+    el('div', { class: 'card stack' },
+      el('div', {}, el('label', { for: 'name' }, 'Ditt namn'), name),
+      el('button', { class: 'primary', onclick: () => { const n = nm(); if (n) wsend({ t: 'create', name: n, open: true }); } }, 'Skapa nytt spel'),
+      el('div', {}, el('label', { for: 'code' }, 'Har du en kod?'), el('div', { class: 'row' }, codeI, el('button', { onclick: () => { const n = nm(); if (n) wsend({ t: 'join', name: n, code: codeI.value }); } }, 'Gå med')))),
+    el('div', { class: 'card' }, el('h2', {}, 'Öppna spel'),
+      rooms.length ? rooms.map((r) => el('div', { class: 'roomrow' }, el('div', {}, r.host + 's spel', el('div', { class: 'small' }, r.count + ' av 6 spelare')), el('button', { onclick: () => { const n = nm(); if (n) wsend({ t: 'join', name: n, code: r.code }); } }, 'Gå med'))) : el('p', { class: 'small' }, 'Inga väntande spel just nu. Skapa ett!'))));
+  if (focused) document.getElementById(focused)?.focus();
+}
+function renderLobby() {
+  boardEl = null; const host = S.host === S.you; const link = location.origin + location.pathname + '?kod=' + S.code;
+  app.replaceChildren(el('div', { class: 'home' },
+    el('h1', {}, GAME_NAME),
+    el('div', { class: 'card stack', style: 'margin-top:20px' },
+      el('div', {}, el('div', { class: 'small' }, 'Spelkod'), el('div', { class: 'code' }, S.code)),
+      el('div', { class: 'row' }, el('button', { onclick: () => { try { navigator.clipboard.writeText(link); toast('Länken är kopierad.'); } catch { toast(link); } } }, 'Kopiera inbjudningslänk')),
+      el('div', {}, el('h3', {}, 'Spelare'), S.members.map((m, i) => el('div', { class: 'pl' }, el('div', { class: 'row', style: 'flex:1' }, el('span', { class: 'dot', style: 'flex:0 0 16px;background:' + COLORS[i] }), el('span', {}, m.name + (m.id === S.you ? ' (du)' : '')))))),
+      host ? el('div', { class: 'stack' },
+        el('div', { class: 'row' }, el('button', { onclick: () => wsend({ t: 'addBot' }), disabled: S.members.length >= 6 }, 'Lägg till dator'), el('button', { onclick: () => wsend({ t: 'removeBot' }), disabled: !S.members.some((m) => m.bot) }, 'Ta bort dator')),
+        el('div', {}, el('label', { for: 'target' }, 'Vinstkrav i kontanter'), (() => { const s = el('select', { id: 'target', onchange: (e) => wsend({ t: 'config', target: Number(e.target.value) }) }, el('option', { value: 1000000 }, '1 000 000 kr'), el('option', { value: 500000 }, '500 000 kr, kortare spel')); s.value = S.target; return s; })()),
+        el('div', {}, el('label', { for: 'open' }, 'Vem kan gå med'), (() => { const s = el('select', { id: 'open', onchange: (e) => wsend({ t: 'config', open: e.target.value === 'open' }) }, el('option', { value: 'open' }, 'Alla, visas under Öppna spel'), el('option', { value: 'code' }, 'Bara med kod eller länk')); s.value = S.open ? 'open' : 'code'; return s; })()),
+        el('button', { class: 'primary', disabled: S.members.length < 2, onclick: () => wsend({ t: 'start' }) }, 'Starta spelet')) : el('p', { class: 'small' }, 'Väntar på att värden ska starta spelet.'),
+      el('button', { onclick: () => wsend({ t: 'leave' }) }, 'Lämna'))));
+}
+const myPlots = () => Object.keys(S.game.plots).map(Number).filter((n) => S.game.plots[n].owner === S.you);
+function fit() { const sc = document.getElementById('scaler'); if (!sc || !boardEl) return; const k = sc.clientWidth / 1290; boardEl.style.transform = `scale(${k})`; sc.style.height = 1185 * k + 'px'; }
+window.addEventListener('resize', fit);
+
+function renderGame() {
+  const g = S.game;
+  if (!boardEl) {
+    boardEl = buildBoard();
+    app.replaceChildren(el('div', { class: 'game' }, el('div', { class: 'boardwrap' }, el('div', { class: 'scaler', id: 'scaler' }, boardEl)), el('div', { class: 'side', id: 'side' })));
+    fit();
+  }
+  // Ägare, byggnader och belåning på tomterna.
+  for (const n of Object.keys(g.plots)) {
+    const x = g.plots[n]; const h = document.getElementById('h' + n); const sq = document.getElementById('sq' + n); h.replaceChildren();
+    sq.classList.toggle('mort', !!x.mort);
+    if (x.owner) { const i = g.players.findIndex((p) => p.id === x.owner); h.append(el('span', { class: 'own', style: 'background:' + COLORS[i], title: g.players[i].name })); if (x.built) h.append(svg(HOUSE(COLORS[i]))); }
+  }
+  // Pjäser.
+  boardEl.querySelectorAll('.token').forEach((t) => { if (!g.players.some((p) => 'tk' + p.color === t.id && !p.out)) t.remove(); });
+  const counts = {};
+  g.players.forEach((p) => {
+    if (p.out) return; const r = rect(p.pos); const i = counts[p.pos] = (counts[p.pos] || 0) + 1;
+    const dx = ((i - 1) % 3) * 30 - 30, dy = Math.floor((i - 1) / 3) * 30 - 15;
+    let t = document.getElementById('tk' + p.color);
+    if (!t) { t = el('div', { class: 'token' + (p.id === S.you ? ' me' : ''), id: 'tk' + p.color, style: 'background:' + COLORS[p.color], title: p.name }, p.name.slice(0, 1).toUpperCase()); boardEl.append(t); }
+    t.style.left = r.x + r.w / 2 - 15 + dx + 'px'; t.style.top = r.y + r.h / 2 - 15 + dy + 'px';
+  });
+  renderSide(); renderModal();
+}
+function renderSide() {
+  const g = S.game; const side = document.getElementById('side'); const me = g.players.find((p) => p.id === S.you);
+  const current = g.players[g.current]; const myTurn = current.id === S.you; const debt = g.debts[0];
+  const bond = g.bondRound && g.bondRound.queue[0];
+  const waiting = debt ? g.players.find((p) => p.id === debt.from) : bond ? g.players.find((p) => p.id === bond) : current;
+  const logBox = el('div', { class: 'log', id: 'logbox' }, [...g.log].reverse().slice(0, 40).map((l) => el('div', {}, l)));
+  side.replaceChildren(
+    el('div', { class: 'card', style: 'margin:0;padding:14px' },
+      g.phase === 'over' ? el('h2', {}, g.players.find((p) => p.id === g.winner).name + ' vann!') : el('h2', {}, waiting.id === S.you ? 'Din tur' : waiting.name + ' spelar'),
+      g.dice.length ? el('div', { class: 'dice', style: 'margin-top:10px' }, g.dice.map((d) => el('div', { class: 'die' }, d))) : null,
+      el('div', { style: 'margin-top:12px' }, actionsFor(me, myTurn, debt, bond))),
+    g.news || g.lastCard ? el('div', { class: 'card', style: 'margin:0;padding:14px;display:grid;gap:8px' },
+      g.lastCard ? el('div', { class: 'news', style: 'background:' + (g.lastCard.deck === 'Börstips' ? '#7dd3fc' : '#fde047') }, el('div', { class: 'small', style: 'color:#1a1740' }, g.lastCard.deck), g.lastCard.text) : null,
+      g.news ? el('div', { class: 'small' }, 'Just nu: ' + (g.news.type === 'good' ? 'Goda tider' : 'Dåliga tider')) : null) : null,
+    el('div', { class: 'card', style: 'margin:0;padding:14px' }, el('h3', {}, 'Spelare · mål ' + kr(g.target)),
+      g.players.map((p) => { const m = S.members.find((x) => x.id === p.id);
+        return el('div', { class: 'pl' + (p.id === current.id ? ' on' : '') + (p.out ? ' out' : '') }, el('div', { style: 'display:flex;gap:8px;align-items:center;min-width:0' }, el('span', { class: 'dot', style: 'background:' + COLORS[p.color] }), el('div', {}, p.name + (p.id === S.you ? ' (du)' : ''), el('div', { class: 'small' }, [p.car ? 'bil' : null, p.loans ? p.loans + ' lån' : null, p.skip ? 'i fängelse' : null, m && !m.online ? 'borta' : null].filter(Boolean).join(' · ')))), el('div', { class: 'money' }, kr(p.cash))); })),
+    el('div', { class: 'card', style: 'margin:0;padding:14px' }, el('h3', { style: 'margin-bottom:8px' }, 'Händelser'), logBox),
+    el('button', { onclick: () => wsend({ t: 'leave' }) }, 'Lämna spelet'));
+}
+const canTrade = (p) => p.pos === 12 || (p.pos >= 35 && p.pos <= 46);
+function actionsFor(me, myTurn, debt, bond) {
+  const g = S.game;
+  if (g.phase === 'over') return el('button', { class: 'primary', onclick: () => wsend({ t: 'leave' }) }, 'Till startsidan');
+  if (!me || me.out) return el('p', { class: 'small' }, 'Du är ute ur spelet och tittar på.');
+  if (debt && debt.from === S.you) {
+    return el('div', { class: 'stack' }, el('div', {}, `Du måste betala ${kr(debt.amount)} (${debt.why}) men har ${kr(me.cash)}. Skaffa pengar:`),
+      el('div', { class: 'actions' }, el('button', { onclick: () => act({ type: 'loan' }), disabled: me.loans >= RULES.maxLoans || me.pos === 38 }, 'Ta lån 50 000 kr'), el('button', { onclick: () => open(assetsModal) }, 'Mina tillgångar'), me.car ? el('button', { onclick: () => act({ type: 'sellCar' }) }, 'Sälj bilen') : null, el('button', { class: 'danger', onclick: () => open(bankruptModal) }, 'Gå i konkurs')));
+  }
+  if (debt) return el('p', { class: 'small' }, 'Väntar på en betalning.');
+  if (bond === S.you) return el('div', { class: 'stack' }, el('div', {}, 'Välj en obligation för 500 kr:'),
+    el('div', { class: 'bondgrid' }, Object.keys(g.bonds).map((n) => el('button', { disabled: !!g.bonds[n], onclick: () => act({ type: 'buyBond', n: Number(n) }) }, n))), el('button', { onclick: () => act({ type: 'skipBond' }) }, 'Köp ingen'));
+  if (bond) return el('p', { class: 'small' }, 'Väntar på obligationsköp.');
+  if (!myTurn) return el('div', { class: 'actions' }, el('button', { onclick: () => open(assetsModal) }, 'Mina tillgångar'));
+  if (g.stage === 'pre') {
+    const trade = canTrade(me); const bld = me.pos === 17 || me.pos === 40 || me.freeBuild;
+    return el('div', { class: 'stack' }, el('button', { class: 'primary', onclick: () => act({ type: 'roll' }) }, me.car && !(me.pos >= 34 && me.pos < 47) ? 'Slå två tärningar' : 'Slå tärningen'),
+      el('div', { class: 'actions' }, trade ? el('button', { onclick: () => open(buyModal) }, 'Köp tomt/aktie') : null, trade ? el('button', { onclick: () => open(meetingModal) }, 'Bolagsstämma') : null, bld ? el('button', { onclick: () => open(buildModal) }, 'Bygg') : null,
+        !me.car ? el('button', { onclick: () => act({ type: 'buyCar' }), disabled: me.cash < RULES.carPrice }, 'Köp bil 50 000 kr') : null,
+        el('button', { onclick: () => open(assetsModal) }, 'Mina tillgångar'), el('button', { onclick: () => act({ type: 'loan' }), disabled: me.loans >= RULES.maxLoans }, 'Ta lån 50 000 kr')));
+  }
+  return el('div', { class: 'stack' }, el('button', { class: 'primary', onclick: () => act({ type: 'end' }) }, 'Avsluta turen'), el('div', { class: 'actions' }, el('button', { onclick: () => open(assetsModal) }, 'Mina tillgångar'), el('button', { onclick: () => act({ type: 'loan' }), disabled: me.loans >= RULES.maxLoans || me.pos === 38 }, 'Ta lån 50 000 kr')));
+}
+function open(fn) { modal = fn; renderModal(); }
+function close() { modal = null; renderModal(); }
+function renderModal() {
+  document.getElementById('modalbg')?.remove(); if (!modal || !S || !S.game) return;
+  const body = modal(); if (!body) { modal = null; return; }
+  const bg = el('div', { class: 'modalbg', id: 'modalbg', onclick: (e) => { if (e.target === bg) close(); } }, el('div', { class: 'modal', role: 'dialog', 'aria-modal': 'true' }, body, el('button', { style: 'margin-top:16px;width:100%', onclick: close }, 'Stäng')));
+  document.body.append(bg);
+}
+const ownerName = (id) => S.game.players.find((p) => p.id === id)?.name;
+function showSquare(n) {
+  if (!S || !S.game) return;
+  open(() => { const s = SQUARES[n]; const box = [el('h2', {}, n + '. ' + s.name)];
+    if (s.kind === 'plot') { const i = plotInfo(n); const x = S.game.plots[n]; const g = GROUPS[s.group];
+      box.push(el('p', {}, g.name + (g.industry ? ', industritomt' : '')), el('div', { class: 'item' }, 'Pris', el('b', {}, kr(i.price))), el('div', { class: 'item' }, 'Byggkostnad', el('b', {}, kr(i.build))), el('div', { class: 'item' }, 'Hyra obebyggd', el('b', {}, kr(i.rent))), el('div', { class: 'item' }, 'Hyra bebyggd', el('b', {}, kr(i.rentBuilt))), el('div', { class: 'item' }, 'Ägare', el('b', {}, x.owner ? ownerName(x.owner) : 'Banken')), el('p', { class: 'small' }, 'Äger någon hela gruppen med aktier fördubblas hyran.')); }
+    else box.push(el('p', {}, ({ bor: 'Dra ett Börstips.', news: 'Dra en Finanstidning.', div: 'Du får utdelning på dina aktier.', lilla: 'Köp en obligation, sedan sker dragningen.', bonddiv: 'Du får utdelning och kan köpa en obligation.', branch: 'Här kan du köpa en tomt och en aktie före ditt kast.', buildsq: 'Här kan du bygga före ditt kast.', repay: 'Du måste betala tillbaka ett lån plus 5 000 kr i ränta.', give: 'Ge motspelarna 20 % på deras aktier i grupper där du har tomter.', prison: 'Slå en tärning. Du står över 1 till 3 kast.', gotoprison: 'Slå en tärning. På 1 eller 2 åker du i fängelse.', entry: 'Slå två tärningar och få 5 000 kr per öga.', exit: 'Betala ränta på dina lån och dra ett Börstips.' })[s.kind] || ''));
+    return el('div', {}, box); });
+}
+function grouped(fn) {
+  return Object.keys(GROUPS).map((k) => { const rows = fn(k); if (!rows.length) return null;
+    return el('div', {}, el('div', { class: 'group' }, el('span', { class: 's', style: 'width:16px;height:16px;background:' + GROUPS[k].color }), GROUPS[k].name), rows); });
+}
+const plotsIn = (k) => Object.keys(SQUARES).map(Number).filter((n) => SQUARES[n].group === k);
+function buyModal() { const g = S.game; const me = g.players.find((p) => p.id === S.you);
+  return el('div', {}, el('h2', {}, 'Köp i banken'), el('p', { class: 'small' }, 'Du får köpa en tomt och en aktie per tur. Kontanter: ' + kr(me.cash)),
+    grouped((k) => [...plotsIn(k).filter((n) => !g.plots[n].owner).map((n) => el('div', { class: 'item' }, 'Tomt: ' + SQUARES[n].name + ', ' + kr(plotInfo(n).price), el('button', { disabled: g.boughtPlot || me.cash < plotInfo(n).price, onclick: () => act({ type: 'buyPlot', n }) }, 'Köp'))),
+      ...g.shares.filter((s) => s.group === k && !s.owner).map((s) => el('div', { class: 'item' }, `Aktie: ${kr(s.value)}, ger ${s.pct} %`, el('button', { disabled: g.boughtShare || me.cash < s.value, onclick: () => act({ type: 'buyShare', id: s.id }) }, 'Köp')))])); }
+function buildModal() { const g = S.game; const me = g.players.find((p) => p.id === S.you); const list = myPlots().filter((n) => !g.plots[n].built && !g.plots[n].mort);
+  return el('div', {}, el('h2', {}, 'Bygg'), el('p', { class: 'small' }, 'Kontanter: ' + kr(me.cash)), list.length ? list.map((n) => el('div', { class: 'item' }, SQUARES[n].name + ', ' + kr(plotInfo(n).build), el('button', { disabled: me.cash < plotInfo(n).build, onclick: () => act({ type: 'build', n }) }, 'Bygg'))) : el('p', {}, 'Du har inga tomter att bygga på.')); }
+function assetsModal() { const g = S.game; const me = g.players.find((p) => p.id === S.you); if (!me) return null; const isTurn = g.players[g.current].id === S.you; const pre = isTurn && g.stage === 'pre' && !g.debts.length && !g.bondRound;
+  const myShares = g.shares.filter((s) => s.owner === S.you); const bonds = Object.keys(g.bonds).filter((n) => g.bonds[n] === S.you);
+  return el('div', {}, el('h2', {}, 'Mina tillgångar'), el('p', { class: 'small' }, `Kontanter ${kr(me.cash)} · Lån ${me.loans} · Obligationer ${bonds.join(', ') || 'inga'}`),
+    me.loans ? el('button', { disabled: !isTurn || me.cash < RULES.loan, onclick: () => act({ type: 'repay' }) }, 'Betala tillbaka ett lån') : null,
+    grouped((k) => [...myPlots().filter((n) => SQUARES[n].group === k).map((n) => { const x = g.plots[n]; const i = plotInfo(n); const mv = x.built ? i.mortgageBuilt : i.mortgage; const sv = x.built ? i.sellBuilt : i.sell;
+      return el('div', { class: 'item' }, SQUARES[n].name + (x.built ? ', bebyggd' : '') + (x.mort ? ', belånad' : ''), el('div', { class: 'btns' }, x.mort ? el('button', { disabled: !pre, onclick: () => act({ type: 'redeem', n }) }, 'Lös ' + kr(Math.round(mv * RULES.redeemPct))) : [el('button', { onclick: () => act({ type: 'mortgage', n }) }, 'Belåna ' + kr(mv)), el('button', { onclick: () => act({ type: 'sellPlot', n }) }, 'Sälj ' + kr(sv))])); }),
+      ...myShares.filter((s) => s.group === k).map((s) => el('div', { class: 'item' }, `Aktie ${kr(s.value)}, ger ${s.pct} %`, el('button', { onclick: () => act({ type: 'sellShare', id: s.id }) }, 'Sälj ' + kr(Math.round(s.value * 0.75 / 500) * 500))))])); }
+function meetingModal() { const g = S.game; const me = g.players.find((p) => p.id === S.you);
+  return el('div', {}, el('h2', {}, 'Bolagsstämma'), el('p', {}, 'Köp ut motspelarna ur en grupp där du redan äger något. Högre avgift ger bättre chans: du lyckas om två tärningar visar högst avgiften delat med 10 000. Med 120 000 kr lyckas du alltid.'),
+    grouped((k) => { const mine = plotsIn(k).some((n) => g.plots[n].owner === S.you) || g.shares.some((s) => s.group === k && s.owner === S.you); let x = 0; plotsIn(k).forEach((n) => { const q = g.plots[n]; if (q.owner && q.owner !== S.you) x += plotInfo(n).price + (q.built ? plotInfo(n).build : 0); }); g.shares.forEach((s) => { if (s.group === k && s.owner && s.owner !== S.you) x += s.value; }); if (!mine || !x) return [];
+      const sel = el('select', { 'aria-label': 'Förmedlingsavgift', style: 'width:auto' }, [30, 40, 50, 60, 70, 80, 90, 100, 110, 120].map((f) => el('option', { value: f * 1000 }, kr(f * 1000)))); sel.value = 70000;
+      return [el('div', { class: 'item' }, 'Köpsumma ' + kr(x), el('div', { class: 'btns' }, sel, el('button', { onclick: () => { if (me.cash < x + Number(sel.value)) toast('Du har inte tillräckligt med kontanter.'); else { act({ type: 'meeting', group: k, fee: Number(sel.value) }); close(); } } }, 'Kalla')))]; })); }
+function bankruptModal() { return el('div', {}, el('h2', {}, 'Gå i konkurs?'), el('p', {}, 'Du lämnar spelet och alla dina tomter och aktier går tillbaka till banken.'), el('button', { class: 'danger', onclick: () => { act({ type: 'bankrupt' }); close(); } }, 'Ja, gå i konkurs')); }
+connect();
+</script>
+</body>
+</html>

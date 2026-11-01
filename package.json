@@ -1,0 +1,13 @@
+{
+  "name": "finans-online",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Svenskt affärsspel online för 2-6 spelare",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "test": "node test/simulate.js"
+  },
+  "engines": { "node": ">=18" },
+  "dependencies": { "ws": "^8.18.0" }
+}
