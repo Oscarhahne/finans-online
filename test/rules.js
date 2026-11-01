@@ -29,10 +29,13 @@ assert.equal(g.players[0].pos, 38); assert.equal(g.players[0].cash, 5000); asser
 g = two(); g.players[0].pos = 40; g.bonds[2] = 'a'; g.bonds[1] = 'b'; g.bonds[12] = 'c';
 const before = g.players.map((p) => p.cash); Math.random = () => 0; G.apply(g, 'a', { type: 'roll' }); G.apply(g, 'a', { type: 'skipBond' }); Math.random = orig;
 assert.equal(g.players[0].cash - before[0], 50000); assert.equal(g.players[1].cash - before[1], 25000); assert.equal(g.players[2].cash - before[2], 15000);
-// Vinst kräver miljonen och två grupper.
-g = two(); g.players[0].cash = 2000000; G.settle(g); assert.equal(g.phase, 'play');
-['A', 'H'].forEach((k) => { Object.keys(g.plots).forEach((n) => { if (require('../public/data.js').SQUARES[n].group === k) g.plots[n].owner = 'a'; }); g.shares.forEach((s) => { if (s.group === k) s.owner = 'a'; }); });
-G.settle(g); assert.equal(g.phase, 'over'); assert.equal(g.winner, 'a');
+// Når någon målet spelas rundan klart. Sedan vinner den som har mest.
+g = two(); g.players[1].cash = 1200000; G.settle(g); assert.equal(g.phase, 'play'); assert.equal(g.finalRound, 'b');
+g.stage = 'post'; G.apply(g, 'a', { type: 'end' }); assert.equal(g.phase, 'play'); assert.equal(g.current, 1);
+g.stage = 'post'; G.apply(g, 'b', { type: 'end' }); assert.equal(g.phase, 'play'); assert.equal(g.current, 2);
+g.players[2].cash = 1500000; g.stage = 'post'; G.apply(g, 'c', { type: 'end' }); assert.equal(g.phase, 'over'); assert.equal(g.winner, 'c');
+// Har ingen kvar summan när rundan är slut fortsätter spelet.
+g = two(); g.players[2].cash = 1200000; G.settle(g); g.current = 2; g.players[2].cash = 900000; g.stage = 'post'; G.apply(g, 'c', { type: 'end' }); assert.equal(g.phase, 'play'); assert.equal(g.finalRound, null); assert.equal(g.current, 0);
 // Skuld som inte går att betala blockerar turen och kan sluta i konkurs.
 g = two(); g.players[0].cash = 0; g.debts.push({ from: 'a', to: 'b', amount: 900000, why: 'test' }); G.settle(g);
 rejects(g, 'b', { type: 'roll' }, /inte din tur|Vänta/);

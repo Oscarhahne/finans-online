@@ -9,7 +9,7 @@ const G = require('./game.js');
 const PORT = process.env.PORT || 3000;
 const PUBLIC = path.join(__dirname, 'public');
 const TYPES = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8' };
-const BOT_DELAY = Number(process.env.BOT_DELAY ?? 700);
+const BOT_DELAY = Number(process.env.BOT_DELAY ?? 1700);
 const TURN_LIMIT = Number(process.env.TURN_LIMIT ?? 120000); // Tid innan spelet agerar åt en spelare
 const GONE_LIMIT = Number(process.env.GONE_LIMIT ?? 20000); // Kortare tid om spelaren tappat kontakten
 const MAX_ROOMS = 300;

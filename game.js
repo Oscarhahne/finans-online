@@ -9,7 +9,7 @@ const groupPlots = (k) => Object.keys(SQUARES).map(Number).filter((n) => SQUARES
 
 function newGame(players, opts = {}) {
   const g = {
-    phase: 'play', target: opts.target || R.target, doubles: 0, landed: null, turnNo: 1, current: 0, stage: 'pre', boughtPlot: false, boughtShare: false,
+    phase: 'play', target: opts.target || R.target, doubles: 0, finalRound: null, landed: null, cardNo: 0, rollNo: 0, lastRoll: null, turnNo: 1, current: 0, stage: 'pre', boughtPlot: false, boughtShare: false,
     players: players.map((p, i) => ({ id: p.id, name: p.name, bot: !!p.bot, color: i, pos: 47, cash: R.startCash, car: false, loans: 0, skip: 0, fromPrison: false, freeBuild: false, out: false })),
     plots: {}, shares: [], bonds: {}, news: null, dice: [], debts: [], bondRound: null, winner: null, log: [],
     tipDeck: shuffled(BORSTIPS.length), newsDeck: shuffled(FINANS.length), lastCard: null,
@@ -56,7 +56,7 @@ function giveDividends(g, p) {
 }
 function drawTip(g, p, d) {
   const i = g.tipDeck.shift(); g.tipDeck.push(i); const c = BORSTIPS[i];
-  g.lastCard = { deck: 'Börstips', text: c.x }; log(g, `Börstips till ${p.name}: ${c.x}`);
+  g.cardNo++; g.lastCard = { id: g.cardNo, deck: 'Börstips', text: c.x }; log(g, `Börstips till ${p.name}: ${c.x}`);
   if (c.t === 'gain') p.cash += c.a;
   else if (c.t === 'lose') pay(g, p, null, c.a, 'börstips');
   else if (c.t === 'dividend') dividendTo(g, p);
@@ -72,7 +72,7 @@ function drawTip(g, p, d) {
 function drawNews(g, p) {
   const i = g.newsDeck.shift(); g.newsDeck.push(i); const c = FINANS[i];
   g.news = c.until ? { type: c.t, text: c.x } : null;
-  g.lastCard = { deck: 'Finanstidningen', text: c.x }; log(g, `Finanstidningen: ${c.x}`);
+  g.cardNo++; g.lastCard = { id: g.cardNo, deck: 'Finanstidningen', text: c.x }; log(g, `Finanstidningen: ${c.x}`);
   const everyone = alive(g);
   if (c.t === 'largedraw') startBonds(g, p, true, 'large');
   else if (c.t === 'alldiv') everyone.forEach((o) => dividendTo(g, o));
@@ -146,9 +146,19 @@ function bankruptPlayer(g, p) {
   Object.keys(g.bonds).forEach((b) => { if (g.bonds[b] === p.id) g.bonds[b] = null; });
   log(g, `${p.name} har gått i konkurs.`);
 }
+const reachedTarget = (g) => alive(g).filter((p) => p.cash >= g.target && completeCount(g, p) >= R.groupsToWin);
+// När rundan är slut vinner den som har mest, av dem som fortfarande har nått målet.
+function finishRound(g) {
+  const best = reachedTarget(g).sort((a, b) => b.cash - a.cash)[0];
+  g.finalRound = null;
+  if (!best) { log(g, 'Ingen har kvar vinstsumman när rundan är slut. Spelet fortsätter.'); return false; }
+  g.phase = 'over'; g.winner = best.id; log(g, `Rundan är slut. ${best.name} vinner med ${kr(best.cash)}!`);
+  return true;
+}
 function nextTurn(g) {
   const n = g.players.length;
   for (let guard = 0; guard < 200; guard++) {
+    if (g.current === n - 1 && g.finalRound && finishRound(g)) return;
     g.current = (g.current + 1) % n; const p = cur(g);
     if (p.out) continue;
     if (p.skip > 0) { p.skip--; log(g, `${p.name} står över sitt kast.`); continue; }
@@ -168,8 +178,8 @@ function settle(g) {
     }
     const left = alive(g);
     if (left.length === 1) { g.phase = 'over'; g.winner = left[0].id; log(g, `${left[0].name} är sist kvar och vinner!`); break; }
-    const w = left.find((p) => p.cash >= g.target && completeCount(g, p) >= R.groupsToWin);
-    if (w) { g.phase = 'over'; g.winner = w.id; log(g, `${w.name} visar ${kr(w.cash)} och två kompletta företagsgrupper och vinner!`); break; }
+    const w = reachedTarget(g)[0];
+    if (w && !g.finalRound) { g.finalRound = w.id; log(g, `${w.name} har nått ${kr(g.target)}! Rundan spelas klart.`); }
     if (g.bondRound) {
       const r = g.bondRound;
       while (r.queue.length) { const o = P(g, r.queue[0]); const free = Object.values(g.bonds).some((v) => !v); if (o.out || !free || o.cash < R.bondPrice) r.queue.shift(); else break; }
@@ -203,6 +213,7 @@ function apply(g, pid, a) {
     case 'roll': { pre();
       const inBank = p.pos >= 34 && p.pos < 47; const two = p.car && !inBank;
       const d1 = die(); const d2 = two ? die() : null; g.dice = two ? [d1, d2] : [d1];
+      g.rollNo++; g.lastRoll = { id: g.rollNo, player: pid, dice: g.dice.slice() };
       const pair = two && d1 === d2;
       if (pair) g.doubles++;
       if (pair && g.doubles >= R.maxDoubles) {
@@ -277,11 +288,6 @@ function botAction(g, pid, passive) {
   }
   if (g.stage === 'post') return { type: 'end' };
   if (passive) return { type: 'roll' };
-  // Sälj av för vinst om det räcker.
-  if (completeCount(g, p) >= R.groupsToWin) {
-    const keep = new Set(Object.keys(GROUPS).filter((k) => completeGroup(g, k, p)));
-    const s = g.shares.find((v) => v.owner === pid && !keep.has(v.group)); if (s) return { type: 'sellShare', id: s.id };
-  }
   if (!p.car && p.cash > 150000) return { type: 'buyCar' };
   if (canTrade(p)) {
     if (p.cash > 200000) for (const k of Object.keys(GROUPS)) { const x = meetingCost(g, p, k); const has = groupPlots(k).some((n) => g.plots[n].owner === pid) || g.shares.some((s) => s.group === k && s.owner === pid);
