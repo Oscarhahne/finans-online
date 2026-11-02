@@ -32,7 +32,7 @@ All speldata finns i `public/data.js`: namn, tomter, priser, hyror, aktier och k
 
 ## Inställningar
 
-Miljövariabler i millisekunder: `TURN_LIMIT` (120000) är tiden innan spelet gör ett enkelt drag åt en spelare, `GONE_LIMIT` (20000) gäller den som tappat kontakten, och `BOT_DELAY` (1700) styr datorspelarnas tempo.
+Miljövariabler i millisekunder: `TURN_LIMIT` (120000) är tiden innan spelet gör ett enkelt drag åt en spelare, `GONE_LIMIT` (20000) gäller den som tappat kontakten, och `BOT_DELAY` (2700) styr datorspelarnas tempo.
 
 ## Tester
 
