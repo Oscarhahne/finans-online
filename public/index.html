@@ -79,7 +79,7 @@ label{display:block;font-weight:700;margin:0 0 6px;color:var(--mute)}
 .mini.m{opacity:.85;outline:2px dashed #fff;outline-offset:-3px}
 .note{background:#d9f99d;color:#14532d}.bond{background:#c4b5fd;color:#1a1740;width:38px}
 .events{position:fixed;left:50%;top:128px;transform:translateX(-50%);z-index:42;display:grid;gap:8px;width:min(460px,calc(100vw - 24px));pointer-events:none}
-.evt{background:#fff;color:var(--dark);border-left:0;border-radius:14px;padding:10px 14px;font-weight:800;box-shadow:0 8px 24px rgba(0,0,0,.5);text-align:center;animation:evt .2s ease-out}
+.evt{background:#101d24;color:#fff;border:4px solid #fff;border-radius:14px;padding:10px 14px;font-weight:800;box-shadow:0 8px 24px rgba(0,0,0,.5);text-align:center;animation:evt .2s ease-out}
 @keyframes evt{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:none}}
 .scaler{position:relative;width:100%}
 .board{position:absolute;left:0;top:0;width:1290px;height:1185px;transform-origin:0 0;background:#0f4a33;border-radius:28px;overflow:hidden;font-family:Nunito,sans-serif}
@@ -136,7 +136,7 @@ label{display:block;font-weight:700;margin:0 0 6px;color:var(--mute)}
 .buygrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px;align-items:start;margin-top:10px}
 .buybox{background:#0a2f22;border-radius:16px;padding:14px;min-width:0}
 .bondgrid{display:grid;grid-template-columns:repeat(6,1fr);gap:6px}
-.cardpop{--ac:#f6c945;--lip:#b98516;--band:#fbe89a;position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);z-index:40;width:min(440px,calc(100vw - 24px));max-height:calc(100vh - 16px);overflow:hidden;border-radius:24px;background:#101d24;color:#fff;border:4px solid var(--ac);box-shadow:0 8px 0 var(--lip),0 22px 55px rgba(0,0,0,.65);pointer-events:none;animation:pop .25s ease-out;font-family:Nunito,sans-serif}
+.cardpop{--ac:#f6c945;--lip:#b98516;--band:#fbe89a;position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);z-index:40;width:min(440px,calc(100vw - 24px));max-height:calc(100vh - 16px);overflow:hidden;border-radius:24px;background:#101d24;color:#fff;border:6px solid #fff;box-shadow:0 8px 0 var(--lip),0 22px 55px rgba(0,0,0,.65);pointer-events:none;animation:pop .25s ease-out;font-family:Nunito,sans-serif}
 .cardpop.tips{--ac:#7cc0ff;--lip:#2f6fb8;--band:#cfe8ff}
 .cphead{display:flex;align-items:center;gap:12px;background:var(--band);color:#18202c;padding:9px 16px}.cphead .tic{width:56px;height:42px;margin:0}
 .cphead b{display:block;font:800 23px/1.1 Nunito,sans-serif;text-transform:uppercase;letter-spacing:.5px}.cphead span{display:block;font:700 12.5px/1.25 Nunito,sans-serif;text-transform:uppercase;letter-spacing:.7px;color:#4b5563;border-top:1px solid rgba(0,0,0,.2);margin-top:3px;padding-top:3px}
@@ -171,7 +171,7 @@ body.rolling .side{pointer-events:none}
 .winner{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);z-index:71;width:min(480px,calc(100vw - 32px));background:rgba(6,38,27,.95);border:3px solid var(--gold);border-radius:28px;padding:32px;text-align:center;display:grid;gap:14px}
 .winner h2{font-size:42px;line-height:1.1;color:var(--gold)}
 .lastround{background:var(--gold);color:var(--dark);border-radius:12px;padding:10px 12px;font-weight:800;margin-top:10px}
-.drawbox{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);z-index:44;width:min(500px,calc(100vw - 24px));max-height:92vh;overflow:auto;background:#0f4a33;border:3px solid #c4b5fd;border-radius:24px;padding:22px;display:grid;gap:12px;box-shadow:0 18px 60px rgba(0,0,0,.7)}
+.drawbox{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);z-index:44;width:min(500px,calc(100vw - 24px));max-height:92vh;overflow:auto;background:#0f4a33;border:6px solid #fff;border-radius:24px;padding:22px;display:grid;gap:12px;box-shadow:0 18px 60px rgba(0,0,0,.7)}
 .drawbox h2{font-size:26px;text-align:center}.drawbox .dice{justify-content:center}
 .drawrow{display:grid;grid-template-columns:48px 1fr auto;gap:12px;align-items:center;background:#c4b5fd;color:var(--dark);border-radius:14px;padding:10px 14px}
 .drawrow .small{color:#312e81}.drawrow.none{background:#0d4230;color:#e3f8ec}.drawrow.none .small{color:var(--mute)}
@@ -272,8 +272,8 @@ function buildBoard() {
   b.append(el('div', { class: 'mid', style: `left:${colX(6)}px;width:${TW}px;top:${BOTTOM - 5 * ROW}px;height:${5 * ROW + D}px` }, 'Bankens huvudkontor'));
   const leftC = D + 2 * TW; const rightC = colX(8) + 1.5 * TW;
   b.append(el('div', { class: 'deck ct-bor', style: `left:${leftC - 85}px;top:${BOTTOM - 705}px;transform:rotate(-4deg)` }, iconFor(SQUARES[2]), 'Börstips'));
-  b.append(el('div', { class: 'deck ct-news', style: `left:${rightC - 85}px;top:${BOTTOM - 545}px;transform:rotate(4deg)` }, iconFor(SQUARES[6]), 'Finanstidningen'));
-  b.append(el('div', { class: 'activenews', id: 'activenews', style: `left:${colX(8) + 10}px;width:${3 * TW - 20}px;top:${BOTTOM - 429}px` }));
+  b.append(el('div', { class: 'deck ct-news', style: `left:${rightC - 85}px;top:${BOTTOM - 705}px;transform:rotate(4deg)` }, iconFor(SQUARES[6]), 'Finanstidningen'));
+  b.append(el('div', { class: 'activenews', id: 'activenews', style: `left:${colX(8) + 10}px;width:${3 * TW - 20}px;top:${BOTTOM - 585}px` }));
   for (let n = 1; n <= 53; n++) {
     const s = SQUARES[n]; const r = rect(n); const isPlot = s.kind === 'plot';
     const g = isPlot ? GROUPS[s.group] : null;
