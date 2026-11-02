@@ -34,7 +34,8 @@ label{display:block;font-weight:700;margin:0 0 6px;color:var(--mute)}
 @media (max-width:1199px){.leftcol{flex:1 1 100%;width:100%;order:-1;grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}}
 .pile{display:grid;gap:5px}.pile h4{margin:0;font:800 13px Nunito,sans-serif;color:var(--mute);display:flex;justify-content:space-between}
 .minis{display:flex;flex-wrap:wrap;gap:4px}
-.stacks{display:grid;gap:8px}.stack3{display:grid;gap:6px}.cardstack{display:grid}
+.holdings{background:var(--panel);border-radius:20px;padding:14px;margin-top:12px;display:grid;gap:10px}.hhead{display:flex;flex-wrap:wrap;gap:4px 12px;align-items:baseline}
+.stacks{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:12px;align-items:start}.stack3{display:grid;gap:6px}.cardstack{display:grid}
 .stackcard{position:relative;display:block;width:100%;min-height:0;height:58px;padding:0;background:#fbfaf3;color:#1a1740;border:1px solid #1a1740;border-radius:9px;overflow:hidden;text-align:left;font:800 12px/1.1 Nunito,sans-serif;box-shadow:0 -1px 4px rgba(0,0,0,.4)}
 .stackcard+.stackcard{margin-top:-28px}
 .stackcard:hover,.stackcard:focus-visible{background:#fff;z-index:3;transform:translateY(-2px)}
@@ -388,7 +389,7 @@ function renderGame() {
   const g = S.game; showCardPopup(g);
   if (!boardEl) {
     boardEl = buildBoard();
-    app.replaceChildren(el('div', { class: 'game' }, el('div', { class: 'leftcol' }, el('aside', { class: 'landing', id: 'landing' }), el('aside', { class: 'landing', id: 'piles', 'aria-label': 'Mina tillgångar' })), el('div', { class: 'boardwrap' }, el('div', { class: 'scaler', id: 'scaler' }, boardEl)), el('div', { class: 'side', id: 'side' })));
+    app.replaceChildren(el('div', { class: 'game' }, el('div', { class: 'leftcol' }, el('aside', { class: 'landing', id: 'landing' }), el('aside', { class: 'landing', id: 'piles', 'aria-label': 'Mina tillgångar' })), el('div', { class: 'boardwrap' }, el('div', { class: 'scaler', id: 'scaler' }, boardEl), el('section', { class: 'holdings', id: 'holdings', 'aria-label': 'Mina tomter och aktier' })), el('div', { class: 'side', id: 'side' })));
     fit();
   }
   // Ägare, byggnader och belåning på tomterna.
@@ -508,19 +509,20 @@ const glowOn = (ns) => ({ onmouseenter: () => setGlow(ns), onmouseleave: clearGl
 // Egna högar till vänster: tomter, aktier, obligationer och pengar.
 function renderPiles() {
   clearGlow(); const box = document.getElementById('piles'); if (!box) return; const g = S.game; const me = g.players.find((p) => p.id === S.you);
-  if (!me) { box.replaceChildren(); return; }
+  if (!me) { box.replaceChildren(); document.getElementById('holdings')?.replaceChildren(); return; }
   const mine = Object.keys(g.plots).map(Number).filter((n) => g.plots[n].owner === S.you).sort((a, b) => a - b);
   const shares = g.shares.filter((v) => v.owner === S.you); const bonds = Object.keys(g.bonds).filter((n) => g.bonds[n] === S.you);
   const notes = []; let left = me.cash; for (const v of [100000, 50000, 10000, 5000, 1000, 500]) { const c = Math.floor(left / v); if (c) { notes.push(el('div', { class: 'mini note', title: c + ' sedlar' }, (v / 1000) + 'k × ' + c)); left -= c * v; } }
-  const pile = (title, count, items, empty) => el('section', { class: 'pile' }, el('h4', {}, title, el('span', {}, count)), items.length ? el('div', { class: title === 'Tomter och aktier' ? 'stacks' : 'minis' }, items) : el('div', { class: 'small' }, empty));
+  const pile = (title, count, items, empty) => el('section', { class: 'pile' }, el('h4', {}, title, el('span', {}, count)), items.length ? el('div', { class: 'minis' }, items) : el('div', { class: 'small' }, empty));
   // Kort i samma koncern staplas, så att listan tar mindre plats.
   const stacks = Object.keys(GROUPS).map((k) => { const gr = GROUPS[k]; const style = `background:${gr.color};color:${gr.text}`;
     const plotCards = mine.filter((n) => SQUARES[n].group === k).map((n) => { const x = g.plots[n]; const pic = svg(gr.industry ? FACTORY3D : HOUSE3D); if (!x.built) pic.classList.add('unbuilt');
       return el('button', { class: 'stackcard' + (x.mort ? ' m' : ''), ...glowOn([n]), onclick: () => showDeed(n), 'aria-label': 'Lagfartsbevis ' + SQUARES[n].name }, el('span', { class: 'band', style }, SQUARES[n].name), el('span', { class: 'sbody' }, pic, x.mort ? 'Belånad' : x.built ? 'Bebyggd' : 'Obebyggd')); });
     const shareCards = shares.filter((v) => v.group === k).map((v) => el('button', { class: 'stackcard', ...glowOn(plotsIn(k)), onclick: () => showShare(v.id), 'aria-label': 'Aktiebrev ' + gr.name }, el('span', { class: 'band', style }, 'Aktie ' + kr(v.value)), el('span', { class: 'sbody' }, 'Utdelning ' + v.pct + ' %')));
     return plotCards.length || shareCards.length ? el('div', { class: 'stack3' }, el('div', { class: 'small' }, gr.name), plotCards.length ? el('div', { class: 'cardstack' }, plotCards) : null, shareCards.length ? el('div', { class: 'cardstack' }, shareCards) : null) : null; }).filter(Boolean);
-  box.replaceChildren(el('h3', {}, 'Mina högar'), el('div', { class: 'small' }, 'Tryck på ett kort för att se vad det gäller.'),
-    pile('Tomter och aktier', mine.length + shares.length, stacks, 'Inga tomter eller aktier än'),
+  const under = document.getElementById('holdings');
+  under.replaceChildren(el('div', { class: 'hhead' }, el('h3', {}, 'Mina tomter och aktier'), el('span', { class: 'small' }, 'Tryck på ett kort för att se vad det gäller.')), stacks.length ? el('div', { class: 'stacks' }, stacks) : el('div', { class: 'small' }, 'Inga tomter eller aktier än'));
+  box.replaceChildren(el('h3', {}, 'Mina högar'),
     pile('Obligationer', bonds.length, bonds.map((n) => el('button', { class: 'deedmini', onclick: () => showBond(n), 'aria-label': 'Obligation ' + n }, el('span', { class: 'band', style: 'background:#c4b5fd;color:#1a1740' }, 'Obligation'), el('b', { style: 'font-size:18px' }, 'Nr ' + n))), 'Inga obligationer än'),
     pile('Frikort', (me.jailFree || []).length, (me.jailFree || []).map(() => el('button', { class: 'deedmini', onclick: () => showFree(), 'aria-label': 'Frikort' }, el('span', { class: 'band', style: 'background:#7dd3fc;color:#1a1740' }, 'Frikort'), el('span', {}, 'Slipp fängelset'))), 'Inga frikort'),
     pile('Pengar', kr(me.cash), notes, 'Inga pengar'));
