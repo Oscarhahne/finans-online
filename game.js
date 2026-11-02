@@ -73,6 +73,7 @@ function drawTip(g, p, d) {
   else if (c.t === 'tradepass') log(g, `${p.name} sparar ett köptips.`);
   else if (c.t === 'perplot') { const a = plotsOf(g, p).length * c.a; p.cash += a; log(g, `${p.name} får ${kr(a)} från hyresgäster.`); }
   else if (c.t === 'poorest') { const o = alive(g).reduce((b, q) => (q.cash < b.cash ? q : b), p); o.cash += c.a; log(g, `${o.name} har minst kontanter och får ${kr(c.a)}.`); }
+  else if (c.t === 'audit') { const a = Math.ceil(p.cash * c.pct / 100 / 500) * 500; if (a) { pay(g, p, null, a, 'revision'); log(g, `${p.name} betalar ${kr(a)} efter revisionen.`); } }
   else if (c.t === 'carloss') { if (p.car) { p.car = false; log(g, `${p.name} förlorar sin bil.`); } else log(g, `${p.name} har ingen bil att förlora.`); }
   else if (c.t === 'toexit') { p.pos = 47; p.fromPrison = false; g.landed = { player: p.id, pos: 47 }; if (p.loans) pay(g, p, null, p.loans * R.loanInterest, 'låneränta'); log(g, `${p.name} går till Bankutgång.`); }
   else if (c.t === 'news') drawNews(g, p, d);
