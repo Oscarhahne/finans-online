@@ -147,6 +147,11 @@ label{display:block;font-weight:700;margin:0 0 6px;color:var(--mute)}
 .cpeff{display:flex;align-items:center;gap:13px;margin:10px 0 9px;padding:9px 14px;border-radius:14px;background:#14342c;border:1px solid #2f6b57}.cpeff.neg{background:#3a1a1e;border-color:#8c3a40}.cpeff.neu{background:#1a2c3f;border-color:#3f6c96}
 .cpeff .tic{width:60px;height:45px;margin:0}.cpeff b{display:block;font:800 clamp(21px,3.4vh,27px)/1.1 Nunito,sans-serif;color:#86ef8c}.cpeff.neg b{color:#fca5a5}.cpeff.neu b{color:#9dd0ff}.cpeff span{display:block;font:700 15.5px/1.2 Nunito,sans-serif;color:#b5efc0}.cpeff.neg span{color:#fbd0d0}.cpeff.neu span{color:#cfe8ff}
 .cpfoot{text-align:center;font:700 15px/1.2 Nunito,sans-serif;color:#aab7bb}
+.placed{left:var(--x)!important;top:var(--y)!important;transform:scale(var(--s))!important;transform-origin:0 0;max-height:none!important;pointer-events:none;animation:placedpop .22s ease-out!important}
+@keyframes placedpop{from{opacity:0;transform:scale(calc(var(--s) * .9))}to{opacity:1;transform:scale(var(--s))}}
+.cardpop.placed{width:440px}.cardpop.placed .cpscene{height:112px}.cardpop.placed .cpbody h2{font-size:31px}.cardpop.placed .cpbody p{font-size:17px}.cardpop.placed .cpeff b{font-size:25px}
+.drawbox.placed{width:500px;overflow:visible;pointer-events:auto}
+.events.placed{transform:none!important;animation:none!important;left:var(--x)!important;top:var(--y)!important;right:auto!important;bottom:auto!important;width:var(--w)!important;max-width:none!important}
 .ct-news,.ct-bor{color:#18202c!important;text-shadow:none!important}.ct-news{background:linear-gradient(150deg,#ffe07a,#f7bf30 60%,#eeac1c)!important}.ct-bor{background:linear-gradient(150deg,#c0e1ff,#7cbcf9 60%,#5aa4ee)!important}
 .ct-news .n,.ct-bor .n{background:none;color:#18202c;font-size:21px;font-weight:800}
 .ct-news .sidelab,.ct-bor .sidelab{font-size:21px}.ct-news .sidelab .tic,.ct-bor .sidelab .tic{width:50px;height:38px}.ct-news.bk .tic,.ct-bor.bk .tic{width:44px;height:33px}.ct-news .lab,.ct-bor .lab{opacity:1}
@@ -266,7 +271,7 @@ function buildBoard() {
   b.append(lg);
   b.append(el('div', { class: 'mid', style: `left:${colX(6)}px;width:${TW}px;top:${BOTTOM - 5 * ROW}px;height:${5 * ROW + D}px` }, 'Bankens huvudkontor'));
   const leftC = D + 2 * TW; const rightC = colX(8) + 1.5 * TW;
-  b.append(el('div', { class: 'deck ct-bor', style: `left:${leftC - 85}px;top:${BOTTOM - 505}px;transform:rotate(-4deg)` }, iconFor(SQUARES[2]), 'Börstips'));
+  b.append(el('div', { class: 'deck ct-bor', style: `left:${leftC - 85}px;top:${BOTTOM - 705}px;transform:rotate(-4deg)` }, iconFor(SQUARES[2]), 'Börstips'));
   b.append(el('div', { class: 'deck ct-news', style: `left:${rightC - 85}px;top:${BOTTOM - 545}px;transform:rotate(4deg)` }, iconFor(SQUARES[6]), 'Finanstidningen'));
   b.append(el('div', { class: 'activenews', id: 'activenews', style: `left:${colX(8) + 10}px;width:${3 * TW - 20}px;top:${BOTTOM - 429}px` }));
   for (let n = 1; n <= 53; n++) {
@@ -450,7 +455,7 @@ function showDraw(d) {
     el('div', { class: 'dice' }, d.dice.map((v) => el('div', { class: 'die' }, v))),
     d.results.map((r, i) => el('div', { class: 'drawrow' + (r.winner ? '' : ' none') }, el('span', { class: 'drawno' }, r.num), el('div', {}, el('div', { class: 'small' }, ['Högsta vinsten', 'Andra vinsten', 'Tredje vinsten'][i]), r.winner ? el('b', {}, r.winner) : 'Ingen äger obligationen'), el('b', { class: 'money' }, kr(r.prize)))),
     el('button', { onclick: () => { box.remove(); clearTimeout(drawTimer); } }, 'Stäng'));
-  document.body.append(box); drawTimer = setTimeout(() => box.remove(), 4000);
+  placePopup(box); drawTimer = setTimeout(() => box.remove(), 4000);
 }
 // Målad stadsbild för korten. Tonen styr himlen och scenen vad som står i förgrunden.
 function cardScene(tone, scene) {
@@ -474,6 +479,20 @@ function cardScene(tone, scene) {
   const sun = tone === '-' ? '' : `<circle cx="330" cy="118" r="62" fill="url(#cpS)"/>`;
   return svg(`<svg viewBox="0 0 420 210" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><defs><linearGradient id="cpK" x2="0" y2="1"><stop offset="0" stop-color="${sky[0]}"/><stop offset=".65" stop-color="${sky[1]}"/><stop offset="1" stop-color="${sky[2]}"/></linearGradient><linearGradient id="cpG" x2="1" y2="0"><stop offset="0" stop-color="${glass[0]}"/><stop offset="1" stop-color="${glass[1]}"/></linearGradient><radialGradient id="cpS"><stop offset="0" stop-color="#fff2c0"/><stop offset=".35" stop-color="#ffd27a" stop-opacity=".75"/><stop offset="1" stop-color="#ffd27a" stop-opacity="0"/></radialGradient></defs><rect width="420" height="210" fill="url(#cpK)"/>${sun}${far}${near}${fg}</svg>`);
 }
+// Den öppna ytan på spelplanen under Börstips, i skärmens koordinater. På små skärmar visas fönstren mitt på.
+function openArea() {
+  if (!boardEl || matchMedia('(max-width:999px),(max-height:619px)').matches) return null;
+  const b = boardEl.getBoundingClientRect(), arm = document.getElementById('sq42'); if (!arm) return null; const k = b.width / boardW();
+  const left = b.left + (D + 12) * k, right = arm.getBoundingClientRect().left - 12 * k;
+  return { left, right, top: b.top + (BOTTOM - 590) * k, bottom: b.top + (BOTTOM - 10) * k, deckTop: b.top + (BOTTOM - 705) * k };
+}
+function placePopup(e) {
+  document.body.append(e); const a = openArea(); if (!a) return;
+  e.classList.add('placed'); e.style.setProperty('--s', 1); e.style.setProperty('--x', '0px'); e.style.setProperty('--y', '0px');
+  const w = e.offsetWidth, h = e.offsetHeight, aw = a.right - a.left, ah = a.bottom - a.top; const s = Math.max(0.62, Math.min(aw / w, ah / h, 1.2));
+  const x = Math.max(4, a.left + (aw - w * s) / 2), y = Math.max(4, Math.min(a.top + Math.max(ah - h * s, 0) / 2, a.bottom - h * s));
+  e.style.setProperty('--s', s); e.style.setProperty('--x', x + 'px'); e.style.setProperty('--y', y + 'px');
+}
 function cardPopup(card, tips) {
   const v = cardView(card.text); const until = /Gäller tills nästa tidning/.test(card.text); const save = /Spara kortet/.test(card.text);
   const cls = v.tone === '-' ? ' neg' : v.tone === '0' ? ' neu' : '';
@@ -493,7 +512,7 @@ function showCardPopup(g) {
   if (!g.lastCard || g.lastCard.id !== no) return;
   document.getElementById('cardpop')?.remove(); clearTimeout(cardTimer);
   const tips = g.lastCard.deck === 'Börstips';
-  document.body.append(cardPopup(g.lastCard, tips));
+  placePopup(cardPopup(g.lastCard, tips));
   cardTimer = setTimeout(() => document.getElementById('cardpop')?.remove(), 5000);
 }
 // Fyrverkerier när spelet är slut.
@@ -707,7 +726,7 @@ let seenEvent = null;
 function showEvents(g) {
   const no = g.eventNo || 0; if (seenEvent === null) { seenEvent = no; return; }
   const fresh = (g.events || []).filter((e) => e.id > seenEvent); seenEvent = no; if (!fresh.length) return;
-  let box = document.getElementById('events'); if (!box) { box = el('div', { class: 'events', id: 'events', role: 'status', 'aria-live': 'polite' }); document.body.append(box); }
+  let box = document.getElementById('events'); if (!box) { box = el('div', { class: 'events', id: 'events', role: 'status', 'aria-live': 'polite' }); document.body.append(box); } const area = openArea(); box.classList.toggle('placed', !!area); if (area) { box.style.setProperty('--x', area.left + 'px'); box.style.setProperty('--y', area.deckTop + 'px'); box.style.setProperty('--w', (area.right - area.left) + 'px'); }
   fresh.slice(-4).forEach((e) => { const d = el('div', { class: 'evt' }, e.text); box.append(d); setTimeout(() => d.remove(), 3000); });
 }
 function showSquare(n) {
