@@ -56,7 +56,11 @@ function schedule(r) {
   clearTimeout(r.timer);
   const g = r.game; if (!g || g.phase !== 'play') return;
   const id = G.actor(g); const m = r.members.find((x) => x.id === id); if (!m) return;
-  const delay = m.bot ? BOT_DELAY : (m.ws ? TURN_LIMIT : GONE_LIMIT);
+  // Efter ett kast får pjäsen hinna gå färdigt innan datorspelaren gör nästa sak.
+  const roll = g.lastRoll; let walk = 0;
+  if (roll && roll.id !== r.waitedRoll) { r.waitedRoll = roll.id; walk = roll.path ? Math.min(1900, (roll.path.length - 1) * 220) : 0; } else if (roll && Date.now() < (r.walkUntil || 0)) walk = r.walkUntil - Date.now();
+  if (walk) r.walkUntil = Date.now() + walk;
+  const delay = m.bot ? BOT_DELAY + walk : (m.ws ? TURN_LIMIT : GONE_LIMIT);
   r.timer = setTimeout(() => {
     try {
       if (!r.game || r.game.phase !== 'play') return;

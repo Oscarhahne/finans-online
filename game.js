@@ -264,7 +264,7 @@ function apply(g, pid, a) {
         const d1 = die(); const d2 = die(); setRoll(g, pid, [d1, d2], 'slår för att komma ut');
         if (d1 === d2) {
           p.jail = 0; let steps = p.car && !newsIs(g, 'fuel') ? d1 + d2 : d1; if (g.news && g.news.type === 'good') steps *= 2; else if (g.news && g.news.type === 'bad') steps = d1;
-          while (steps-- > 0) { p.pos = p.pos === 53 ? 1 : p.pos + 1; if (p.pos === 34 || p.pos === 47) break; }
+          const path = [p.pos]; while (steps-- > 0) { p.pos = p.pos === 53 ? 1 : p.pos + 1; path.push(p.pos); if (p.pos === 34 || p.pos === 47) break; } if (g.lastRoll) g.lastRoll.path = path;
           log(g, `${p.name} slår lika och går ut ur fängelset till ${SQUARES[p.pos].name}.`);
           g.stage = 'post'; land(g, p); break;
         }
@@ -280,7 +280,7 @@ function apply(g, pid, a) {
       if (pair) g.doubles++;
       if (pair && g.doubles >= R.maxDoubles) { log(g, `${p.name} slår lika ${R.maxDoubles} gånger i rad.`); sendToPrison(g, p); break; }
       let steps = bad ? Math.min(d1, d2) : d1 + (d2 || 0); if (good) steps *= 2;
-      while (steps-- > 0) { p.pos = p.pos === 53 ? 1 : p.pos + 1; if (p.pos === 34 || p.pos === 47) break; }
+      const path = [p.pos]; while (steps-- > 0) { p.pos = p.pos === 53 ? 1 : p.pos + 1; path.push(p.pos); if (p.pos === 34 || p.pos === 47) break; } if (g.lastRoll) g.lastRoll.path = path;
       log(g, `${p.name} slår ${d2 === null ? d1 : d1 + ' och ' + d2}${good ? ', goda tider ger dubbla steg,' : bad ? ', dåliga tider ger lägsta tärningen,' : ''} och går till ${SQUARES[p.pos].name}.`, true);
       g.stage = 'post'; g.extraRoll = pair; land(g, p); afterLanding(g, p); break; }
     case 'bonus': { needTurn(); if (g.stage !== 'bonus') fail('Det går inte nu.');

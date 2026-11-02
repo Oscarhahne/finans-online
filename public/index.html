@@ -436,13 +436,41 @@ function playDice(g, r, done) {
   document.body.append(stage); document.body.classList.add('rolling'); sfx.dice();
   setTimeout(() => { stage.remove(); document.body.classList.remove('rolling'); done(); }, 1550);
 }
+// Var en pjäs står på en ruta. Den står vid rutans inre kant och växer uppåt och åt båda sidor.
+function tokenSpot(pos, i) {
+  const r = rect(pos); const step = (i - 1) * 24; let tx, ty;
+  if (r.corner) { tx = r.x + 38 + step - 14; ty = r.y + r.h - 62; }
+  else if (r.bank && r.wide) { tx = r.x + r.w - 42; ty = r.y + 26 - step / 2; }
+  else if (r.bank) { tx = (r.arm === 'L' ? r.x + r.w - 40 : r.x - 4) + (r.arm === 'L' ? -1 : 1) * step; ty = r.y + 28; }
+  else if (r.rot === 90) { tx = r.x + r.w - 42 - step; ty = r.y + r.h - 62; }
+  else if (r.rot === -90) { tx = r.x - 2 + step; ty = r.y + r.h - 62; }
+  else if (r.rot === 180) { tx = r.x + 2 + step; ty = r.y + r.h - 54; }
+  else { tx = r.x + r.w - 46 - step; ty = r.y + 1; }
+  return { x: Math.max(0, Math.min(boardW() - 88, tx - 22)), y: Math.max(0, ty - 62) };
+}
+// Pjäsen går ruta för ruta efter ett kast. Vid många steg går den fortare.
+function walkToken(g, roll, done) {
+  const p = g.players.find((v) => v.id === roll.player); const path = roll.path || [];
+  const t = p && document.getElementById('tk' + p.color);
+  const still = window.matchMedia && matchMedia('(prefers-reduced-motion:reduce)').matches;
+  if (!t || path.length < 2 || still) { done(); return; }
+  const ms = Math.min(220, 1900 / (path.length - 1)); t.style.transition = `left ${ms * 0.85}ms ease-in-out,top ${ms * 0.85}ms ease-in-out`; t.style.zIndex = 8;
+  let k = 1;
+  const next = () => {
+    const tk = document.getElementById('tk' + p.color); if (k >= path.length || !tk) { if (tk) { tk.style.transition = ''; tk.style.zIndex = ''; } done(); return; }
+    const spot = tokenSpot(path[k], 1); tk.style.left = spot.x + 'px'; tk.style.top = spot.y + 'px';
+    tk.firstElementChild?.animate?.([{ transform: 'translateY(0)' }, { transform: 'translateY(-16px)', offset: 0.45 }, { transform: 'translateY(0)' }], { duration: ms * 0.85 });
+    k++; setTimeout(next, ms);
+  };
+  next();
+}
 function onState(m) {
   if (animating) { pendingState = m; return; }
   const r = m.game && m.game.lastRoll;
   if (seenRoll === null || !S || !S.game) seenRoll = r ? r.id : 0;
   else if (r && r.id !== seenRoll) {
     seenRoll = r.id; animating = true;
-    playDice(m.game, r, () => { animating = false; const q = pendingState || m; pendingState = null; onState(q); });
+    playDice(m.game, r, () => walkToken(S.game, r, () => { animating = false; const q = pendingState || m; pendingState = null; onState(q); }));
     return;
   }
   const d = m.game && m.game.lastDraw;
@@ -571,17 +599,7 @@ function renderGame() {
     if (p.out) return; const r = rect(p.pos); const i = counts[p.pos] = (counts[p.pos] || 0) + 1;
     let t = document.getElementById('tk' + p.color);
     if (!t) { t = el('div', { class: 'token' + (p.id === S.you ? ' me' : ''), id: 'tk' + p.color, title: p.name }, pawn(p.shape, p.color)); boardEl.append(t); }
-    // Pjäsen står vid rutans inre kant så att namn och pris syns.
-    const step = (i - 1) * 24; let tx, ty;
-    if (r.corner) { tx = r.x + 38 + step - 14; ty = r.y + r.h - 62; }
-    else if (r.bank && r.wide) { tx = r.x + r.w - 42; ty = r.y + 26 - step / 2; }
-    else if (r.bank) { tx = (r.arm === 'L' ? r.x + r.w - 40 : r.x - 4) + (r.arm === 'L' ? -1 : 1) * step; ty = r.y + 28; }
-    else if (r.rot === 90) { tx = r.x + r.w - 42 - step; ty = r.y + r.h - 62; }
-    else if (r.rot === -90) { tx = r.x - 2 + step; ty = r.y + r.h - 62; }
-    else if (r.rot === 180) { tx = r.x + 2 + step; ty = r.y + r.h - 54; }
-    else { tx = r.x + r.w - 46 - step; ty = r.y + 1; }
-    // Pjäsen är dubbelt så stor som rutans utrymme, så den står kvar på samma plats men växer uppåt och åt båda sidor.
-    t.style.left = Math.max(0, Math.min(boardW() - 88, tx - 22)) + 'px'; t.style.top = Math.max(0, ty - 62) + 'px';
+    const spot = tokenSpot(p.pos, i); t.style.left = spot.x + 'px'; t.style.top = spot.y + 'px';
   });
   renderLanding(); renderPiles(); if (fit()) return renderGame(); renderSide(); renderModal(); showEvents(g); celebrate(g);
 }
