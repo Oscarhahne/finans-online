@@ -399,6 +399,9 @@ const sfx = {
   register() { if (!this.ac()) return; const t = this.ctx.currentTime; this.noise(t, .07, 900, 2, .3); this.noise(t + .09, .09, 500, 2, .3); this.tone(t + .17, 2093, .55, .22); this.tone(t + .17, 3136, .4, .13); this.tone(t + .29, 2637, .6, .18); },
   // Ett slag mot en metallstång: korta, ojämna deltoner och ett litet klick.
   clank(at, base, vol) { [1, 2.76, 4.07, 5.93].forEach((m, i) => this.tone(at + Math.random() * .004, base * m * (1 + (Math.random() - .5) * .03), .12 + .1 / (i + 1), vol / (i * .6 + 1))); this.noise(at, .025, 2600, 1.5, vol * 1.3); },
+  // En nyckelknippa som skramlar: många små, ljusa metallklick i tre skakningar.
+  keys() { if (!this.ac()) return; const t = this.ctx.currentTime;
+    [[0, .32, 1], [.42, .34, .85], [.88, .46, .6]].forEach(([start, len, power]) => { for (let i = 0; i < 16; i++) { const d = start + Math.pow(Math.random(), 1.3) * len, base = 1900 + Math.random() * 3100, v = (.018 + Math.random() * .045) * power; [1, 1.47, 2.09, 2.74].forEach((m, k) => { if (base * m < 15000) this.tone(t + d, base * m, .035 + Math.random() * .09, v / (k * .7 + 1)); }); this.noise(t + d, .012, 7000, .7, v * 1.4, 'highpass'); } }); },
   // En tung celldörr: den rullar igen, slår i ramen så att det ekar, och sedan går låset.
   door() { if (!this.ac()) return; const t = this.ctx.currentTime;
     for (let i = 0; i < 12; i++) { const d = i * .055; this.noise(t + d, .08, 2300 + i * 90 + Math.random() * 300, 9, .07 + i * .012); this.noise(t + d, .07, 300, 1.5, .03 + i * .006); if (i % 2 === 0) this.clank(t + d, 340 + i * 14 + Math.random() * 40, .03 + i * .005); }
