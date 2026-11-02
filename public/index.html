@@ -152,6 +152,9 @@ label{display:block;font-weight:700;margin:0 0 6px;color:var(--mute)}
 .cardpop.placed{width:440px}.cardpop.placed .cpscene{height:112px}.cardpop.placed .cpbody h2{font-size:31px}.cardpop.placed .cpbody p{font-size:17px}.cardpop.placed .cpeff b{font-size:25px}
 .drawbox.placed{width:500px;overflow:visible;pointer-events:auto}
 .events.placed{transform:none!important;animation:none!important;left:var(--x)!important;top:var(--y)!important;right:auto!important;bottom:auto!important;width:var(--w)!important;max-width:none!important}
+.hasart{background:#03381e!important}.artwrap{position:absolute;display:flex;align-items:center;justify-content:center}
+.divart{position:relative;container-type:inline-size;aspect-ratio:321/214;flex:none;text-shadow:none}.divart img{display:block;width:100%;height:100%}
+.divart span{position:absolute;left:4.2%;top:6.5%;width:12.6%;height:17.5%;display:flex;align-items:center;justify-content:center;border-radius:12%;background:#0a2a1b;color:#fff;font:800 9.5cqw/1 Nunito,sans-serif}
 .ct-news,.ct-bor{color:#18202c!important;text-shadow:none!important}.ct-news{background:linear-gradient(150deg,#ffe07a,#f7bf30 60%,#eeac1c)!important}.ct-bor{background:linear-gradient(150deg,#c0e1ff,#7cbcf9 60%,#5aa4ee)!important}
 .ct-news .n,.ct-bor .n{background:none;color:#18202c;font-size:21px;font-weight:800}
 .ct-news .sidelab,.ct-bor .sidelab{font-size:21px}.ct-news .sidelab .tic,.ct-bor .sidelab .tic{width:50px;height:38px}.ct-news.bk .tic,.ct-bor.bk .tic{width:44px;height:33px}.ct-news .lab,.ct-bor .lab{opacity:1}
@@ -234,6 +237,8 @@ const ICON = {
   K: '<path d="M25 5h14M28 5v15L13 42a3 3 0 0 0 3 4h32a3 3 0 0 0 3-4L36 20V5" fill="#ede9fe" stroke="#2e1065" stroke-width="2"/><path d="M21 33h22l6 11H15z" fill="#22d3ee"/><circle cx="30" cy="38" r="2.500" fill="#fff"/>',
   I: '<path d="M6 45V25l15 9v-9l15 9v-9l15 9V8h8v37z" fill="#e2e8f0" stroke="#1f2937"/><path d="M12 36h6v5h-6zM26 36h6v5h-6zM40 36h6v5h-6z" fill="#fbbf24"/><circle cx="56" cy="4" r="3" fill="#cbd5e1"/>',
 };
+// Egen bild för Aktieutdelning. Rutans nummer läggs ovanpå numret i bilden.
+const divArt = (n, width) => el('div', { class: 'divart', style: `width:${width}` }, el('img', { src: 'aktieutdelning.png', alt: 'Aktieutdelning', draggable: 'false' }), el('span', {}, n));
 const iconFor = (s) => { const k = s.kind === 'plot' ? s.group : { bor: 'bor', news: 'news', div: 'div', lilla: 'bond', bonddiv: 'bond', branch: 'bank', entry: 'in', exit: 'out', buildsq: 'crane', repay: 'repay', give: 'give', prison: 'bars', gotoprison: 'gojail' }[s.kind]; return svg(`<svg class="tic" viewBox="0 0 64 48" aria-hidden="true">${ICON[k] || ''}</svg>`); };
 const tileBg = (c) => `linear-gradient(145deg,color-mix(in srgb,${c} 78%,white) 0%,${c} 42%,color-mix(in srgb,${c} 52%,black) 100%)`;
 // Rutans plats på brädet: x, y, bredd, höjd och vridning.
@@ -288,6 +293,7 @@ function buildBoard() {
     if (r.corner) e.append(el('div', { class: 'r' }, el('div', { class: 'n' }, n), icon, el('div', {}, ...name)));
     else {
       const rot = r.rot || 0; const sideways = Math.abs(rot) === 90;
+      if (s.kind === 'div') { const uw = sideways ? h : w, uh = sideways ? w : h; e.classList.add('hasart'); e.append(el('div', { class: 'artwrap', style: `left:${(w - uw) / 2}px;top:${(h - uh) / 2}px;width:${uw}px;height:${uh}px;transform:rotate(${-rot}deg)` }, divArt(n, Math.min(uw, uh * 321 / 214) + 'px'))); b.append(e); continue; }
       if (isPlot) e.append(el('div', { class: 'head', id: 'h' + n, style: (sideways ? 'height:42px;' : '') + (rot === -90 ? 'justify-content:flex-end' : '') }));
       // Rutan är vriden så att huvudet pekar inåt, men texten står rak mot skärmen. Pjäsen får en egen del av rutan.
       let lx = 0, ly = 0, W = w, H = h, just = 'center';
@@ -662,7 +668,7 @@ function renderLanding() {
   } else if (g.lastCard && (s.kind === 'bor' || s.kind === 'news' || s.kind === 'exit')) rows.push(el('div', { class: 'small' }, g.lastCard.deck), el('div', {}, g.lastCard.text));
   else rows.push(el('div', {}, SQUARE_TEXT[s.kind] || ''));
   box.replaceChildren(el('h3', {}, p.id === S.you ? 'Du landade på' : p.name + ' landade på'),
-    el('div', { class: 'ltile' + (s.kind === 'bor' ? ' ct-bor' : s.kind === 'news' ? ' ct-news' : ''), style: `background:${tileBg(bg)};color:#fff;--g:${bg}` }, isPlot ? el('div', { class: 'lh' }) : null, el('div', { class: 'lb' }, el('div', { class: 'small', style: 'color:inherit' }, 'Ruta ' + n), icon, el('div', {}, s.name))), ...rows);
+    el('div', { class: 'ltile' + (s.kind === 'bor' ? ' ct-bor' : s.kind === 'news' ? ' ct-news' : ''), style: `background:${tileBg(bg)};color:#fff;--g:${bg}` }, isPlot ? el('div', { class: 'lh' }) : null, (s.kind === 'div' ? divArt(n, '100%') : el('div', { class: 'lb' }, el('div', { class: 'small', style: 'color:inherit' }, 'Ruta ' + n), icon, el('div', {}, s.name)))), ...rows);
 }
 // Rutan på brädet lyser upp när muspekaren eller fokus är på ett bevis.
 const clearGlow = () => document.querySelectorAll('.c.glow').forEach((e) => e.classList.remove('glow'));
