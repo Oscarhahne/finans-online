@@ -36,7 +36,7 @@ Miljövariabler i millisekunder: `TURN_LIMIT` (120000) är tiden innan spelet g�
 
 ## Tester
 
-`node test/rules.js` kontrollerar reglerna och `node test/simulate.js` spelar hela partier med datorspelare.
+Pjäsbilderna i `public/pawns` skapas med `node tools/pawns.js`. `node test/rules.js` kontrollerar reglerna och `node test/simulate.js` spelar hela partier med datorspelare.
 
 ## Innan du lanserar
 

@@ -14,6 +14,7 @@ const TURN_LIMIT = Number(process.env.TURN_LIMIT ?? 120000); // Tid innan spelet
 const GONE_LIMIT = Number(process.env.GONE_LIMIT ?? 20000); // Kortare tid om spelaren tappat kontakten
 const MAX_ROOMS = 300;
 const LOBBY_GRACE = Number(process.env.LOBBY_GRACE ?? 300000); // Så länge väntar en plats i lobbyn på den som tappat kontakten
+const freeShape = (r) => [0, 1, 2, 3, 4, 5].find((k) => !r.members.some((x) => x.shape === k));
 const hostOf = (r) => r.members.find((x) => !x.bot && x.ws) || r.members.find((x) => !x.bot);
 
 const server = http.createServer((req, res) => {
@@ -43,7 +44,7 @@ function broadcastList() { for (const c of wss.clients) if (!c.room) send(c, { t
 function broadcast(r) {
   const base = {
     t: 'state', code: r.code, open: r.open, target: r.target,
-    members: r.members.map((m) => ({ id: m.id, name: m.name, bot: !!m.bot, online: m.bot || !!m.ws })),
+    members: r.members.map((m) => ({ id: m.id, name: m.name, bot: !!m.bot, shape: m.shape, online: m.bot || !!m.ws })),
     host: hostOf(r)?.id,
     game: r.game ? G.publicView(r.game) : null,
   };
@@ -94,7 +95,7 @@ function join(ws, r, name) {
   if (r.game) return send(ws, { t: 'error', msg: 'Spelet har redan börjat. Be värden starta ett nytt spel och skicka en ny länk.' });
   if (r.members.length >= 6) return send(ws, { t: 'error', msg: 'Spelet är fullt.' });
   const m = { id: crypto.randomUUID(), token: crypto.randomBytes(16).toString('hex'), name: clean(name, 16) || 'Spelare', ws };
-  r.members.push(m); ws.room = r;
+  m.shape = freeShape(r); r.members.push(m); ws.room = r;
   send(ws, { t: 'joined', code: r.code, token: m.token });
   broadcast(r); broadcastList();
 }
@@ -132,10 +133,13 @@ wss.on('connection', (ws) => {
       } else if (r) {
         const me = r.members.find((x) => x.ws === ws); if (!me) return;
         const host = hostOf(r) === me;
-        if (a.t === 'addBot') {
+        if (a.t === 'shape') {
+          const k = Number(a.shape); if (r.game || !Number.isInteger(k) || k < 0 || k > 5 || r.members.some((x) => x !== me && x.shape === k)) return;
+          me.shape = k; broadcast(r);
+        } else if (a.t === 'addBot') {
           if (!host || r.game || r.members.length >= 6) return;
           const n = r.members.filter((x) => x.bot).length + 1;
-          r.members.push({ id: crypto.randomUUID(), name: 'Dator ' + n, bot: true, ws: null }); broadcast(r); broadcastList();
+          r.members.push({ id: crypto.randomUUID(), name: 'Dator ' + n, bot: true, ws: null, shape: freeShape(r) }); broadcast(r); broadcastList();
         } else if (a.t === 'removeBot') {
           if (!host || r.game) return; const b = [...r.members].reverse().find((x) => x.bot);
           if (b) r.members = r.members.filter((x) => x !== b); broadcast(r); broadcastList();
