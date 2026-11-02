@@ -70,9 +70,9 @@ g = two(); { const p = g.players[0]; p.pos = 9; p.jail = 2; p.car = true; Math.r
 g = two(); { const p = g.players[0]; p.pos = 9; p.jail = 2; const q = [0, 0.5]; let i = 0; Math.random = () => q[i++ % 2]; G.apply(g, 'a', { type: 'roll' }); Math.random = orig; assert.equal(p.jail, 1); assert.equal(p.pos, 9); assert.equal(g.stage, 'post'); }
 // Händelser skapas för utdelning.
 g = two(); { const p = g.players[0]; g.shares[0].owner = 'a'; p.pos = 3; Math.random = () => 0; const n = g.eventNo; G.apply(g, 'a', { type: 'roll' }); Math.random = orig; assert.ok(g.eventNo > n); assert.match(g.events[g.events.length - 1].text, /aktieutdelning/); }
-// Ett lån per omgång och högst tre lån. Spärren släpper först när spelarens egen tur kommer igen.
-g = two(); G.apply(g, 'a', { type: 'loan' }); rejects(g, 'a', { type: 'loan' }, /ett lån per omgång/); assert.equal(g.players[0].loans, 1);
-{ const nextA = () => { g.stage = 'post'; G.apply(g, 'a', { type: 'end' }); g.stage = 'post'; G.apply(g, 'b', { type: 'end' }); g.stage = 'post'; G.apply(g, 'c', { type: 'end' }); }; nextA(); assert.equal(g.current, 0); G.apply(g, 'a', { type: 'loan' }); nextA(); G.apply(g, 'a', { type: 'loan' }); assert.equal(g.players[0].loans, 3); nextA(); rejects(g, 'a', { type: 'loan' }, /tre lån/); }
+// Varje spelare kan ha tre lån, oavsett hur många andra har.
+g = two(); ['a'].forEach(() => { for (let i = 0; i < 3; i++) G.apply(g, 'a', { type: 'loan' }); }); rejects(g, 'a', { type: 'loan' }, /tre lån/);
+g.stage = 'post'; G.apply(g, 'a', { type: 'end' }); for (let i = 0; i < 3; i++) G.apply(g, 'b', { type: 'loan' }); g.stage = 'post'; G.apply(g, 'b', { type: 'end' }); for (let i = 0; i < 3; i++) G.apply(g, 'c', { type: 'loan' }); assert.equal(g.players[2].loans, 3);
 // Dragningen sparar tärningar, vinnare och priser. Obligationer utan ägare visas utan vinnare.
 g = two(); g.players[0].pos = 41; g.bonds[2] = 'a'; g.bonds[12] = 'c'; Math.random = () => 0; G.apply(g, 'a', { type: 'roll' }); G.apply(g, 'a', { type: 'skipBond' }); Math.random = orig;
 assert.deepEqual(g.lastDraw.dice, [1, 1]); assert.deepEqual(g.lastDraw.results.map((r) => [r.num, r.prize, r.winner]), [[2, 50000, 'A'], [1, 25000, null], [12, 15000, 'C']]);
