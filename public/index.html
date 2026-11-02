@@ -399,8 +399,12 @@ const sfx = {
   register() { if (!this.ac()) return; const t = this.ctx.currentTime; this.noise(t, .07, 900, 2, .3); this.noise(t + .09, .09, 500, 2, .3); this.tone(t + .17, 2093, .55, .22); this.tone(t + .17, 3136, .4, .13); this.tone(t + .29, 2637, .6, .18); },
   // Ett slag mot en metallstång: korta, ojämna deltoner och ett litet klick.
   clank(at, base, vol) { [1, 2.76, 4.07, 5.93].forEach((m, i) => this.tone(at + Math.random() * .004, base * m * (1 + (Math.random() - .5) * .03), .12 + .1 / (i + 1), vol / (i * .6 + 1))); this.noise(at, .025, 2600, 1.5, vol * 1.3); },
-  // Någon skakar i gallret: fram och tillbaka i tre ryck, med stänger som slår olika hårt.
-  door() { if (!this.ac()) return; const t = this.ctx.currentTime; [[0, .2], [.09, .12], [.17, .16], [.27, .09], [.42, .22], [.5, .13], [.59, .17], [.68, .08], [.84, .2], [.93, .11], [1.03, .14], [1.14, .07], [1.26, .05]].forEach(([d, v], i) => this.clank(t + d, 300 + (i % 3) * 55 + Math.random() * 25, v * .7)); [0, .42, .84].forEach((d) => this.noise(t + d, .1, 170, 1, .2)); },
+  // En tung celldörr: den rullar igen, slår i ramen så att det ekar, och sedan går låset.
+  door() { if (!this.ac()) return; const t = this.ctx.currentTime;
+    for (let i = 0; i < 12; i++) { const d = i * .055; this.noise(t + d, .09, 240 + i * 18, 1.5, .05 + i * .012); if (i % 3 === 0) this.clank(t + d, 210 + i * 8, .025 + i * .004); }
+    const hit = t + .68; this.noise(hit, .22, 95, .8, .75, 'lowpass'); this.noise(hit, .05, 1800, 1, .28); [92, 147, 233, 371, 587, 911].forEach((f, i) => this.tone(hit, f, 1.5 / (i * .3 + 1), .17 / (i * .55 + 1)));
+    [[.2, .28], [.42, .14], [.68, .07]].forEach(([d, v]) => { this.noise(hit + d, .14, 130, 1, v * .55, 'lowpass'); this.clank(hit + d, 165, v * .28); });
+    this.clank(hit + .95, 620, .11); this.noise(hit + 1.06, .03, 3000, 2, .24); this.clank(hit + 1.08, 760, .1); },
 };
 document.addEventListener('pointerdown', () => { if (sfx.on) sfx.ac(); });
 let soundPrev = null;
