@@ -34,19 +34,21 @@
     20: NEWS, 21: plot('Datakonsult', 'T'), 22: plot('Ingenjörsbyrå', 'T'), 23: BOR,
     24: plot('Plastfabrik', 'K'), 25: plot('Bensinbolag', 'K'), 26: NEWS, 27: plot('Raffinaderi', 'K'), 28: BOR, 29: DIV,
     30: { kind: 'gotoprison', name: 'Gå direkt i fängelse' },
-    31: plot('Sågverk', 'I'), 32: plot('Pappersbruk', 'I'), 33: plot('Järnverk', 'I'),
-    34: { kind: 'entry', name: 'Bankentré', sub: 'gratifikation' },
-    35: DIV, 36: BOR, 37: NEWS,
-    38: { kind: 'repay', name: 'Återbetala ett av dina lån' },
-    39: { kind: 'give', name: 'Ge motspelarna 20 % utdelning' },
-    40: { kind: 'buildsq', name: 'Banken förmedlar byggnadsaffärerna' },
-    41: { kind: 'lilla', name: 'Lilla obligationsdragningen' },
-    42: BOR, 43: NEWS, 44: DIV, 45: BOR,
-    46: { kind: 'bonddiv', name: 'Utdelning och obligation' },
-    47: { kind: 'exit', name: 'Bankutgång', sub: 'start, börstips' },
-    48: plot('Snickeri', 'H'), 49: NEWS, 50: plot('Smedja', 'H'), 51: BOR,
-    52: { kind: 'lilla', name: 'Lilla obligationsdragningen' },
-    53: plot('Skrädderi', 'H'),
+    31: plot('Sågverk', 'I'), 32: plot('Pappersbruk', 'I'),
+    33: { kind: 'itsec', name: 'It-Säkerhet AB' },
+    34: plot('Järnverk', 'I'),
+    35: { kind: 'entry', name: 'Bankentré', sub: 'gratifikation' },
+    36: DIV, 37: BOR, 38: NEWS,
+    39: { kind: 'repay', name: 'Återbetala ett av dina lån' },
+    40: { kind: 'give', name: 'Ge motspelarna 20 % utdelning' },
+    41: { kind: 'buildsq', name: 'Banken förmedlar byggnadsaffärerna' },
+    42: { kind: 'lilla', name: 'Lilla obligationsdragningen' },
+    43: BOR, 44: NEWS, 45: DIV, 46: BOR,
+    47: { kind: 'bonddiv', name: 'Utdelning och obligation' },
+    48: { kind: 'exit', name: 'Bankutgång', sub: 'start, börstips' },
+    49: plot('Snickeri', 'H'), 50: NEWS, 51: plot('Smedja', 'H'), 52: BOR,
+    53: { kind: 'lilla', name: 'Lilla obligationsdragningen' },
+    54: plot('Skrädderi', 'H'),
   };
 
   // Egna korttexter. Inga originaltexter är kopierade.
@@ -61,7 +63,7 @@
     { t: 'dividend', x: 'Bolagen går bra. Du får aktieutdelning.' },
     { t: 'dividend', x: 'Extra utdelning från banken på dina aktier.' },
     { t: 'give', x: 'Ge dina motspelare 20 % utdelning på aktier i grupper där du har tomter.' },
-    { t: 'goto', to: 34, x: 'Bråttom till mötet! Gå till Bankentré.' },
+    { t: 'goto', to: 35, x: 'Bråttom till mötet! Gå till Bankentré.' },
     { t: 'goto', to: 12, x: 'Gå till Bankfilialen.' },
     { t: 'goto', to: 17, x: 'Gå till Byggprojekt AB.' },
     { t: 'news', x: 'Något stort är på gång. Ta en Finanstidning.' },
@@ -119,7 +121,7 @@
   const RULES = {
     startCash: 75000, carPrice: 50000, carSell: 25000, loan: 50000, loanInterest: 5000, maxLoans: 3,
     bondPrice: 500, bonusPerPip: 10000, largeDraw: [100000, 50000, 25000], smallDraw: [50000, 25000, 15000],
-    redeemPct: 1.1, givePct: 0.2, target: 1000000, feeMin: 30000, feeMax: 120000, feeBank: 30000, groupsToWin: 0, maxDoubles: 3,
+    redeemPct: 1.1, givePct: 0.2, target: 1000000, feeMin: 30000, feeMax: 120000, feeBank: 30000, groupsToWin: 0, maxDoubles: 3, itCost: 5000, itVirus: 15000, itSafeFrom: 4,
   };
   const round500 = (v) => Math.round(v / 500) * 500;
   const plotInfo = (n) => {

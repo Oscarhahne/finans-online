@@ -11,7 +11,7 @@ for (let i = 0; i < N; i++) {
     G.apply(g, id, G.botAction(g, id, false));
     for (const p of g.players) {
       if (!Number.isFinite(p.cash) || p.cash < 0) throw new Error('Ogiltig kassa ' + p.cash);
-      if (p.pos < 1 || p.pos > 53) throw new Error('Ogiltig ruta ' + p.pos);
+      if (p.pos < 1 || p.pos > 54) throw new Error('Ogiltig ruta ' + p.pos);
       if (p.loans > 3) throw new Error('För många lån');
     }
     steps++;

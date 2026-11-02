@@ -215,10 +215,11 @@ const FACTORY3D = '<svg class="b3d" viewBox="0 0 40 40" role="img" aria-label="I
 const SHAPE_NAMES = ['Portfölj', 'Myntstapel', 'Skyskrapa', 'Sparbössa', 'Bil', 'Diamant'];
 function pawn(shape, color) { return el('img', { class: 'pawn', src: `pawns/${shape}-${color}.png`, alt: SHAPE_NAMES[shape], draggable: 'false' }); }
 const CITY = `<svg role="img" aria-label="Illustration av en hög kontorsbyggnad i ett finansdistrikt i skymning" width="1050" height="945" viewBox="0 0 1000 900" style="position:absolute;left:120px;top:120px;filter:blur(1.5px)"><defs><linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#06261b"/><stop offset=".55" stop-color="#1b7a54"/><stop offset="1" stop-color="#a7e3a1"/></linearGradient><pattern id="lit" width="24" height="30" patternUnits="userSpaceOnUse"><rect x="6" y="7" width="12" height="16" fill="#fde68a" opacity=".7"/></pattern><pattern id="glass" width="18" height="24" patternUnits="userSpaceOnUse"><rect x="4" y="5" width="10" height="14" fill="#93c5fd" opacity=".5"/></pattern></defs><rect width="1000" height="900" fill="url(#sky)"/><rect y="520" width="100" height="380" fill="#14513b"/><rect x="340" y="560" width="70" height="340" fill="#14513b"/><rect x="710" y="460" width="60" height="440" fill="#14513b"/><rect x="930" y="480" width="70" height="420" fill="#14513b"/><rect y="520" width="100" height="380" fill="url(#glass)"/><rect x="930" y="480" width="70" height="420" fill="url(#glass)"/><rect x="198" y="300" width="4" height="110" fill="#07291e"/><rect x="165" y="400" width="70" height="70" fill="#07291e"/><rect x="130" y="460" width="140" height="80" fill="#07291e"/><rect x="90" y="530" width="220" height="290" fill="#07291e"/><rect x="130" y="460" width="140" height="80" fill="url(#lit)"/><rect x="96" y="535" width="208" height="280" fill="url(#lit)"/><polygon points="80,820 200,780 320,820" fill="#0d3d2c"/><rect x="80" y="820" width="240" height="80" fill="#0d3d2c"/><rect x="100" y="826" width="14" height="74" fill="#c7d2fe"/><rect x="140" y="826" width="14" height="74" fill="#c7d2fe"/><rect x="180" y="826" width="14" height="74" fill="#c7d2fe"/><rect x="220" y="826" width="14" height="74" fill="#c7d2fe"/><rect x="260" y="826" width="14" height="74" fill="#c7d2fe"/><rect x="300" y="826" width="14" height="74" fill="#c7d2fe"/><polygon points="760,560 930,470 930,900 760,900" fill="#0d3d2c"/><rect x="772" y="590" width="146" height="310" fill="url(#glass)"/></svg>`;
-const KIND_BG = { bor: '#7cbcf9', news: '#f7bf30', div: '#15803d', lilla: '#0e7490', bonddiv: '#15803d', branch: '#a16207', entry: '#a16207', exit: '#a16207', buildsq: '#c2570c', repay: '#be123c', give: '#be123c', prison: '#334155', gotoprison: '#334155' };
+const KIND_BG = { itsec: '#4338ca', bor: '#7cbcf9', news: '#f7bf30', div: '#15803d', lilla: '#0e7490', bonddiv: '#15803d', branch: '#a16207', entry: '#a16207', exit: '#a16207', buildsq: '#c2570c', repay: '#be123c', give: '#be123c', prison: '#334155', gotoprison: '#334155' };
 const COIN = (x, y, w) => `<ellipse cx="${x}" cy="${y}" rx="${w}" ry="${w * .35}" fill="#fcd34d" stroke="#92400e"/>`;
 const STACK = (x, y, n, w = 9) => Array.from({ length: n }, (_, i) => `<path d="M${x - w} ${y - i * 4}v3a${w} ${w * .35} 0 0 0 ${w * 2} 0v-3" fill="#d97706" stroke="#92400e" stroke-width=".6"/>${COIN(x, y - i * 4, w)}`).join('');
 const ICON = {
+  shield: '<path d="M32 3l20 7v13c0 12-8 19-20 23C20 42 12 35 12 23V10z" fill="#e0e7ff" stroke="#1e1b4b" stroke-width="2"/><path d="M32 8l15 5v10c0 9-6 15-15 18z" fill="#818cf8"/><rect x="25" y="21" width="14" height="11" rx="2" fill="#1e1b4b"/><path d="M28 21v-3a4 4 0 0 1 8 0v3" fill="none" stroke="#1e1b4b" stroke-width="2.500"/>',
   bor: '<path d="M10 7l40-3 3 38-40 3z" fill="#94a3b8"/><rect x="9" y="3" width="44" height="39" rx="3" fill="#fff" stroke="#1e3a5f" stroke-width="1.5"/><path d="M14 10h22" stroke="#1e3a5f" stroke-width="2.500"/><path d="M15 36V18M15 36h33" stroke="#94a3b8" stroke-width="1.5"/><rect x="19" y="28" width="5" height="8" fill="#22a06b"/><rect x="27" y="24" width="5" height="12" fill="#e5484d"/><rect x="35" y="20" width="5" height="16" fill="#22a06b"/><path d="M17 26l9-6 7 3 14-13M41 9l6 1-1 6" fill="none" stroke="#1d4ed8" stroke-width="2.500" stroke-linecap="round" stroke-linejoin="round"/>',
   news: '<path d="M9 13l34-9 8 32-34 9z" fill="#a8b2c3"/><g transform="rotate(-9 32 24)"><rect x="14" y="4" width="38" height="40" rx="2.500" fill="#fff" stroke="#3b4658" stroke-width="1.500"/><text x="33" y="15.500" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="900" font-size="11" fill="#3b4658">NEWS</text><path d="M18 19h30" stroke="#3b4658" stroke-width="2"/><path d="M18 24h13M18 29h13M18 34h13M18 39h13" stroke="#8892a3" stroke-width="2"/><rect x="34" y="23" width="14" height="17" rx="1.500" fill="#4b5563"/></g>',
   div: `${STACK(14, 38, 5)}${STACK(30, 40, 3)}<circle cx="42" cy="28" r="13" fill="#fbbf24" stroke="#92400e" stroke-width="1.500"/><circle cx="42" cy="28" r="9.500" fill="none" stroke="#92400e"/><text x="42" y="33" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="800" font-size="13" fill="#78350f">kr</text><path d="M50 14l6-6M50 5h8v8" fill="none" stroke="#86efac" stroke-width="3"/>`,
@@ -241,30 +242,30 @@ const ICON = {
 };
 // Egen bild för Aktieutdelning. Rutans nummer läggs ovanpå numret i bilden.
 const divArt = (n, width) => el('div', { class: 'divart', style: `width:${width}` }, el('img', { src: 'aktieutdelning.png', alt: 'Aktieutdelning', draggable: 'false' }), el('span', {}, n));
-const iconFor = (s) => { const k = s.kind === 'plot' ? s.group : { bor: 'bor', news: 'news', div: 'div', lilla: 'bond', bonddiv: 'bond', branch: 'bank', entry: 'in', exit: 'out', buildsq: 'crane', repay: 'repay', give: 'give', prison: 'bars', gotoprison: 'gojail' }[s.kind]; return svg(`<svg class="tic" viewBox="0 0 64 48" aria-hidden="true">${ICON[k] || ''}</svg>`); };
+const iconFor = (s) => { const k = s.kind === 'plot' ? s.group : { bor: 'bor', news: 'news', div: 'div', lilla: 'bond', bonddiv: 'bond', branch: 'bank', entry: 'in', exit: 'out', buildsq: 'crane', itsec: 'shield', repay: 'repay', give: 'give', prison: 'bars', gotoprison: 'gojail' }[s.kind]; return svg(`<svg class="tic" viewBox="0 0 64 48" aria-hidden="true">${ICON[k] || ''}</svg>`); };
 const tileBg = (c) => `linear-gradient(145deg,color-mix(in srgb,${c} 78%,white) 0%,${c} 42%,color-mix(in srgb,${c} 52%,black) 100%)`;
 // Rutans plats på brädet: x, y, bredd, höjd och vridning.
 // Brädets bredd följer skärmen. Rutorna upptill och nedtill blir bredare, så att spelplanen fyller platsen.
 let TW = 105;
 const D = 200; const ROW = 105; // D är rutornas djup och hörnens storlek. ROW är höjden på rutorna längs sidorna.
 const BOTTOM = D + 9 * ROW; const boardH = () => BOTTOM + D;
-const boardW = () => 2 * D + TW * 10;
+const boardW = () => 2 * D + TW * 11;
 const colX = (c) => D + (c - 1) * TW;
 function rect(n) {
-  const W = boardW(); const C = (x, y) => ({ x, y, w: D, h: D, corner: true });
-  if (n === 9) return C(0, 0); if (n === 20) return C(W - D, 0); if (n === 30) return C(W - D, BOTTOM); if (n === 52) return C(0, BOTTOM);
-  if (n === 53) return { x: 0, y: BOTTOM - ROW, w: D, h: ROW, rot: 90 };
+  const W = boardW(); const C = (x, y) => ({ x, y, w: D, h: D, corner: true }); const topW = (W - 2 * D) / 10;
+  if (n === 9) return C(0, 0); if (n === 20) return C(W - D, 0); if (n === 30) return C(W - D, BOTTOM); if (n === 53) return C(0, BOTTOM);
+  if (n === 54) return { x: 0, y: BOTTOM - ROW, w: D, h: ROW, rot: 90 };
   if (n <= 8) return { x: 0, y: BOTTOM - 2 * ROW - (n - 1) * ROW, w: D, h: ROW, rot: 90 };
-  if (n <= 19) return { x: colX(n - 9), y: 0, w: TW, h: D, rot: 180 };
+  if (n <= 19) return { x: D + (n - 10) * topW, y: 0, w: topW, h: D, rot: 180 };
   if (n <= 29) return { x: W - D, y: D + (n - 21) * ROW, w: D, h: ROW, rot: -90 };
-  if (n <= 33) return { x: colX(10 - (n - 31)), y: BOTTOM, w: TW, h: D };
-  if (n === 34) return { x: colX(7), y: BOTTOM, w: TW, h: D };
-  if (n <= 39) return { x: colX(7), y: BOTTOM - ROW - (n - 35) * ROW, w: TW, h: ROW, bank: true, arm: 'R' };
-  if (n === 40) return { x: colX(5) + 1.5 * TW, y: BOTTOM - 6 * ROW, w: 1.5 * TW, h: ROW, bank: true, wide: true };
-  if (n === 41) return { x: colX(5), y: BOTTOM - 6 * ROW, w: 1.5 * TW, h: ROW, bank: true, wide: true };
-  if (n <= 46) return { x: colX(5), y: BOTTOM - 5 * ROW + (n - 42) * ROW, w: TW, h: ROW, bank: true, arm: 'L' };
-  if (n === 47) return { x: colX(5), y: BOTTOM, w: TW, h: D };
-  return { x: colX(4 - (n - 48)), y: BOTTOM, w: TW, h: D };
+  if (n <= 34) return { x: colX(11 - (n - 31)), y: BOTTOM, w: TW, h: D };
+  if (n === 35) return { x: colX(7), y: BOTTOM, w: TW, h: D };
+  if (n <= 40) return { x: colX(7), y: BOTTOM - ROW - (n - 36) * ROW, w: TW, h: ROW, bank: true, arm: 'R' };
+  if (n === 41) return { x: colX(5) + 1.5 * TW, y: BOTTOM - 6 * ROW, w: 1.5 * TW, h: ROW, bank: true, wide: true };
+  if (n === 42) return { x: colX(5), y: BOTTOM - 6 * ROW, w: 1.5 * TW, h: ROW, bank: true, wide: true };
+  if (n <= 47) return { x: colX(5), y: BOTTOM - 5 * ROW + (n - 43) * ROW, w: TW, h: ROW, bank: true, arm: 'L' };
+  if (n === 48) return { x: colX(5), y: BOTTOM, w: TW, h: D };
+  return { x: colX(4 - (n - 49)), y: BOTTOM, w: TW, h: D };
 }
 const breakable = (s) => s.replace('Pappersbruk', 'Pappers\u00adbruk').replace('Byggprojekt', 'Bygg\u00adprojekt').replace('Bankutgång', 'Bank\u00adutgång').replace('Bankentré', 'Bank\u00adentré').replace('gratifikation', 'grati\u00adfikation').replace('byggnadsaffärerna', 'byggnads\u00adaffärerna').replace('Kontorshus', 'Kontors\u00adhus').replace('Mäklarfirma', 'Mäklar\u00adfirma').replace('börstips', 'börs\u00adtips').replace('Datakonsult', 'Data\u00adkonsult').replace('Bilverkstad', 'Bil\u00adverkstad').replace('Bensinbolag', 'Bensin\u00adbolag').replace('Återbetala', 'Åter\u00adbetala').replace('motspelarna', 'mot\u00adspelarna').replace('Finanstidning', 'Finans­tidning').replace('Aktieutdelning', 'Aktie­utdelning').replace('obligationsdragningen', 'obligations­dragningen').replace('Försäkringsbolag', 'För­säkrings­bolag').replace('Livsmedelsbutik', 'Livsmedels­butik').replace('Elektronikfirma', 'Elektronik­firma').replace('Ingenjörsbyrå', 'Ingenjörs­byrå').replace('obligationsköp', 'obligations­köp');
 
@@ -277,11 +278,11 @@ function buildBoard() {
   [[KIND_BG.bank || KIND_BG.branch, 'Bank och handel'], [KIND_BG.bor, 'Börstips'], [KIND_BG.news, 'Finanstidning'], [KIND_BG.div, 'Aktieutdelning'], [KIND_BG.lilla, 'Obligationer']].forEach(([c, t]) => lg.append(el('div', { class: 'l' }, el('div', { class: 's', style: 'background:' + c }), t)));
   b.append(lg);
   b.append(el('div', { class: 'mid', style: `left:${colX(6)}px;width:${TW}px;top:${BOTTOM - 5 * ROW}px;height:${5 * ROW + D}px` }, 'Bankens huvudkontor'));
-  const leftC = D + 2 * TW; const rightC = colX(8) + 1.5 * TW;
+  const leftC = D + 2 * TW; const rightC = colX(8) + 2 * TW;
   b.append(el('div', { class: 'deck ct-bor', style: `left:${leftC - 85}px;top:${BOTTOM - 705}px;transform:rotate(-4deg)` }, iconFor(SQUARES[2]), 'Börstips'));
   b.append(el('div', { class: 'deck ct-news', style: `left:${rightC - 85}px;top:${BOTTOM - 705}px;transform:rotate(4deg)` }, iconFor(SQUARES[6]), 'Finanstidningen'));
-  b.append(el('div', { class: 'activenews', id: 'activenews', style: `left:${colX(8) + 10}px;width:${3 * TW - 20}px;top:${BOTTOM - 585}px` }));
-  for (let n = 1; n <= 53; n++) {
+  b.append(el('div', { class: 'activenews', id: 'activenews', style: `left:${colX(8) + 10}px;width:${4 * TW - 20}px;top:${BOTTOM - 585}px` }));
+  for (let n = 1; n <= 54; n++) {
     const s = SQUARES[n]; const r = rect(n); const isPlot = s.kind === 'plot';
     const g = isPlot ? GROUPS[s.group] : null;
     const base = isPlot ? g.color : KIND_BG[s.kind];
@@ -376,7 +377,7 @@ const myPlots = () => Object.keys(S.game.plots).map(Number).filter((n) => S.game
 function fit() {
   const sc = document.getElementById('scaler'); if (!sc || !boardEl) return false; const wrap = sc.parentElement;
   const flow = matchMedia('(max-width:999px),(max-height:619px)').matches;
-  let rebuilt = false; const nextTW = flow ? 105 : Math.round(Math.max(105, Math.min(240, (wrap.clientWidth / (wrap.clientHeight / boardH()) - 2 * D) / 10)));
+  let rebuilt = false; const nextTW = flow ? 105 : Math.round(Math.max(105, Math.min(240, (wrap.clientWidth / (wrap.clientHeight / boardH()) - 2 * D) / 11)));
   if (nextTW !== TW) { TW = nextTW; const nb = buildBoard(); boardEl.replaceWith(nb); boardEl = nb; rebuilt = true; }
   const W = boardW(); const k = flow ? wrap.clientWidth / W : Math.min(wrap.clientWidth / W, wrap.clientHeight / boardH());
   boardEl.style.transform = `scale(${k})`; sc.style.width = W * k + 'px'; sc.style.height = boardH() * k + 'px'; sc.style.flex = 'none';
@@ -518,7 +519,7 @@ function cardScene(tone, scene) {
 // Den öppna ytan på spelplanen under Börstips, i skärmens koordinater. På små skärmar visas fönstren mitt på.
 function openArea() {
   if (!boardEl || matchMedia('(max-width:999px),(max-height:619px)').matches) return null;
-  const b = boardEl.getBoundingClientRect(), arm = document.getElementById('sq42'); if (!arm) return null; const k = b.width / boardW();
+  const b = boardEl.getBoundingClientRect(), arm = document.getElementById('sq43'); if (!arm) return null; const k = b.width / boardW();
   const left = b.left + (D + 12) * k, right = arm.getBoundingClientRect().left - 12 * k;
   return { left, right, top: b.top + (BOTTOM - 590) * k, bottom: b.top + (BOTTOM - 10) * k, deckTop: b.top + (BOTTOM - 705) * k };
 }
@@ -627,15 +628,15 @@ function renderSide() {
   const lb = document.getElementById('leaveslot'); if (lb && !lb.firstChild) lb.append(soundButton(), el('button', { style: 'width:100%', onclick: () => wsend({ t: 'leave' }) }, 'Lämna spelet'));
 }
 const newsIs = (t) => !!(S && S.game && S.game.news && S.game.news.type === t);
-const twoDice = (p) => p.car && !(p.pos >= 34 && p.pos < 47) && !newsIs('fuel');
-const canTrade = (p) => p.lapDone && (p.pos === 12 || (p.pos >= 35 && p.pos <= 46));
+const twoDice = (p) => p.car && !(p.pos >= 35 && p.pos < 48) && !newsIs('fuel');
+const canTrade = (p) => p.lapDone && (p.pos === 12 || (p.pos >= 36 && p.pos <= 47));
 function actionsFor(me, myTurn, debt, bond) {
   const g = S.game;
   if (g.phase === 'over') return el('button', { class: 'primary', onclick: () => wsend({ t: 'leave' }) }, 'Till startsidan');
   if (!me || me.out) return el('p', { class: 'small' }, 'Du är ute ur spelet och tittar på.');
   if (debt && debt.from === S.you) {
     return el('div', { class: 'stack' }, el('div', {}, `Du måste betala ${kr(debt.amount)} (${debt.why}) men har ${kr(me.cash)}. Skaffa pengar:`),
-      el('div', { class: 'actions' }, el('button', { onclick: () => act({ type: 'loan' }), disabled: newsIs('creditstop') || me.loans >= RULES.maxLoans || me.pos === 38 }, 'Ta lån 50 000 kr'), el('button', { onclick: () => open(assetsModal) }, 'Mina tillgångar'), me.car ? el('button', { onclick: () => act({ type: 'sellCar' }) }, 'Sälj bilen') : null, el('button', { class: 'danger', onclick: () => open(bankruptModal) }, 'Gå i konkurs')));
+      el('div', { class: 'actions' }, el('button', { onclick: () => act({ type: 'loan' }), disabled: newsIs('creditstop') || me.loans >= RULES.maxLoans || me.pos === 39 }, 'Ta lån 50 000 kr'), el('button', { onclick: () => open(assetsModal) }, 'Mina tillgångar'), me.car ? el('button', { onclick: () => act({ type: 'sellCar' }) }, 'Sälj bilen') : null, el('button', { class: 'danger', onclick: () => open(bankruptModal) }, 'Gå i konkurs')));
   }
   if (debt) return el('p', { class: 'small' }, 'Väntar på en betalning.');
   if (bond === S.you) return el('div', { class: 'stack' }, el('div', {}, 'Välj en obligation för 500 kr:'),
@@ -644,18 +645,19 @@ function actionsFor(me, myTurn, debt, bond) {
   if (!myTurn) return el('div', { class: 'actions' }, el('button', { onclick: () => open(assetsModal) }, 'Mina tillgångar'));
   if (g.stage === 'bonus') return el('button', { class: 'primary', style: 'width:100%', onclick: () => act({ type: 'bonus' }) }, 'Slå gratifikation');
   if (g.stage === 'sentence') return el('div', { class: 'stack' }, el('button', { class: 'primary', onclick: () => act({ type: 'sentence' }) }, 'Slå hur länge du ska sitta'), me.jailFree && me.jailFree.length ? el('button', { onclick: () => act({ type: 'useJailFree' }) }, 'Använd frikort') : null);
+  if (g.stage === 'itsec') return el('div', { class: 'stack' }, el('div', {}, 'It-Säkerhet AB: betala för bra it-säkerhet, eller chansa. Slår du ' + (RULES.itSafeFrom - 1) + ' eller lägre betalar du ' + kr(RULES.itVirus) + '. Slår du ' + RULES.itSafeFrom + ' eller högre är du säker.'), el('div', { class: 'actions' }, el('button', { class: 'primary', onclick: () => act({ type: 'itPay' }) }, 'Betala ' + kr(RULES.itCost)), el('button', { onclick: () => act({ type: 'itRoll' }) }, 'Slå tärningen')));
   if (g.stage === 'rentchoice') return el('div', { class: 'stack' }, el('div', {}, 'Du ska betala ' + kr(g.pendingRent.amount) + ' i hyra.'), el('div', { class: 'actions' }, el('button', { class: 'primary', onclick: () => act({ type: 'useRentFree' }) }, 'Använd hyresfrihet'), el('button', { onclick: () => act({ type: 'payRent' }) }, 'Betala hyran')));
   if (g.stage === 'visit') return el('div', { class: 'stack' }, el('div', {}, 'Välj vilken av dina tomter du vill besöka:'), el('div', { class: 'actions' }, myPlots().map((n) => el('button', { onclick: () => act({ type: 'visit', n }) }, SQUARES[n].name))));
   if (g.stage === 'handover') { const prev = (() => { const n = g.players.length; const i = g.players.indexOf(me); for (let k = 1; k < n; k++) { const o = g.players[(i - k + n) % n]; if (!o.out) return o; } return null; })(); const full = (k) => plotsIn(k).every((n) => g.plots[n].owner === S.you) && g.shares.filter((v) => v.group === k).every((v) => v.owner === S.you);
     return el('div', { class: 'stack' }, el('div', {}, 'Välj vad du lämnar över till ' + (prev ? prev.name : '') + ':'), el('div', { class: 'actions' }, myPlots().filter((n) => !full(SQUARES[n].group)).map((n) => el('button', { onclick: () => act({ type: 'handover', kind: 'plot', n }) }, SQUARES[n].name)), g.shares.filter((v) => v.owner === S.you && !full(v.group)).map((v) => el('button', { onclick: () => act({ type: 'handover', kind: 'share', id: v.id }) }, 'Aktie ' + GROUPS[v.group].name + ' ' + kr(v.value))))); }
   if (g.stage === 'pre') {
-    const trade = canTrade(me); const pass = me.lapDone && !trade && (me.tradePass || []).length > 0; const atBuild = me.pos === 17 || me.pos === 40; const hasPermit = (me.permits || []).length > 0; const bld = (atBuild || hasPermit) && !(g.news && g.news.type === 'buildstop');
+    const trade = canTrade(me); const pass = me.lapDone && !trade && (me.tradePass || []).length > 0; const atBuild = me.pos === 17 || me.pos === 41; const hasPermit = (me.permits || []).length > 0; const bld = (atBuild || hasPermit) && !(g.news && g.news.type === 'buildstop');
     return el('div', { class: 'stack' }, el('button', { class: 'primary', onclick: () => act({ type: 'roll' }) }, me.jail ? 'Slå för att komma ut' : (g.doubles ? 'Slå igen: ' : '') + (g.news && g.news.type === 'bad' ? 'Slå två tärningar, lägsta gäller' : g.news && g.news.type === 'good' ? (twoDice(me) ? 'Slå två tärningar, dubbla steg' : 'Slå tärningen, dubbla steg') : twoDice(me) ? 'Slå två tärningar' : 'Slå tärningen')),
       el('div', { class: 'actions' }, trade ? el('button', { onclick: () => open(buyModal) }, 'Köp tomt/aktie') : null, pass ? el('button', { onclick: () => open(buyModal) }, 'Använd köptips') : null, trade && !newsIs('stockclose') ? el('button', { onclick: () => open(meetingModal) }, 'Bolagsstämma') : null, bld ? el('button', { onclick: () => open(buildModal) }, atBuild ? 'Bygg' : 'Använd bygglov') : null,
         !me.car ? el('button', { onclick: () => act({ type: 'buyCar' }), disabled: me.cash < RULES.carPrice }, 'Köp bil 50 000 kr') : null,
         el('button', { onclick: () => open(assetsModal) }, 'Mina tillgångar'), el('button', { onclick: () => act({ type: 'loan' }), disabled: newsIs('creditstop') || me.loans >= RULES.maxLoans }, 'Ta lån 50 000 kr')));
   }
-  return el('div', { class: 'stack' }, el('button', { class: 'primary', onclick: () => act({ type: 'end' }) }, 'Avsluta turen'), el('div', { class: 'actions' }, el('button', { onclick: () => open(assetsModal) }, 'Mina tillgångar'), el('button', { onclick: () => act({ type: 'loan' }), disabled: newsIs('creditstop') || me.loans >= RULES.maxLoans || me.pos === 38 }, 'Ta lån 50 000 kr')));
+  return el('div', { class: 'stack' }, el('button', { class: 'primary', onclick: () => act({ type: 'end' }) }, 'Avsluta turen'), el('div', { class: 'actions' }, el('button', { onclick: () => open(assetsModal) }, 'Mina tillgångar'), el('button', { onclick: () => act({ type: 'loan' }), disabled: newsIs('creditstop') || me.loans >= RULES.maxLoans || me.pos === 39 }, 'Ta lån 50 000 kr')));
 }
 function open(fn) { modal = fn; renderModal(); }
 function close() { modal = null; renderModal(); }
@@ -666,7 +668,7 @@ function renderModal() {
   document.body.append(bg);
 }
 const ownerName = (id) => S.game.players.find((p) => p.id === id)?.name;
-const SQUARE_TEXT = { bor: 'Dra ett Börstips.', news: 'Dra en Finanstidning.', div: 'Du får utdelning på dina aktier.', lilla: 'Köp en obligation, sedan sker dragningen.', bonddiv: 'Du får utdelning och kan köpa en obligation.', branch: 'Här kan du köpa en tomt och en aktie före ditt kast.', buildsq: 'Här kan du bygga före ditt kast.', repay: 'Du måste betala tillbaka ett lån plus 5 000 kr i ränta.', give: 'Ge motspelarna 20 % på deras aktier i grupper där du har tomter.', prison: 'Slå en tärning för hur länge du ska sitta, högst 3 år. Slår du lika på din tur går du ut.', gotoprison: 'Du åker i fängelse, om du inte redan har suttit där under det här varvet.', entry: 'Slå två tärningar och få 10 000 kr per öga.', exit: 'Betala ränta på dina lån och dra ett Börstips.' };
+const SQUARE_TEXT = { itsec: 'Betala 5 000 kr för bra it-säkerhet, eller slå en tärning. Slår du 3 eller lägre betalar du 15 000 kr för virus i verksamheten. Slår du 4 eller högre är du säker.', bor: 'Dra ett Börstips.', news: 'Dra en Finanstidning.', div: 'Du får utdelning på dina aktier.', lilla: 'Köp en obligation, sedan sker dragningen.', bonddiv: 'Du får utdelning och kan köpa en obligation.', branch: 'Här kan du köpa en tomt och en aktie före ditt kast.', buildsq: 'Här kan du bygga före ditt kast.', repay: 'Du måste betala tillbaka ett lån plus 5 000 kr i ränta.', give: 'Ge motspelarna 20 % på deras aktier i grupper där du har tomter.', prison: 'Slå en tärning för hur länge du ska sitta, högst 3 år. Slår du lika på din tur går du ut.', gotoprison: 'Du åker i fängelse, om du inte redan har suttit där under det här varvet.', entry: 'Slå två tärningar och få 10 000 kr per öga.', exit: 'Betala ränta på dina lån och dra ett Börstips.' };
 function currentRent(n) {
   const g = S.game; const x = g.plots[n]; if (!x.owner || x.mort) return 0; const i = plotInfo(n); const k = SQUARES[n].group;
   const full = plotsIn(k).every((m) => g.plots[m].owner === x.owner) && g.shares.filter((s) => s.group === k).every((s) => s.owner === x.owner);
@@ -778,7 +780,7 @@ function buyModal() { const g = S.game; const me = g.players.find((p) => p.id ==
       el('section', { class: 'buybox', 'aria-label': 'Tomter' }, el('h3', {}, 'Tomter'), g.boughtPlot ? none('Du har redan köpt en tomt den här turen.') : null, plots.some(Boolean) ? plots : none('Alla tomter är sålda.')),
       el('section', { class: 'buybox', 'aria-label': 'Aktier' }, el('h3', {}, 'Aktier'), newsIs('stockclose') ? none('Börsen är stängd just nu.') : null, g.boughtShare ? none('Du har redan köpt en aktie den här turen.') : null, shares.some(Boolean) ? shares : none('Alla aktier är sålda.')))); }
 function buildModal() { const g = S.game; const me = g.players.find((p) => p.id === S.you); const list = myPlots().filter((n) => !g.plots[n].built && !g.plots[n].mort);
-  return el('div', {}, el('h2', {}, 'Bygg'), el('p', { class: 'small' }, 'Kontanter: ' + kr(me.cash) + (me.pos === 17 || me.pos === 40 ? '' : '. Bygglovet används när du bygger.')), list.length ? list.map((n) => el('div', { class: 'item' }, SQUARES[n].name + ', ' + kr(plotInfo(n).build), el('button', { disabled: me.cash < plotInfo(n).build, onclick: () => act({ type: 'build', n }) }, 'Bygg'))) : el('p', {}, 'Du har inga tomter att bygga på.')); }
+  return el('div', {}, el('h2', {}, 'Bygg'), el('p', { class: 'small' }, 'Kontanter: ' + kr(me.cash) + (me.pos === 17 || me.pos === 41 ? '' : '. Bygglovet används när du bygger.')), list.length ? list.map((n) => el('div', { class: 'item' }, SQUARES[n].name + ', ' + kr(plotInfo(n).build), el('button', { disabled: me.cash < plotInfo(n).build, onclick: () => act({ type: 'build', n }) }, 'Bygg'))) : el('p', {}, 'Du har inga tomter att bygga på.')); }
 function assetsModal() { const g = S.game; const me = g.players.find((p) => p.id === S.you); if (!me) return null; const isTurn = g.players[g.current].id === S.you; const pre = isTurn && g.stage === 'pre' && !g.debts.length && !g.bondRound;
   const myShares = g.shares.filter((s) => s.owner === S.you); const bonds = Object.keys(g.bonds).filter((n) => g.bonds[n] === S.you);
   return el('div', {}, el('h2', {}, 'Mina tillgångar'), el('p', { class: 'small' }, `Kontanter ${kr(me.cash)} · Lån ${me.loans} · Obligationer ${bonds.join(', ') || 'inga'}`),
