@@ -64,7 +64,6 @@
     { t: 'goto', to: 34, x: 'Bråttom till mötet! Gå till Bankentré.' },
     { t: 'goto', to: 12, x: 'Gå till Bankfilialen.' },
     { t: 'goto', to: 17, x: 'Gå till Byggprojekt AB.' },
-    { t: 'freebuild', x: 'Bygglov beviljat! Du får bygga en gång när du vill, före ditt kast.' },
     { t: 'news', x: 'Något stort är på gång. Ta en Finanstidning.' },
     { t: 'prison', x: 'Skatteverket vill prata. Gå till Fängelset.' },
     { t: 'car', a: 5000, x: 'Bilen behöver service. Bilägare betalar 5 000 kr.' },
@@ -80,6 +79,7 @@
     { t: 'forward', n: 2, x: 'Bra fart i affärerna. Gå 2 steg framåt.' },
     { t: 'prison', x: 'Gå direkt i fängelse.' },
     { t: 'jailfree', x: 'Frikort! Spara kortet. Du kan använda det för att slippa fängelset.' },
+    { t: 'permit', x: 'Bygglov! Spara kortet. Du kan använda det en gång för att bygga när du vill, före ditt kast.' },
     { t: 'goto', to: 12, x: 'Gå direkt till Bankfilialen.' },
     { t: 'goto', to: 21, x: 'Gå direkt till ruta 21.' },
     { t: 'visit', x: 'Besök en av dina egna tomter. Har du ingen tomt går du direkt till Bankentré.' },
@@ -87,8 +87,8 @@
   ];
   const BORSTIPS = TIPS.concat(TIPS, TIPS_EXTRA);
   const FINANS = [].concat(
-    Array(3).fill({ t: 'good', until: true, x: 'Goda tider! Gratifikationen räknas dubbelt och utdelningsrutan gäller alla. Gäller tills nästa tidning.' }),
-    Array(3).fill({ t: 'bad', until: true, x: 'Dåliga tider! Gratifikationen räknas till hälften. Gäller tills nästa tidning.' }),
+    Array(3).fill({ t: 'good', until: true, x: 'Goda tider! Du går dubbelt så många steg som tärningarna visar, gratifikationen räknas dubbelt och utdelningsrutan gäller alla. Gäller tills nästa tidning.' }),
+    Array(3).fill({ t: 'bad', until: true, x: 'Dåliga tider! Du slår två tärningar och går efter den lägsta, och gratifikationen räknas till hälften. Gäller tills nästa tidning.' }),
     Array(3).fill({ t: 'largedraw', x: 'Stora obligationsdragningen! Alla får köpa en obligation före dragningen.' }),
     Array(3).fill({ t: 'alldiv', x: 'Hausse på börsen! Alla spelare får aktieutdelning.' }),
     Array(2).fill({ t: 'inflation', x: 'Inflation och kursfall! Alla betalar 10 % av sitt aktiekapital.' }),

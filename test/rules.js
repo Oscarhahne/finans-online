@@ -81,7 +81,7 @@ const D = require('../public/data.js');
 const tip = (g, match) => { const i = D.BORSTIPS.findIndex(match); g.tipDeck = [i, ...g.tipDeck.filter((v) => v !== i)]; };
 const news = (g, match) => { const i = D.FINANS.findIndex(match); g.newsDeck = [i, ...g.newsDeck.filter((v) => v !== i)]; };
 const landOn = (g, pos, die = 0) => { g.players[g.current].pos = pos - 1; Math.random = () => die; G.apply(g, g.players[g.current].id, { type: 'roll' }); Math.random = orig; };
-assert.equal(D.BORSTIPS.length, 50); assert.equal(D.BORSTIPS.filter((c) => c.t === 'bondwin').length, 1); assert.equal(D.BORSTIPS.filter((c) => c.t === 'back').length, 1); assert.equal(D.BORSTIPS.filter((c) => c.t === 'forward').length, 1); assert.equal(D.FINANS.length, 31);
+assert.equal(D.BORSTIPS.length, 49); assert.equal(D.BORSTIPS.filter((c) => c.t === 'bondwin').length, 1); assert.equal(D.BORSTIPS.filter((c) => c.t === 'back').length, 1); assert.equal(D.BORSTIPS.filter((c) => c.t === 'forward').length, 1); assert.equal(D.FINANS.length, 31);
 g = two(); g.bonds[1] = 'b'; { const c = g.players[1].cash; tip(g, (c) => c.t === 'bondwin' && c.n === 1); landOn(g, 2); assert.equal(g.players[1].cash, c + 10000); assert.equal(g.bonds[1], null); }
 g = two(); tip(g, (c) => c.t === 'smalldraw'); landOn(g, 2); assert.equal(g.bondRound.draw, 'small');
 g = two(); tip(g, (c) => c.t === 'back'); landOn(g, 2); assert.equal(g.players[0].pos, 53);
@@ -112,4 +112,12 @@ g = auto(); landOn(g, 41); assert.equal(g.current, 0); assert.ok(g.bondRound); G
 g = auto(); g.plots[10].owner = 'b'; g.players[0].cash = 0; landOn(g, 10); assert.equal(g.current, 0); assert.equal(g.debts.length, 1); G.apply(g, 'a', { type: 'loan' }); assert.equal(g.current, 1);
 g = auto(); { const p = g.players[0]; p.car = true; p.pos = 1; Math.random = () => 0; G.apply(g, 'a', { type: 'roll' }); Math.random = orig; assert.equal(g.current, 0); assert.equal(g.stage, 'pre'); }
 g = auto(); { const p = g.players[0]; p.pos = 9; p.jail = 2; const q = [0, 0.5]; let i = 0; Math.random = () => q[i++ % 2]; G.apply(g, 'a', { type: 'roll' }); Math.random = orig; assert.equal(g.current, 1); }
+// Bygglov sparas och kan användas en gång var som helst, före kastet.
+g = two(); { const i = D.BORSTIPS.findIndex((c) => c.t === 'permit'); const p = g.players[0]; g.plots[10].owner = 'a'; g.plots[13].owner = 'a'; tip(g, (c) => c.t === 'permit'); landOn(g, 2); assert.equal(p.permits.length, 1); assert.ok(!g.tipDeck.includes(i));
+  g.stage = 'pre'; p.pos = 3; const c = p.cash; G.apply(g, 'a', { type: 'build', n: 10 }); assert.equal(g.plots[10].built, true); assert.equal(p.cash, c - 25000); assert.equal(p.permits.length, 0); assert.ok(g.tipDeck.includes(i)); rejects(g, 'a', { type: 'build', n: 13 }, /inte bygga här/); }
+// Goda tider: dubbla steg. Dåliga tider: två tärningar, den lägsta gäller.
+g = two(); { const p = g.players[0]; p.pos = 1; g.news = { type: 'good' }; Math.random = () => 0.5; G.apply(g, 'a', { type: 'roll' }); Math.random = orig; assert.equal(p.pos, 9); }
+g = two(); { const p = g.players[0]; p.pos = 2; g.news = { type: 'good' }; p.car = true; const q = [0, 0.5]; let i = 0; Math.random = () => q[i++ % 2]; G.apply(g, 'a', { type: 'roll' }); Math.random = orig; assert.equal(p.pos, 12); }
+g = two(); { const p = g.players[0]; p.pos = 1; g.news = { type: 'bad' }; const q = [0.99, 0.2]; let i = 0; Math.random = () => q[i++ % 2]; G.apply(g, 'a', { type: 'roll' }); Math.random = orig; assert.equal(g.lastRoll.dice.length, 2); assert.equal(p.pos, 3); }
+g = two(); { const p = g.players[0]; p.pos = 30; g.news = { type: 'good' }; Math.random = () => 0.99; G.apply(g, 'a', { type: 'roll' }); Math.random = orig; assert.equal(p.pos, 34); }
 console.log('Alla regeltester klara');
