@@ -645,7 +645,7 @@ function actionsFor(me, myTurn, debt, bond) {
   if (!me || me.out) return el('p', { class: 'small' }, 'Du är ute ur spelet och tittar på.');
   if (debt && debt.from === S.you) {
     return el('div', { class: 'stack' }, el('div', {}, `Du måste betala ${kr(debt.amount)} (${debt.why}) men har ${kr(me.cash)}. Skaffa pengar:`),
-      el('div', { class: 'actions' }, el('button', { onclick: () => act({ type: 'loan' }), disabled: newsIs('creditstop') || me.loans >= RULES.maxLoans || me.pos === 39 }, 'Ta lån 50 000 kr'), el('button', { onclick: () => open(assetsModal) }, 'Mina tillgångar'), me.car ? el('button', { onclick: () => act({ type: 'sellCar' }) }, 'Sälj bilen') : null, el('button', { class: 'danger', onclick: () => open(bankruptModal) }, 'Gå i konkurs')));
+      el('div', { class: 'actions' }, el('button', { onclick: () => act({ type: 'loan' }), disabled: newsIs('creditstop') || me.loans >= RULES.maxLoans || me.loanTaken || me.pos === 39 }, 'Ta lån 50 000 kr'), el('button', { onclick: () => open(assetsModal) }, 'Mina tillgångar'), me.car ? el('button', { onclick: () => act({ type: 'sellCar' }) }, 'Sälj bilen') : null, el('button', { class: 'danger', onclick: () => open(bankruptModal) }, 'Gå i konkurs')));
   }
   if (debt) return el('p', { class: 'small' }, 'Väntar på en betalning.');
   if (bond === S.you) return el('div', { class: 'stack' }, el('div', {}, 'Välj en obligation för 500 kr:'),
@@ -664,9 +664,9 @@ function actionsFor(me, myTurn, debt, bond) {
     return el('div', { class: 'stack' }, el('button', { class: 'primary', onclick: () => act({ type: 'roll' }) }, me.jail ? 'Slå för att komma ut' : (g.doubles ? 'Slå igen: ' : '') + (g.news && g.news.type === 'bad' ? 'Slå två tärningar, lägsta gäller' : g.news && g.news.type === 'good' ? (twoDice(me) ? 'Slå två tärningar, dubbla steg' : 'Slå tärningen, dubbla steg') : twoDice(me) ? 'Slå två tärningar' : 'Slå tärningen')),
       el('div', { class: 'actions' }, trade ? el('button', { onclick: () => open(buyModal) }, 'Köp tomt/aktie') : null, pass ? el('button', { onclick: () => open(buyModal) }, 'Använd köptips') : null, trade && !newsIs('stockclose') ? el('button', { onclick: () => open(meetingModal) }, 'Bolagsstämma') : null, bld ? el('button', { onclick: () => open(buildModal) }, atBuild ? 'Bygg' : 'Använd bygglov') : null,
         !me.car ? el('button', { onclick: () => act({ type: 'buyCar' }), disabled: me.cash < RULES.carPrice }, 'Köp bil 50 000 kr') : null,
-        el('button', { onclick: () => open(assetsModal) }, 'Mina tillgångar'), el('button', { onclick: () => act({ type: 'loan' }), disabled: newsIs('creditstop') || me.loans >= RULES.maxLoans }, 'Ta lån 50 000 kr')));
+        el('button', { onclick: () => open(assetsModal) }, 'Mina tillgångar'), el('button', { onclick: () => act({ type: 'loan' }), disabled: newsIs('creditstop') || me.loans >= RULES.maxLoans || me.loanTaken }, 'Ta lån 50 000 kr')));
   }
-  return el('div', { class: 'stack' }, el('button', { class: 'primary', onclick: () => act({ type: 'end' }) }, 'Avsluta turen'), el('div', { class: 'actions' }, el('button', { onclick: () => open(assetsModal) }, 'Mina tillgångar'), el('button', { onclick: () => act({ type: 'loan' }), disabled: newsIs('creditstop') || me.loans >= RULES.maxLoans || me.pos === 39 }, 'Ta lån 50 000 kr')));
+  return el('div', { class: 'stack' }, el('button', { class: 'primary', onclick: () => act({ type: 'end' }) }, 'Avsluta turen'), el('div', { class: 'actions' }, el('button', { onclick: () => open(assetsModal) }, 'Mina tillgångar'), el('button', { onclick: () => act({ type: 'loan' }), disabled: newsIs('creditstop') || me.loans >= RULES.maxLoans || me.loanTaken || me.pos === 39 }, 'Ta lån 50 000 kr')));
 }
 function open(fn) { modal = fn; renderModal(); }
 function close() { modal = null; renderModal(); }
