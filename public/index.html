@@ -34,7 +34,7 @@ label{display:block;font-weight:700;margin:0 0 6px;color:var(--mute)}
 .leftcol{display:grid;gap:12px;align-content:start}
 .landing{background:var(--panel);border-radius:14px;padding:9px;display:grid;gap:7px;align-content:start;font-size:13.5px}
 .landing h3{font-size:15px}
-.ltile{border-radius:14px;box-shadow:inset 0 0 0 1px rgba(0,0,0,.7);overflow:hidden;font-weight:800;text-align:center}
+.ltile{border-radius:14px;box-shadow:inset 0 0 0 2px color-mix(in srgb,var(--g) 55%,white);text-shadow:0 2px 3px rgba(0,0,0,.6);overflow:hidden;font-weight:800;text-align:center}
 .ltile .lh{height:30px;background:rgba(255,255,255,.4);border-bottom:1px solid rgba(0,0,0,.45)}
 .ltile .lb{padding:8px 4px;display:grid;gap:4px;justify-items:center;overflow-wrap:anywhere;font:600 16px/1.15 Fredoka,sans-serif}
 .lrow{display:flex;justify-content:space-between;gap:8px;font-size:13.5px}
@@ -84,16 +84,22 @@ label{display:block;font-weight:700;margin:0 0 6px;color:var(--mute)}
 .scaler{position:relative;width:100%}
 .board{position:absolute;left:0;top:0;width:1290px;height:1185px;transform-origin:0 0;background:#0f4a33;border-radius:28px;overflow:hidden;font-family:Nunito,sans-serif}
 .side{min-width:0}
-.c{position:absolute;width:105px;height:120px;border-radius:14px;box-shadow:inset 0 0 0 1px rgba(0,0,0,.7),0 2px 6px rgba(0,0,0,.25);color:var(--dark);padding:0;font:800 25px/1.08 Nunito,sans-serif;text-align:center;overflow-wrap:break-word;cursor:pointer;background:none}
+.c{position:absolute;width:105px;height:120px;border-radius:16px;box-shadow:inset 0 0 0 2px color-mix(in srgb,var(--g) 55%,white),inset 0 2px 0 3px rgba(255,255,255,.18),0 0 9px color-mix(in srgb,var(--g) 70%,white);color:#fff;text-shadow:0 2px 3px rgba(0,0,0,.65);padding:0;font:800 25px/1.08 Nunito,sans-serif;text-align:center;overflow-wrap:break-word;cursor:pointer;background:none;overflow:hidden}
+.c::after{content:'';position:absolute;inset:0;pointer-events:none;background:linear-gradient(120deg,rgba(255,255,255,.2) 0,rgba(255,255,255,.04) 28%,transparent 29%)}
+.bk .pr{font-size:16px}
 .pr{font:800 20px/1.1 Nunito,sans-serif;opacity:.95;white-space:nowrap}
 .lab{position:absolute;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:3px;text-align:center}
 .c:hover{filter:brightness(1.08)}
-.n{font:800 16px/17px Nunito,sans-serif;opacity:.9}
+.n{position:absolute;top:5px;left:5px;min-width:30px;padding:3px 6px;border-radius:8px;background:rgba(0,0,0,.45);font:800 17px/19px Nunito,sans-serif;text-align:center;z-index:1}
+.tic{display:block;width:66px;height:50px;flex:none;filter:drop-shadow(0 3px 3px rgba(0,0,0,.5))}
+.rowlab{flex-direction:row;gap:5px;padding-left:4px}.rowlab .tic{width:44px;height:33px;margin-top:14px}.rowlab .ltext{min-width:0;flex:1}
+.sidelab{font-size:23px;gap:0;padding-top:2px}.sidelab .tic{width:36px;height:27px}.sidelab .pr{font-size:17px}
+.bk .tic{width:36px;height:27px}.bk .lab{gap:0;font-size:18px}.h .tic{width:84px;height:63px}
+.ltile .tic{width:92px;height:69px}
 .t{font-weight:800}
-.board .deck .ic,.ltile .ic,.cardpop .ic{width:auto}
 .head{position:absolute;top:1px;left:1px;right:1px;height:30px;border-radius:13px 13px 0 0;background:rgba(255,255,255,.4);border-bottom:1px solid rgba(0,0,0,.45);display:flex;align-items:center;justify-content:flex-start;gap:3px;padding:0 3px}
 .bk{height:105px;font-size:20px}
-.narrow .c{font-size:20px}.narrow .bk{font-size:15px}.narrow .pr{font-size:16px}
+.narrow .c{font-size:20px}.narrow .bk .lab{font-size:14.5px}.narrow .rowlab .tic{width:32px;height:24px}.narrow .pr{font-size:16px}
 .h{width:120px;height:120px}
 .r{position:absolute;inset:0;padding:10px;display:flex;flex-direction:column;gap:2px;align-items:center;justify-content:center;text-align:center}
 .ic{display:block;margin:0 auto 1px;width:44px;height:30px}
@@ -104,12 +110,12 @@ label{display:block;font-weight:700;margin:0 0 6px;color:var(--mute)}
 .pawn{display:block;width:100%;height:100%;overflow:visible}
 .token.me .pawn{filter:drop-shadow(0 0 4px #fff)}
 .title{position:absolute;left:195px;top:128px;width:900px;text-align:center;font:600 76px/1 Fredoka,sans-serif;color:#fff;text-shadow:0 2px 10px #06261b}
-.mid{position:absolute;left:645px;top:540px;width:105px;height:645px;border-radius:14px;box-shadow:inset 0 0 0 1px rgba(0,0,0,.7);background:var(--gold);color:var(--dark);display:flex;align-items:center;justify-content:center;writing-mode:vertical-rl;font:600 36px/1 Fredoka,sans-serif}
+.mid{position:absolute;border-radius:16px;box-shadow:inset 0 0 0 2px #fde68a,0 0 9px #fbbf24;background:linear-gradient(160deg,#eab308,#a16207 55%,#713f12);color:#fff;text-shadow:0 2px 3px rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;writing-mode:vertical-rl;font:600 36px/1 Fredoka,sans-serif}
 .legend{position:absolute;left:195px;top:220px;width:900px;padding:14px 18px;border-radius:24px;background:rgba(6,38,27,.9);display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px 18px}
 .l{display:flex;align-items:center;gap:9px;font:700 14px/1.2 Nunito,sans-serif}
 .s{width:22px;height:22px;flex:none;border-radius:50%}
-.deck{position:absolute;width:170px;height:100px;border-radius:16px;display:flex;flex-direction:column;gap:6px;align-items:center;justify-content:center;font:600 19px/1 Fredoka,sans-serif;color:var(--dark);box-shadow:0 6px 16px rgba(0,0,0,.45)}
-.deck svg{width:66px;height:45px}
+.deck{border:2px solid var(--g);text-shadow:0 2px 3px rgba(0,0,0,.6);position:absolute;width:170px;height:100px;border-radius:16px;display:flex;flex-direction:column;gap:6px;align-items:center;justify-content:center;font:600 19px/1 Fredoka,sans-serif;color:var(--dark);box-shadow:0 6px 16px rgba(0,0,0,.45)}
+.deck svg{width:66px;height:50px}
 .pl{display:flex;justify-content:space-between;align-items:center;gap:6px;padding:3px 8px;border-radius:10px;background:#0d4230;margin-top:4px}
 .pl.on{outline:2px solid var(--gold)}.pl.out{opacity:.45;text-decoration:line-through}
 .dot{width:16px;height:16px;border-radius:50%;flex:none;border:2px solid #111}
@@ -130,7 +136,7 @@ label{display:block;font-weight:700;margin:0 0 6px;color:var(--mute)}
 .buybox{background:#0a2f22;border-radius:16px;padding:14px;min-width:0}
 .bondgrid{display:grid;grid-template-columns:repeat(6,1fr);gap:6px}
 .cardpop{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);z-index:40;width:min(420px,calc(100vw - 32px));padding:24px;border-radius:24px;color:var(--dark);text-align:center;box-shadow:0 18px 50px rgba(0,0,0,.6);pointer-events:none;animation:pop .25s ease-out}
-.cardpop h2{font-size:26px;margin:6px 0 10px}.cardpop p{margin:0;font-size:19px;font-weight:800;line-height:1.3}.cardpop .ic{width:88px;height:60px}
+.cardpop h2{font-size:26px;margin:6px 0 10px}.cardpop p{margin:0;font-size:19px;font-weight:800;line-height:1.3}.cardpop .tic{width:100px;height:75px;margin:0 auto}
 @keyframes pop{from{opacity:0;transform:translate(-50%,-50%) scale(.85)}to{opacity:1;transform:translate(-50%,-50%) scale(1)}}
 @media (prefers-reduced-motion:reduce){.cardpop{animation:none}}
 .dicestage{position:fixed;inset:0;z-index:45;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:28px;background:rgba(2,20,13,.45);pointer-events:none}
@@ -183,8 +189,32 @@ function pawn(i) {
   return `<svg class="pawn" viewBox="0 0 44 62" role="img" aria-label="Pjäs"><defs><radialGradient id="${id}" cx=".34" cy=".28" r=".85"><stop offset="0" stop-color="#fff"/><stop offset=".22" stop-color="${c}"/><stop offset=".72" stop-color="${c}"/><stop offset="1" stop-color="#14123a"/></radialGradient><linearGradient id="${id}b" x1="0" x2="1"><stop offset="0" stop-color="#14123a"/><stop offset=".22" stop-color="${c}"/><stop offset=".42" stop-color="#fff"/><stop offset=".62" stop-color="${c}"/><stop offset="1" stop-color="#14123a"/></linearGradient></defs><ellipse cx="22" cy="56" rx="20" ry="6" fill="#000" opacity=".45"/><path d="M17 24C16 36 10 44 7 50H37C34 44 28 36 27 24Z" fill="url(#${id}b)" stroke="#0b0a24" stroke-width="1"/><path d="M15 25.5C18 28 26 28 29 25.5L28 22H16Z" fill="url(#${id}b)" stroke="#0b0a24" stroke-width="1"/><path d="M6 50C6 47 38 47 38 50V53C38 57 6 57 6 53Z" fill="url(#${id}b)" stroke="#0b0a24" stroke-width="1"/><ellipse cx="22" cy="50" rx="16" ry="3.4" fill="${c}" stroke="#0b0a24" stroke-width=".7"/><circle cx="22" cy="14" r="13" fill="url(#${id})" stroke="#0b0a24" stroke-width="1"/><ellipse cx="17" cy="9" rx="4" ry="2.6" fill="#fff" opacity=".85"/></svg>`;
 }
 const CITY = `<svg role="img" aria-label="Illustration av en hög kontorsbyggnad i ett finansdistrikt i skymning" width="1050" height="945" viewBox="0 0 1000 900" style="position:absolute;left:120px;top:120px;filter:blur(1.5px)"><defs><linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#06261b"/><stop offset=".55" stop-color="#1b7a54"/><stop offset="1" stop-color="#a7e3a1"/></linearGradient><pattern id="lit" width="24" height="30" patternUnits="userSpaceOnUse"><rect x="6" y="7" width="12" height="16" fill="#fde68a" opacity=".7"/></pattern><pattern id="glass" width="18" height="24" patternUnits="userSpaceOnUse"><rect x="4" y="5" width="10" height="14" fill="#93c5fd" opacity=".5"/></pattern></defs><rect width="1000" height="900" fill="url(#sky)"/><rect y="520" width="100" height="380" fill="#14513b"/><rect x="340" y="560" width="70" height="340" fill="#14513b"/><rect x="710" y="460" width="60" height="440" fill="#14513b"/><rect x="930" y="480" width="70" height="420" fill="#14513b"/><rect y="520" width="100" height="380" fill="url(#glass)"/><rect x="930" y="480" width="70" height="420" fill="url(#glass)"/><rect x="198" y="300" width="4" height="110" fill="#07291e"/><rect x="165" y="400" width="70" height="70" fill="#07291e"/><rect x="130" y="460" width="140" height="80" fill="#07291e"/><rect x="90" y="530" width="220" height="290" fill="#07291e"/><rect x="130" y="460" width="140" height="80" fill="url(#lit)"/><rect x="96" y="535" width="208" height="280" fill="url(#lit)"/><polygon points="80,820 200,780 320,820" fill="#0d3d2c"/><rect x="80" y="820" width="240" height="80" fill="#0d3d2c"/><rect x="100" y="826" width="14" height="74" fill="#c7d2fe"/><rect x="140" y="826" width="14" height="74" fill="#c7d2fe"/><rect x="180" y="826" width="14" height="74" fill="#c7d2fe"/><rect x="220" y="826" width="14" height="74" fill="#c7d2fe"/><rect x="260" y="826" width="14" height="74" fill="#c7d2fe"/><rect x="300" y="826" width="14" height="74" fill="#c7d2fe"/><polygon points="760,560 930,470 930,900 760,900" fill="#0d3d2c"/><rect x="772" y="590" width="146" height="310" fill="url(#glass)"/></svg>`;
-const KIND_BG = { bor: '#7dd3fc', news: '#fde047', div: '#4ade80', lilla: '#c4b5fd', bonddiv: '#4ade80', branch: '#fbbf24', entry: '#fbbf24', exit: '#fbbf24', buildsq: '#fdba74', repay: '#fda4af', give: '#fda4af', prison: '#0f172a', gotoprison: '#0f172a' };
-
+const KIND_BG = { bor: '#1d4ed8', news: '#c98a0a', div: '#15803d', lilla: '#0e7490', bonddiv: '#15803d', branch: '#a16207', entry: '#a16207', exit: '#a16207', buildsq: '#c2570c', repay: '#be123c', give: '#be123c', prison: '#334155', gotoprison: '#334155' };
+const COIN = (x, y, w) => `<ellipse cx="${x}" cy="${y}" rx="${w}" ry="${w * .35}" fill="#fcd34d" stroke="#92400e"/>`;
+const STACK = (x, y, n, w = 9) => Array.from({ length: n }, (_, i) => `<path d="M${x - w} ${y - i * 4}v3a${w} ${w * .35} 0 0 0 ${w * 2} 0v-3" fill="#d97706" stroke="#92400e" stroke-width=".6"/>${COIN(x, y - i * 4, w)}`).join('');
+const ICON = {
+  bor: '<path d="M6 40L18 32L28 35L42 20L58 10" fill="none" stroke="#7dd3fc" stroke-width="2"/><g stroke-width="1.5"><path d="M10 22v18M22 14v22M34 12v22M46 6v18" stroke="#e2e8f0"/><rect x="7" y="26" width="6" height="10" fill="#34d399"/><rect x="19" y="18" width="6" height="12" fill="#f87171"/><rect x="31" y="16" width="6" height="12" fill="#34d399"/><rect x="43" y="9" width="6" height="11" fill="#34d399"/></g><path d="M52 6h9v9l-3-3-5 5-3-3 5-5z" fill="#7dd3fc"/>',
+  news: '<path d="M8 10l36-6 6 34-36 6z" fill="#94a3b8"/><path d="M12 7l36-4 5 34-36 5z" fill="#f8fafc" stroke="#475569"/><path d="M17 11l26-3M18 15l13-1M19 20l12-1M20 25l12-1M21 30l26-3" stroke="#334155" stroke-width="2"/><path d="M34 13l10-1 1.500 11-10 1z" fill="#475569"/><path d="M54 6l5-4M55 14h7M54 21l6 3" stroke="#fde047" stroke-width="3" stroke-linecap="round"/>',
+  div: `${STACK(14, 38, 5)}${STACK(30, 40, 3)}<circle cx="42" cy="28" r="13" fill="#fbbf24" stroke="#92400e" stroke-width="1.500"/><circle cx="42" cy="28" r="9.500" fill="none" stroke="#92400e"/><text x="42" y="33" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="800" font-size="13" fill="#78350f">kr</text><path d="M50 14l6-6M50 5h8v8" fill="none" stroke="#86efac" stroke-width="3"/>`,
+  bond: '<rect x="10" y="5" width="44" height="34" rx="3" fill="#f8fafc" stroke="#334155"/><rect x="14" y="9" width="36" height="26" rx="1" fill="none" stroke="#0e7490"/><path d="M19 15h26M19 20h18M19 25h14" stroke="#475569" stroke-width="2"/><circle cx="44" cy="31" r="8" fill="#fbbf24" stroke="#92400e"/><path d="M40 38l-3 8 7-3 7 3-3-8" fill="#ef4444"/>',
+  bank: '<path d="M32 3L60 17H4z" fill="#fde68a" stroke="#78350f"/><path d="M8 19h48v4H8zM6 40h52v5H6z" fill="#fef3c7" stroke="#78350f"/><path d="M12 24h6v15h-6zM24 24h6v15h-6zM36 24h6v15h-6zM47 24h6v15h-6z" fill="#fef9c3" stroke="#78350f"/>',
+  in: '<path d="M4 14h40v30H4z" fill="#78350f"/><path d="M8 18h32v26H8z" fill="#fde68a"/><path d="M30 18h10v26H30z" fill="#451a03"/><path d="M42 31H58M49 23l-8 8 8 8" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>',
+  out: '<path d="M20 14h40v30H20z" fill="#78350f"/><path d="M24 18h32v26H24z" fill="#fde68a"/><path d="M46 18h10v26H46z" fill="#451a03"/><path d="M36 31H6M14 23l-8 8 8 8" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>',
+  crane: '<path d="M18 44V8M12 44h14M8 10h48M18 8L8 10M18 8l28 2" stroke="#fde047" stroke-width="3" fill="none"/><path d="M46 10v14" stroke="#e2e8f0" stroke-width="2"/><rect x="38" y="24" width="16" height="12" fill="#f87171" stroke="#7f1d1d"/><path d="M38 24l8-6 8 6z" fill="#b91c1c"/><path d="M28 44h30v2H28z" fill="#e2e8f0"/>',
+  repay: `${STACK(20, 40, 5, 11)}<path d="M44 8v28M34 26l10 11 10-11" fill="none" stroke="#fecdd3" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>`,
+  give: `<circle cx="32" cy="24" r="12" fill="#fbbf24" stroke="#92400e" stroke-width="1.500"/><text x="32" y="29" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="800" font-size="12" fill="#78350f">%</text><path d="M16 12L6 5M48 12L58 5M16 36L6 43M48 36l10 7" stroke="#fecdd3" stroke-width="4" stroke-linecap="round"/>`,
+  bars: '<rect x="8" y="5" width="48" height="39" rx="3" fill="#0f172a" stroke="#cbd5e1" stroke-width="2"/><path d="M17 6v37M27 6v37M37 6v37M47 6v37" stroke="#cbd5e1" stroke-width="3.500"/><rect x="24" y="19" width="16" height="13" rx="2" fill="#fbbf24" stroke="#78350f"/><path d="M27 19v-4a5 5 0 0 1 10 0v4" fill="none" stroke="#fbbf24" stroke-width="2.500"/>',
+  gojail: '<rect x="30" y="5" width="30" height="39" rx="3" fill="#0f172a" stroke="#cbd5e1" stroke-width="2"/><path d="M38 6v37M45 6v37M52 6v37" stroke="#cbd5e1" stroke-width="3"/><path d="M4 25h22M17 15l10 10-10 10" fill="none" stroke="#fda4af" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>',
+  H: '<path d="M14 12h24l6 7-5 3-5-4H26l-3 27h-8l3-27H10z" fill="#e2e8f0" stroke="#334155"/><path d="M38 28h18v14H38z" fill="#b45309" stroke="#451a03"/>',
+  S: '<path d="M44 5a13 13 0 0 0-12 18L8 37a6 6 0 0 0 8 9l14-24a13 13 0 0 0 18-13l-9 7-7-3-1-7z" fill="#e2e8f0" stroke="#334155"/>',
+  A: '<path d="M8 20l5-14h38l5 14z" fill="#fda4af" stroke="#4c0519"/><path d="M11 20h42v25H11z" fill="#fff1f2" stroke="#4c0519"/><path d="M17 26h12v19H17z" fill="#be123c"/><path d="M34 26h13v10H34z" fill="#7dd3fc" stroke="#4c0519"/>',
+  F: '<rect x="6" y="15" width="52" height="30" rx="3" fill="#92400e" stroke="#451a03"/><path d="M22 15v-6h20v6" fill="none" stroke="#451a03" stroke-width="4"/><path d="M6 27h52" stroke="#451a03" stroke-width="2"/><rect x="27" y="24" width="10" height="7" fill="#fbbf24" stroke="#451a03"/>',
+  T: '<rect x="15" y="9" width="34" height="30" rx="3" fill="#0f172a" stroke="#99f6e4" stroke-width="2"/><rect x="23" y="16" width="18" height="16" fill="#14b8a6"/><path d="M21 3v6M32 3v6M43 3v6M21 39v6M32 39v6M43 39v6M9 15h6M9 24h6M9 33h6M49 15h6M49 24h6M49 33h6" stroke="#99f6e4" stroke-width="3"/>',
+  K: '<path d="M25 5h14M28 5v15L13 42a3 3 0 0 0 3 4h32a3 3 0 0 0 3-4L36 20V5" fill="#ede9fe" stroke="#2e1065" stroke-width="2"/><path d="M21 33h22l6 11H15z" fill="#22d3ee"/><circle cx="30" cy="38" r="2.500" fill="#fff"/>',
+  I: '<path d="M6 45V25l15 9v-9l15 9v-9l15 9V8h8v37z" fill="#e2e8f0" stroke="#1f2937"/><path d="M12 36h6v5h-6zM26 36h6v5h-6zM40 36h6v5h-6z" fill="#fbbf24"/><circle cx="56" cy="4" r="3" fill="#cbd5e1"/>',
+};
+const iconFor = (s) => { const k = s.kind === 'plot' ? s.group : { bor: 'bor', news: 'news', div: 'div', lilla: 'bond', bonddiv: 'bond', branch: 'bank', entry: 'in', exit: 'out', buildsq: 'crane', repay: 'repay', give: 'give', prison: 'bars', gotoprison: 'gojail' }[s.kind]; return svg(`<svg class="tic" viewBox="0 0 64 48" aria-hidden="true">${ICON[k] || ''}</svg>`); };
+const tileBg = (c) => `linear-gradient(145deg,color-mix(in srgb,${c} 78%,white) 0%,${c} 42%,color-mix(in srgb,${c} 52%,black) 100%)`;
 // Rutans plats på brädet: x, y, bredd, höjd och vridning.
 // Brädets bredd följer skärmen. Rutorna upptill och nedtill blir bredare, så att spelplanen fyller platsen.
 let TW = 105;
@@ -216,25 +246,25 @@ function buildBoard() {
   b.append(el('div', { class: 'title', style: `left:${W / 2 - 450}px;top:${D + 8}px` }, GAME_NAME));
   const lg = el('div', { class: 'legend', style: `left:${W / 2 - 450}px;top:${D + 100}px` });
   Object.values(GROUPS).forEach((g) => lg.append(el('div', { class: 'l' }, el('div', { class: 's', style: 'background:' + g.color }), g.name)));
-  [['#fbbf24', 'Bank och handel'], ['#7dd3fc', 'Börstips'], ['#fde047', 'Finanstidning'], ['#4ade80', 'Aktieutdelning'], ['#c4b5fd', 'Obligationer']].forEach(([c, t]) => lg.append(el('div', { class: 'l' }, el('div', { class: 's', style: 'background:' + c }), t)));
+  [[KIND_BG.bank || KIND_BG.branch, 'Bank och handel'], [KIND_BG.bor, 'Börstips'], [KIND_BG.news, 'Finanstidning'], [KIND_BG.div, 'Aktieutdelning'], [KIND_BG.lilla, 'Obligationer']].forEach(([c, t]) => lg.append(el('div', { class: 'l' }, el('div', { class: 's', style: 'background:' + c }), t)));
   b.append(lg);
   b.append(el('div', { class: 'mid', style: `left:${colX(6)}px;width:${TW}px;top:${BOTTOM - 5 * ROW}px;height:${5 * ROW + D}px` }, 'Bankens huvudkontor'));
   const leftC = D + 2 * TW; const rightC = colX(8) + 1.5 * TW;
-  b.append(el('div', { class: 'deck', style: `left:${leftC - 85}px;top:${BOTTOM - 505}px;background:#7dd3fc;transform:rotate(-4deg)` }, svg(CHART), 'Börstips'));
-  b.append(el('div', { class: 'deck', style: `left:${rightC - 85}px;top:${BOTTOM - 545}px;background:#fde047;transform:rotate(4deg)` }, svg(PAPER), 'Finanstidningen'));
+  b.append(el('div', { class: 'deck', style: `left:${leftC - 85}px;top:${BOTTOM - 505}px;background:${tileBg(KIND_BG.bor)};color:#fff;--g:#60a5fa;transform:rotate(-4deg)` }, iconFor(SQUARES[2]), 'Börstips'));
+  b.append(el('div', { class: 'deck', style: `left:${rightC - 85}px;top:${BOTTOM - 545}px;background:${tileBg(KIND_BG.news)};color:#fff;--g:#fde047;transform:rotate(4deg)` }, iconFor(SQUARES[6]), 'Finanstidningen'));
   b.append(el('div', { class: 'activenews', id: 'activenews', style: `left:${colX(8) + 10}px;width:${3 * TW - 20}px;top:${BOTTOM - 429}px` }));
   for (let n = 1; n <= 53; n++) {
     const s = SQUARES[n]; const r = rect(n); const isPlot = s.kind === 'plot';
     const g = isPlot ? GROUPS[s.group] : null;
-    const bg = isPlot ? g.color : KIND_BG[s.kind]; const fg = isPlot ? g.text : (s.kind === 'prison' || s.kind === 'gotoprison' ? '#fff' : '#1a1740');
+    const base = isPlot ? g.color : KIND_BG[s.kind];
     let w = r.rot && Math.abs(r.rot) === 90 ? ROW : r.w, h = r.bank ? ROW : D; if (r.corner) { w = D; h = D; }
     const left = r.x + r.w / 2 - w / 2; const top = r.y + r.h / 2 - h / 2;
     const cls = 'c' + (isPlot ? ' t' : '') + (r.bank ? ' bk' : '') + (r.corner ? ' h' : '');
-    const e = el('div', { class: cls, id: 'sq' + n, role: 'button', tabindex: 0, 'aria-label': n + ' ' + s.name, style: `left:${left}px;top:${top}px;width:${w}px;height:${h}px;background:${bg};color:${fg};` + (r.rot ? `transform:rotate(${r.rot}deg);` : '') });
+    const e = el('div', { class: cls, id: 'sq' + n, role: 'button', tabindex: 0, 'aria-label': n + ' ' + s.name, style: `left:${left}px;top:${top}px;width:${w}px;height:${h}px;background:${tileBg(base)};--g:${base};` + (r.rot ? `transform:rotate(${r.rot}deg);` : '') });
     e.onclick = () => showSquare(n); e.onkeydown = (ev) => { if (ev.key === 'Enter') showSquare(n); };
-    const icon = s.kind === 'bor' ? svg(CHART) : s.kind === 'news' ? svg(PAPER) : null;
+    const icon = iconFor(s);
     const name = s.sub ? [el('strong', {}, breakable(s.name)), el('br'), breakable(s.sub)] : [breakable(s.name)];
-    if (r.corner) e.append(el('div', { class: 'r', style: 'justify-content:flex-start;padding-top:8px' }, el('div', { class: 'n' }, n), el('div', {}, icon, ...name)));
+    if (r.corner) e.append(el('div', { class: 'r' }, el('div', { class: 'n' }, n), icon, el('div', {}, ...name)));
     else {
       const rot = r.rot || 0; const sideways = Math.abs(rot) === 90;
       if (isPlot) e.append(el('div', { class: 'head', id: 'h' + n, style: (sideways ? 'height:42px;' : '') + (rot === -90 ? 'justify-content:flex-end' : '') }));
@@ -243,7 +273,8 @@ function buildBoard() {
       if (r.bank) { const res = 36; if (r.wide) { W = w - res - 4; } else if (r.arm === 'L') { W = w - res; } else { lx = res; W = w - res; } }
       else if (sideways) { const top = isPlot ? 43 : 36; const ah = h - top; W = ah; H = w; lx = w / 2 - W / 2; ly = top + ah / 2 - H / 2; }
       else { const top = isPlot ? 31 : 0; ly = top; H = h - top; just = rot === 180 ? 'flex-start' : 'flex-end'; }
-      e.append(el('div', { class: 'lab', style: `left:${lx}px;top:${ly}px;width:${W}px;height:${H}px;justify-content:${just};transform:rotate(${-rot}deg)` }, el('div', { class: 'n' }, n), icon, el('div', {}, ...name), isPlot ? el('div', { class: 'pr' }, kr(g.plot)) : null));
+      const row = !!r.wide;
+      e.append(el('div', { class: 'lab' + (row ? ' rowlab' : '') + (sideways ? ' sidelab' : ''), style: `left:${lx}px;top:${ly}px;width:${W}px;height:${H}px;justify-content:${row ? 'center' : just};transform:rotate(${-rot}deg)` }, el('div', { class: 'n' }, n), icon, el('div', { class: 'ltext' }, el('div', {}, ...name), isPlot ? el('div', { class: 'pr' }, kr(g.plot)) : null)));
     }
     b.append(e);
   }
@@ -412,7 +443,7 @@ function showCardPopup(g) {
   if (!g.lastCard || g.lastCard.id !== no) return;
   document.getElementById('cardpop')?.remove(); clearTimeout(cardTimer);
   const tips = g.lastCard.deck === 'Börstips';
-  document.body.append(el('div', { class: 'cardpop', id: 'cardpop', role: 'status', style: 'background:' + (tips ? '#7dd3fc' : '#fde047') }, svg(tips ? CHART : PAPER), el('h2', {}, g.lastCard.deck), el('p', {}, g.lastCard.text)));
+  document.body.append(el('div', { class: 'cardpop', id: 'cardpop', role: 'status', style: `background:${tileBg(tips ? KIND_BG.bor : KIND_BG.news)};color:#fff;text-shadow:0 2px 3px rgba(0,0,0,.55);border:3px solid ${tips ? '#60a5fa' : '#fde047'}` }, iconFor(tips ? SQUARES[2] : SQUARES[6]), el('h2', {}, g.lastCard.deck), el('p', {}, g.lastCard.text)));
   cardTimer = setTimeout(() => document.getElementById('cardpop')?.remove(), 5000);
 }
 // Fyrverkerier när spelet är slut.
@@ -552,8 +583,7 @@ function renderLanding() {
   const box = document.getElementById('landing'); if (!box) return; const g = S.game; const L = g.landed;
   if (!L) { box.replaceChildren(el('h3', {}, 'Senaste rutan'), el('p', { class: 'small', style: 'margin:0' }, 'Här visas rutan som spelaren landar på.')); return; }
   const p = g.players.find((v) => v.id === L.player); const n = L.pos; const s = SQUARES[n]; const isPlot = s.kind === 'plot'; const gr = isPlot ? GROUPS[s.group] : null;
-  const bg = isPlot ? gr.color : KIND_BG[s.kind]; const fg = isPlot ? gr.text : (s.kind === 'prison' || s.kind === 'gotoprison' ? '#fff' : '#1a1740');
-  const icon = s.kind === 'bor' ? svg(CHART) : s.kind === 'news' ? svg(PAPER) : null;
+  const bg = isPlot ? gr.color : KIND_BG[s.kind]; const icon = iconFor(s);
   const rows = [];
   if (isPlot) { const i = plotInfo(n); const x = g.plots[n]; const row = (a, b) => el('div', { class: 'lrow' }, el('span', { class: 'small' }, a), el('b', {}, b));
     rows.push(el('div', { class: 'small' }, gr.name), row('Ägare', x.owner ? ownerName(x.owner) : 'Banken'));
@@ -563,7 +593,7 @@ function renderLanding() {
   } else if (g.lastCard && (s.kind === 'bor' || s.kind === 'news' || s.kind === 'exit')) rows.push(el('div', { class: 'small' }, g.lastCard.deck), el('div', {}, g.lastCard.text));
   else rows.push(el('div', {}, SQUARE_TEXT[s.kind] || ''));
   box.replaceChildren(el('h3', {}, p.id === S.you ? 'Du landade på' : p.name + ' landade på'),
-    el('div', { class: 'ltile', style: `background:${bg};color:${fg}` }, isPlot ? el('div', { class: 'lh' }) : null, el('div', { class: 'lb' }, el('div', { class: 'n' }, 'Ruta ' + n), icon, el('div', {}, s.name))), ...rows);
+    el('div', { class: 'ltile', style: `background:${tileBg(bg)};color:#fff;--g:${bg}` }, isPlot ? el('div', { class: 'lh' }) : null, el('div', { class: 'lb' }, el('div', { class: 'small', style: 'color:#fff' }, 'Ruta ' + n), icon, el('div', {}, s.name))), ...rows);
 }
 // Rutan på brädet lyser upp när muspekaren eller fokus är på ett bevis.
 const clearGlow = () => document.querySelectorAll('.c.glow').forEach((e) => e.classList.remove('glow'));
