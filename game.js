@@ -10,7 +10,7 @@ const groupPlots = (k) => Object.keys(SQUARES).map(Number).filter((n) => SQUARES
 function newGame(players, opts = {}) {
   const g = {
     phase: 'play', autoEnd: opts.autoEnd !== false, target: opts.target || R.target, doubles: 0, pendingRent: null, bonusThenLand: false, drawNo: 0, lastDraw: null, extraRoll: false, eventNo: 0, events: [], finalRound: null, landed: null, cardNo: 0, rollNo: 0, lastRoll: null, turnNo: 1, current: 0, stage: 'pre', boughtPlot: false, boughtShare: false,
-    players: players.map((p, i) => ({ id: p.id, name: p.name, bot: !!p.bot, color: i, shape: p.shape ?? i, pos: 48, cash: R.startCash, car: false, loans: 0, jail: 0, jailFree: [], permits: [], rentFree: [], tradePass: [], lapDone: false, fromPrison: false, out: false })),
+    players: players.map((p, i) => ({ id: p.id, name: p.name, bot: !!p.bot, color: p.color ?? i, shape: p.shape ?? i, pos: 48, cash: R.startCash, car: false, loans: 0, jail: 0, jailFree: [], permits: [], rentFree: [], tradePass: [], lapDone: false, fromPrison: false, out: false })),
     plots: {}, shares: [], bonds: {}, news: null, dice: [], debts: [], bondRound: null, winner: null, log: [],
     tipDeck: shuffled(BORSTIPS.length), newsDeck: shuffled(FINANS.length), lastCard: null,
   };

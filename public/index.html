@@ -121,6 +121,7 @@ body::before{content:'';position:fixed;inset:0;z-index:-1;background:var(--bg) u
 .pl{display:flex;justify-content:space-between;align-items:center;gap:6px;padding:3px 8px;border-radius:10px;background:#0d4230;margin-top:4px}
 .pl.on{outline:2px solid var(--gold)}.pl.out{opacity:.45;text-decoration:line-through}
 .dot{width:16px;height:16px;border-radius:50%;flex:none;border:2px solid #111}
+.colors{display:flex;gap:10px;margin-bottom:12px}.colorpick{flex:none;width:44px;height:44px;min-height:44px;padding:0;border-radius:50%;border:3px solid rgba(0,0,0,.5)}.colorpick:hover{filter:brightness(1.1)}.colorpick.on{outline:3px solid #fff;outline-offset:3px}.colorpick:disabled{opacity:.25;cursor:default}
 .shapes{display:grid;grid-template-columns:repeat(6,1fr);gap:6px;margin-bottom:12px}.shape{display:grid;justify-items:center;gap:2px;padding:6px 2px;min-width:0;font:800 11.5px/1.1 Nunito,sans-serif;background:#0d4230;border:2px solid transparent}.shape .pawn{width:50px;height:70px}.shape.on{border-color:var(--gold);background:#1b7a54}.shape:disabled{opacity:.35;cursor:default}
 .pawnicon{display:block;width:28px;height:39px;margin:-5px 0;flex:none}
 .money{font-weight:800;white-space:nowrap}
@@ -191,6 +192,7 @@ body.rolling .side{pointer-events:none}
 <script>
 const { GAME_NAME, GROUPS, SQUARES, RULES, plotInfo } = window.GAME_DATA;
 document.title = GAME_NAME + ' online';
+const COLOR_NAMES = ['Röd', 'Blå', 'Gul', 'Vit', 'Lila', 'Grön'];
 const COLORS = ['#ff1744', '#2979ff', '#ffea00', '#ffffff', '#d500f9', '#00e676'];
 const kr = (v) => Number(v).toLocaleString('sv-SE') + ' kr';
 const app = document.getElementById('app');
@@ -364,7 +366,7 @@ function renderLobby() {
     el('div', { class: 'card stack', style: 'margin-top:20px' },
       el('div', {}, el('div', { class: 'small' }, 'Spelkod'), el('div', { class: 'code' }, S.code)),
       el('div', { class: 'row' }, el('button', { onclick: () => { try { navigator.clipboard.writeText(link); toast('Länken är kopierad.'); } catch { toast(link); } } }, 'Kopiera inbjudningslänk')),
-      el('div', {}, el('h3', {}, 'Välj din pjäs'), el('div', { class: 'shapes' }, SHAPE_NAMES.map((name, k) => { const owner = S.members.find((m) => m.shape === k); const mine = owner && owner.id === S.you; const myColor = S.members.findIndex((m) => m.id === S.you); return el('button', { class: 'shape' + (mine ? ' on' : ''), disabled: !!owner && !mine, title: owner ? name + ': ' + owner.name : name, 'aria-label': name, onclick: () => wsend({ t: 'shape', shape: k }) }, pawn(k, Math.max(myColor, 0)), el('span', {}, name)); }))), el('div', {}, el('h3', {}, 'Spelare'), S.members.map((m, i) => el('div', { class: 'pl' }, el('div', { class: 'row', style: 'flex:1' }, el('span', { class: 'pawnicon', style: 'flex:0 0 26px' }, pawn(m.shape, i)), el('span', {}, m.name + (m.id === S.you ? ' (du)' : '') + (m.online ? '' : ' (tappat kontakten)')))))),
+      el('div', {}, el('h3', {}, 'Välj din pjäs'), el('div', { class: 'shapes' }, SHAPE_NAMES.map((name, k) => { const owner = S.members.find((m) => m.shape === k); const mine = owner && owner.id === S.you; const myColor = (S.members.find((m) => m.id === S.you) || {}).color ?? 0; return el('button', { class: 'shape' + (mine ? ' on' : ''), disabled: !!owner && !mine, title: owner ? name + ': ' + owner.name : name, 'aria-label': name, onclick: () => wsend({ t: 'shape', shape: k }) }, pawn(k, myColor), el('span', {}, name)); }))), el('div', {}, el('h3', {}, 'Välj din färg'), el('div', { class: 'colors' }, COLORS.map((c, k) => { const owner = S.members.find((m) => m.color === k); const mine = owner && owner.id === S.you; return el('button', { class: 'colorpick' + (mine ? ' on' : ''), style: 'background:' + c, disabled: !!owner && !mine, title: owner ? COLOR_NAMES[k] + ': ' + owner.name : COLOR_NAMES[k], 'aria-label': COLOR_NAMES[k], 'aria-pressed': mine ? 'true' : 'false', onclick: () => wsend({ t: 'color', color: k }) }); }))), el('div', {}, el('h3', {}, 'Spelare'), S.members.map((m, i) => el('div', { class: 'pl' }, el('div', { class: 'row', style: 'flex:1' }, el('span', { class: 'pawnicon', style: 'flex:0 0 26px' }, pawn(m.shape, m.color)), el('span', {}, m.name + (m.id === S.you ? ' (du)' : '') + (m.online ? '' : ' (tappat kontakten)')))))),
       host ? el('div', { class: 'stack' },
         el('div', { class: 'row' }, el('button', { onclick: () => wsend({ t: 'addBot' }), disabled: S.members.length >= 6 }, 'Lägg till dator'), el('button', { onclick: () => wsend({ t: 'removeBot' }), disabled: !S.members.some((m) => m.bot) }, 'Ta bort dator')),
         el('div', {}, el('label', { for: 'target' }, 'Vinstkrav i kontanter'), (() => { const s = el('select', { id: 'target', onchange: (e) => wsend({ t: 'config', target: Number(e.target.value) }) }, el('option', { value: 1000000 }, '1 000 000 kr'), el('option', { value: 500000 }, '500 000 kr, kortare spel')); s.value = S.target; return s; })()),
@@ -597,7 +599,7 @@ function renderGame() {
   for (const n of Object.keys(g.plots)) {
     const x = g.plots[n]; const h = document.getElementById('h' + n); const sq = document.getElementById('sq' + n); h.replaceChildren();
     sq.classList.toggle('mort', !!x.mort);
-    if (x.owner) { const i = g.players.findIndex((p) => p.id === x.owner); h.append(el('span', { class: 'own', style: 'background:' + COLORS[i], title: g.players[i].name })); if (x.built) { const r = rect(Number(n)); const b3 = svg(GROUPS[SQUARES[n].group].industry ? FACTORY3D : HOUSE3D); if (r.rot) b3.style.transform = `rotate(${-r.rot}deg)`; h.append(b3); } }
+    if (x.owner) { const i = g.players.findIndex((p) => p.id === x.owner); h.append(el('span', { class: 'own', style: 'background:' + COLORS[g.players[i].color], title: g.players[i].name })); if (x.built) { const r = rect(Number(n)); const b3 = svg(GROUPS[SQUARES[n].group].industry ? FACTORY3D : HOUSE3D); if (r.rot) b3.style.transform = `rotate(${-r.rot}deg)`; h.append(b3); } }
   }
   // Aktivt tidningskort ligger under Finanstidningen på brädet.
   const an = document.getElementById('activenews'); if (g.news) { const v = cardView(g.news.text);
