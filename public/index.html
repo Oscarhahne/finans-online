@@ -534,7 +534,7 @@ function showDraw(d) {
     el('div', { class: 'dice' }, d.dice.map((v) => el('div', { class: 'die' }, v))),
     d.results.map((r, i) => el('div', { class: 'drawrow' + (r.winner ? '' : ' none') }, el('span', { class: 'drawno' }, r.num), el('div', {}, el('div', { class: 'small' }, ['Högsta vinsten', 'Andra vinsten', 'Tredje vinsten'][i]), r.winner ? el('b', {}, r.winner) : 'Ingen äger obligationen'), el('b', { class: 'money' }, kr(r.prize)))),
     el('button', { onclick: () => { box.remove(); clearTimeout(drawTimer); } }, 'Stäng'));
-  placePopup(box); drawTimer = setTimeout(() => box.remove(), 6000);
+  placePopup(box); drawTimer = setTimeout(() => box.remove(), 5000);
 }
 // Målad stadsbild för korten. Tonen styr himlen och scenen vad som står i förgrunden.
 function cardScene(tone, scene) {
@@ -593,7 +593,7 @@ function showCardPopup(g) {
   document.getElementById('cardpop')?.remove(); clearTimeout(cardTimer);
   const tips = g.lastCard.deck === 'Börstips';
   placePopup(cardPopup(g.lastCard, tips)); if (window.Board3D && Board3D.on) Board3D.showCard(g.lastCard, tips);
-  cardTimer = setTimeout(() => { document.getElementById('cardpop')?.remove(); if (window.Board3D) Board3D.hideCard(); }, 7000);
+  cardTimer = setTimeout(() => { document.getElementById('cardpop')?.remove(); if (window.Board3D) Board3D.hideCard(); }, 6000);
 }
 // Fyrverkerier när spelet är slut.
 let celebrated = false, fwStop = null;
@@ -818,7 +818,7 @@ function showEvents(g) {
   const no = g.eventNo || 0; if (seenEvent === null) { seenEvent = no; return; }
   const fresh = (g.events || []).filter((e) => e.id > seenEvent); seenEvent = no; if (!fresh.length) return;
   const slot3d = window.Board3D && Board3D.on ? document.getElementById('popslot') : null; let box = document.getElementById('events'); if (!box) { box = el('div', { class: 'events', id: 'events', role: 'status', 'aria-live': 'polite' }); if (slot3d) { box.classList.add('inpanel'); slot3d.append(box); } else document.body.append(box); } const area = slot3d ? null : openArea(); box.classList.toggle('placed', !!area); if (area) { box.style.setProperty('--x', area.left + 'px'); box.style.setProperty('--y', area.deckTop + 'px'); box.style.setProperty('--w', (area.right - area.left) + 'px'); }
-  fresh.slice(-4).forEach((e) => { const gone = () => { d.remove(); if (!box.children.length) box.remove(); updateRollLock(); }; const d = el('div', { class: 'evt', title: 'Klicka för att stänga', onclick: gone }, e.text); box.append(d); setTimeout(gone, 5000); });
+  fresh.slice(-4).forEach((e) => { const gone = () => { d.remove(); if (!box.children.length) box.remove(); updateRollLock(); }; const d = el('div', { class: 'evt', title: 'Klicka för att stänga', onclick: gone }, e.text); box.append(d); setTimeout(gone, 4000); });
 }
 const myself = () => S.game.players.find((p) => p.id === S.you);
 // Köpknappen på en tomt följer samma regler som vanliga köp: din tur, före kastet, och i banken, på Bankfilialen eller med Köptips.

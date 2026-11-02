@@ -10,7 +10,7 @@ const PORT = process.env.PORT || 3000;
 const PUBLIC = path.join(__dirname, 'public');
 const TYPES = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8' };
 const BOT_DELAY = Number(process.env.BOT_DELAY ?? 2700);
-const DICE_TIME = 1600, POPUP_CARD = 7200, POPUP_DRAW = 6200, POPUP_EVENT = 5200; // Samma tider som i webbläsaren, plus lite marginal.
+const DICE_TIME = 1600, POPUP_CARD = 6200, POPUP_DRAW = 5200, POPUP_EVENT = 4200; // Samma tider som i webbläsaren, plus lite marginal.
 const TURN_LIMIT = Number(process.env.TURN_LIMIT ?? 120000); // Tid innan spelet agerar åt en spelare
 const GONE_LIMIT = Number(process.env.GONE_LIMIT ?? 20000); // Kortare tid om spelaren tappat kontakten
 const MAX_ROOMS = 300;
