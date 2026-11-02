@@ -44,6 +44,8 @@ label{display:block;font-weight:700;margin:0 0 6px;color:var(--mute)}
 .drows{display:grid;margin-top:8px}.drow{display:flex;justify-content:space-between;gap:12px;padding:6px 2px;border-bottom:1px dotted #64748b;font-size:14.5px}.drow b{text-align:right;font-family:Nunito,sans-serif}
 .dfoot{margin:10px 0 0;font-size:13px;line-height:1.3}
 .activenews{position:absolute;left:875px;top:640px;width:275px;padding:10px 12px;border-radius:12px;background:#fef3a0;color:#1a1740;font:800 14px/1.25 Nunito,sans-serif;box-shadow:0 6px 16px rgba(0,0,0,.45);border:2px solid #1a1740}
+.c.glow{filter:brightness(1.3) saturate(1.2);box-shadow:0 0 0 4px #fff,0 0 26px 10px rgba(255,255,255,.9);z-index:4}
+.c.glow:hover{filter:brightness(1.3) saturate(1.2)}
 .mini{min-height:44px;padding:4px 6px;border:0;border-radius:8px;font:800 11.5px/1.1 Nunito,sans-serif;box-shadow:0 2px 3px rgba(0,0,0,.45),inset 0 0 0 1px rgba(0,0,0,.45);text-align:center;width:70px;display:flex;align-items:center;justify-content:center}
 .mini.m{opacity:.85;outline:2px dashed #fff;outline-offset:-3px}
 .note{background:#d9f99d;color:#14532d}.bond{background:#c4b5fd;color:#1a1740;width:38px}
@@ -491,17 +493,21 @@ function renderLanding() {
   box.replaceChildren(el('h3', {}, p.id === S.you ? 'Du landade på' : p.name + ' landade på'),
     el('div', { class: 'ltile', style: `background:${bg};color:${fg}` }, isPlot ? el('div', { class: 'lh' }) : null, el('div', { class: 'lb' }, el('div', { class: 'n' }, 'Ruta ' + n), icon, el('div', {}, s.name))), ...rows);
 }
+// Rutan på brädet lyser upp när muspekaren eller fokus är på ett bevis.
+const clearGlow = () => document.querySelectorAll('.c.glow').forEach((e) => e.classList.remove('glow'));
+const setGlow = (ns) => { clearGlow(); ns.forEach((n) => document.getElementById('sq' + n)?.classList.add('glow')); };
+const glowOn = (ns) => ({ onmouseenter: () => setGlow(ns), onmouseleave: clearGlow, onfocus: () => setGlow(ns), onblur: clearGlow });
 // Egna högar till vänster: tomter, aktier, obligationer och pengar.
 function renderPiles() {
-  const box = document.getElementById('piles'); if (!box) return; const g = S.game; const me = g.players.find((p) => p.id === S.you);
+  clearGlow(); const box = document.getElementById('piles'); if (!box) return; const g = S.game; const me = g.players.find((p) => p.id === S.you);
   if (!me) { box.replaceChildren(); return; }
   const mine = Object.keys(g.plots).map(Number).filter((n) => g.plots[n].owner === S.you).sort((a, b) => a - b);
   const shares = g.shares.filter((v) => v.owner === S.you); const bonds = Object.keys(g.bonds).filter((n) => g.bonds[n] === S.you);
   const notes = []; let left = me.cash; for (const v of [100000, 50000, 10000, 5000, 1000, 500]) { const c = Math.floor(left / v); if (c) { notes.push(el('div', { class: 'mini note', title: c + ' sedlar' }, (v / 1000) + 'k × ' + c)); left -= c * v; } }
   const pile = (title, count, items, empty) => el('section', { class: 'pile' }, el('h4', {}, title, el('span', {}, count)), items.length ? el('div', { class: 'minis' }, items) : el('div', { class: 'small' }, empty));
   box.replaceChildren(el('h3', {}, 'Mina högar'), el('div', { class: 'small' }, 'Tryck på ett kort för att se vad det gäller.'),
-    pile('Tomter', mine.length, mine.map((n) => { const k = SQUARES[n].group; const gr = GROUPS[k]; const x = g.plots[n]; const pic = svg(gr.industry ? FACTORY3D : HOUSE3D); return el('button', { class: 'deedmini' + (x.mort ? ' m' : ''), onclick: () => showDeed(n), 'aria-label': 'Lagfartsbevis ' + SQUARES[n].name }, el('span', { class: 'band', style: `background:${gr.color};color:${gr.text}` }, 'Lagfart'), (() => { if (!x.built) pic.classList.add('unbuilt'); return pic; })(), el('span', {}, breakable(SQUARES[n].name))); }), 'Inga tomter än'),
-    pile('Aktier', shares.length, shares.map((v) => { const gr = GROUPS[v.group]; return el('button', { class: 'deedmini', onclick: () => showShare(v.id), 'aria-label': 'Aktiebrev ' + gr.name }, el('span', { class: 'band', style: `background:${gr.color};color:${gr.text}` }, 'Aktie'), el('span', {}, gr.name), el('b', {}, kr(v.value))); }), 'Inga aktier än'),
+    pile('Tomter', mine.length, mine.map((n) => { const k = SQUARES[n].group; const gr = GROUPS[k]; const x = g.plots[n]; const pic = svg(gr.industry ? FACTORY3D : HOUSE3D); return el('button', { class: 'deedmini' + (x.mort ? ' m' : ''), ...glowOn([n]), onclick: () => showDeed(n), 'aria-label': 'Lagfartsbevis ' + SQUARES[n].name }, el('span', { class: 'band', style: `background:${gr.color};color:${gr.text}` }, 'Lagfart'), (() => { if (!x.built) pic.classList.add('unbuilt'); return pic; })(), el('span', {}, breakable(SQUARES[n].name))); }), 'Inga tomter än'),
+    pile('Aktier', shares.length, shares.map((v) => { const gr = GROUPS[v.group]; return el('button', { class: 'deedmini', ...glowOn(plotsIn(v.group)), onclick: () => showShare(v.id), 'aria-label': 'Aktiebrev ' + gr.name }, el('span', { class: 'band', style: `background:${gr.color};color:${gr.text}` }, 'Aktie'), el('span', {}, gr.name), el('b', {}, kr(v.value))); }), 'Inga aktier än'),
     pile('Obligationer', bonds.length, bonds.map((n) => el('button', { class: 'deedmini', onclick: () => showBond(n), 'aria-label': 'Obligation ' + n }, el('span', { class: 'band', style: 'background:#c4b5fd;color:#1a1740' }, 'Obligation'), el('b', { style: 'font-size:18px' }, 'Nr ' + n))), 'Inga obligationer än'),
     pile('Frikort', (me.jailFree || []).length, (me.jailFree || []).map(() => el('button', { class: 'deedmini', onclick: () => showFree(), 'aria-label': 'Frikort' }, el('span', { class: 'band', style: 'background:#7dd3fc;color:#1a1740' }, 'Frikort'), el('span', {}, 'Slipp fängelset'))), 'Inga frikort'),
     pile('Pengar', kr(me.cash), notes, 'Inga pengar'));
