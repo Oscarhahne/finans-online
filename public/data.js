@@ -42,7 +42,7 @@
     40: { kind: 'buildsq', name: 'Banken förmedlar byggnadsaffärerna' },
     41: { kind: 'lilla', name: 'Lilla obligationsdragningen' },
     42: BOR, 43: NEWS, 44: DIV, 45: BOR,
-    46: { kind: 'bonddiv', name: 'Aktieutdelning och obligationsköp' },
+    46: { kind: 'bonddiv', name: 'Utdelning och obligation' },
     47: { kind: 'exit', name: 'Bankutgång', sub: 'start, börstips' },
     48: plot('Snickeri', 'H'), 49: NEWS, 50: plot('Smedja', 'H'), 51: BOR,
     52: { kind: 'lilla', name: 'Lilla obligationsdragningen' },

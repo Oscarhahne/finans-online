@@ -83,18 +83,19 @@ label{display:block;font-weight:700;margin:0 0 6px;color:var(--mute)}
 .scaler{position:relative;width:100%}
 .board{position:absolute;left:0;top:0;width:1290px;height:1185px;transform-origin:0 0;background:#0f4a33;border-radius:28px;overflow:hidden;font-family:Nunito,sans-serif}
 .side{min-width:0}
-.c{position:absolute;width:105px;height:120px;border-radius:14px;box-shadow:inset 0 0 0 1px rgba(0,0,0,.7),0 2px 6px rgba(0,0,0,.25);color:var(--dark);padding:0;font:600 13.5px/1.15 Nunito,sans-serif;text-align:center;overflow-wrap:break-word;cursor:pointer;background:none}
-.c[style*='rotate(90deg)'] .lab,.c[style*='rotate(-90deg)'] .lab{font-size:12px}
-.pr{font:800 12px/1.1 Nunito,sans-serif;opacity:.95;white-space:nowrap}
+.c{position:absolute;width:105px;height:120px;border-radius:14px;box-shadow:inset 0 0 0 1px rgba(0,0,0,.7),0 2px 6px rgba(0,0,0,.25);color:var(--dark);padding:0;font:700 21px/1.12 Nunito,sans-serif;text-align:center;overflow-wrap:break-word;cursor:pointer;background:none}
+.pr{font:800 17px/1.1 Nunito,sans-serif;opacity:.95;white-space:nowrap}
 .lab{position:absolute;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:3px;text-align:center}
 .c:hover{filter:brightness(1.08)}
-.n{font:700 11px/14px Nunito,sans-serif;opacity:.85}
+.n{font:800 15px/17px Nunito,sans-serif;opacity:.9}
 .t{font-weight:800}
+.board .deck .ic,.ltile .ic,.cardpop .ic{width:auto}
 .head{position:absolute;top:1px;left:1px;right:1px;height:30px;border-radius:13px 13px 0 0;background:rgba(255,255,255,.4);border-bottom:1px solid rgba(0,0,0,.45);display:flex;align-items:center;justify-content:flex-start;gap:3px;padding:0 3px}
-.bk{height:105px;font-size:12px}
+.bk{height:105px;font-size:17px}
+.narrow .c{font-size:17px}.narrow .bk{font-size:14px}.narrow .pr{font-size:15px}
 .h{width:120px;height:120px}
 .r{position:absolute;inset:0;padding:10px;display:flex;flex-direction:column;gap:2px;align-items:center;justify-content:center;text-align:center}
-.ic{display:block;margin:0 auto 1px;width:38px;height:26px}
+.ic{display:block;margin:0 auto 1px;width:44px;height:30px}
 .own{width:16px;height:16px;border-radius:50%;border:2px solid #000;flex:none;position:relative;z-index:1;margin-right:-8px}
 .b3d{width:50px;height:50px;flex:none;filter:drop-shadow(0 2px 1px rgba(0,0,0,.45))}
 .mort{outline:3px dashed #fff;outline-offset:-6px;opacity:.72}
@@ -186,44 +187,46 @@ const KIND_BG = { bor: '#7dd3fc', news: '#fde047', div: '#4ade80', lilla: '#c4b5
 // Rutans plats på brädet: x, y, bredd, höjd och vridning.
 // Brädets bredd följer skärmen. Rutorna upptill och nedtill blir bredare, så att spelplanen fyller platsen.
 let TW = 105;
-const boardW = () => 240 + TW * 10;
-const colX = (c) => 120 + (c - 1) * TW;
+const D = 170; const ROW = 105; // D är rutornas djup och hörnens storlek. ROW är höjden på rutorna längs sidorna.
+const BOTTOM = D + 9 * ROW; const boardH = () => BOTTOM + D;
+const boardW = () => 2 * D + TW * 10;
+const colX = (c) => D + (c - 1) * TW;
 function rect(n) {
-  const W = boardW(); const C = (x, y) => ({ x, y, w: 120, h: 120, corner: true });
-  if (n === 9) return C(0, 0); if (n === 20) return C(W - 120, 0); if (n === 30) return C(W - 120, 1065); if (n === 52) return C(0, 1065);
-  if (n === 53) return { x: 0, y: 960, w: 120, h: 105, rot: 90 };
-  if (n <= 8) return { x: 0, y: 855 - (n - 1) * 105, w: 120, h: 105, rot: 90 };
-  if (n <= 19) return { x: colX(n - 9), y: 0, w: TW, h: 120, rot: 180 };
-  if (n <= 29) return { x: W - 120, y: 120 + (n - 21) * 105, w: 120, h: 105, rot: -90 };
-  if (n <= 33) return { x: colX(10 - (n - 31)), y: 1065, w: TW, h: 120 };
-  if (n === 34) return { x: colX(7), y: 1065, w: TW, h: 120 };
-  if (n <= 39) return { x: colX(7), y: 960 - (n - 35) * 105, w: TW, h: 105, bank: true, arm: 'R' };
-  if (n === 40) return { x: colX(5) + 1.5 * TW, y: 435, w: 1.5 * TW, h: 105, bank: true, wide: true };
-  if (n === 41) return { x: colX(5), y: 435, w: 1.5 * TW, h: 105, bank: true, wide: true };
-  if (n <= 46) return { x: colX(5), y: 540 + (n - 42) * 105, w: TW, h: 105, bank: true, arm: 'L' };
-  if (n === 47) return { x: colX(5), y: 1065, w: TW, h: 120 };
-  return { x: colX(4 - (n - 48)), y: 1065, w: TW, h: 120 };
+  const W = boardW(); const C = (x, y) => ({ x, y, w: D, h: D, corner: true });
+  if (n === 9) return C(0, 0); if (n === 20) return C(W - D, 0); if (n === 30) return C(W - D, BOTTOM); if (n === 52) return C(0, BOTTOM);
+  if (n === 53) return { x: 0, y: BOTTOM - ROW, w: D, h: ROW, rot: 90 };
+  if (n <= 8) return { x: 0, y: BOTTOM - 2 * ROW - (n - 1) * ROW, w: D, h: ROW, rot: 90 };
+  if (n <= 19) return { x: colX(n - 9), y: 0, w: TW, h: D, rot: 180 };
+  if (n <= 29) return { x: W - D, y: D + (n - 21) * ROW, w: D, h: ROW, rot: -90 };
+  if (n <= 33) return { x: colX(10 - (n - 31)), y: BOTTOM, w: TW, h: D };
+  if (n === 34) return { x: colX(7), y: BOTTOM, w: TW, h: D };
+  if (n <= 39) return { x: colX(7), y: BOTTOM - ROW - (n - 35) * ROW, w: TW, h: ROW, bank: true, arm: 'R' };
+  if (n === 40) return { x: colX(5) + 1.5 * TW, y: BOTTOM - 6 * ROW, w: 1.5 * TW, h: ROW, bank: true, wide: true };
+  if (n === 41) return { x: colX(5), y: BOTTOM - 6 * ROW, w: 1.5 * TW, h: ROW, bank: true, wide: true };
+  if (n <= 46) return { x: colX(5), y: BOTTOM - 5 * ROW + (n - 42) * ROW, w: TW, h: ROW, bank: true, arm: 'L' };
+  if (n === 47) return { x: colX(5), y: BOTTOM, w: TW, h: D };
+  return { x: colX(4 - (n - 48)), y: BOTTOM, w: TW, h: D };
 }
 const breakable = (s) => s.replace('motspelarna', 'mot\u00adspelarna').replace('Finanstidning', 'Finans­tidning').replace('Aktieutdelning', 'Aktie­utdelning').replace('obligationsdragningen', 'obligations­dragningen').replace('Försäkringsbolag', 'Försäkrings­bolag').replace('Livsmedelsbutik', 'Livsmedels­butik').replace('Elektronikfirma', 'Elektronik­firma').replace('Ingenjörsbyrå', 'Ingenjörs­byrå').replace('obligationsköp', 'obligations­köp');
 
 function buildBoard() {
-  const W = boardW(); const b = el('div', { class: 'board', style: `width:${W}px` });
-  const city = svg(CITY); city.setAttribute('width', W - 240); city.setAttribute('preserveAspectRatio', 'none'); b.append(city);
-  b.append(el('div', { class: 'title', style: `left:${W / 2 - 450}px` }, GAME_NAME));
-  const lg = el('div', { class: 'legend', style: `left:${W / 2 - 450}px` });
+  const W = boardW(); const b = el('div', { class: 'board' + (TW < 122 ? ' narrow' : ''), style: `width:${W}px;height:${boardH()}px` });
+  const city = svg(CITY); city.setAttribute('width', W - 2 * D); city.style.left = D + 'px'; city.style.top = D + 'px'; city.setAttribute('preserveAspectRatio', 'none'); b.append(city);
+  b.append(el('div', { class: 'title', style: `left:${W / 2 - 450}px;top:${D + 8}px` }, GAME_NAME));
+  const lg = el('div', { class: 'legend', style: `left:${W / 2 - 450}px;top:${D + 100}px` });
   Object.values(GROUPS).forEach((g) => lg.append(el('div', { class: 'l' }, el('div', { class: 's', style: 'background:' + g.color }), g.name)));
   [['#fbbf24', 'Bank och handel'], ['#7dd3fc', 'Börstips'], ['#fde047', 'Finanstidning'], ['#4ade80', 'Aktieutdelning'], ['#c4b5fd', 'Obligationer']].forEach(([c, t]) => lg.append(el('div', { class: 'l' }, el('div', { class: 's', style: 'background:' + c }), t)));
   b.append(lg);
-  b.append(el('div', { class: 'mid', style: `left:${colX(6)}px;width:${TW}px` }, 'Bankens huvudkontor'));
-  const leftC = 120 + 2 * TW; const rightC = colX(8) + 1.5 * TW;
-  b.append(el('div', { class: 'deck', style: `left:${leftC - 85}px;top:560px;background:#7dd3fc;transform:rotate(-4deg)` }, svg(CHART), 'Börstips'));
-  b.append(el('div', { class: 'deck', style: `left:${rightC - 85}px;top:520px;background:#fde047;transform:rotate(4deg)` }, svg(PAPER), 'Finanstidningen'));
-  b.append(el('div', { class: 'activenews', id: 'activenews', style: `left:${colX(8) + 10}px;width:${3 * TW - 20}px` }));
+  b.append(el('div', { class: 'mid', style: `left:${colX(6)}px;width:${TW}px;top:${BOTTOM - 5 * ROW}px;height:${5 * ROW + D}px` }, 'Bankens huvudkontor'));
+  const leftC = D + 2 * TW; const rightC = colX(8) + 1.5 * TW;
+  b.append(el('div', { class: 'deck', style: `left:${leftC - 85}px;top:${BOTTOM - 505}px;background:#7dd3fc;transform:rotate(-4deg)` }, svg(CHART), 'Börstips'));
+  b.append(el('div', { class: 'deck', style: `left:${rightC - 85}px;top:${BOTTOM - 545}px;background:#fde047;transform:rotate(4deg)` }, svg(PAPER), 'Finanstidningen'));
+  b.append(el('div', { class: 'activenews', id: 'activenews', style: `left:${colX(8) + 10}px;width:${3 * TW - 20}px;top:${BOTTOM - 429}px` }));
   for (let n = 1; n <= 53; n++) {
     const s = SQUARES[n]; const r = rect(n); const isPlot = s.kind === 'plot';
     const g = isPlot ? GROUPS[s.group] : null;
     const bg = isPlot ? g.color : KIND_BG[s.kind]; const fg = isPlot ? g.text : (s.kind === 'prison' || s.kind === 'gotoprison' ? '#fff' : '#1a1740');
-    let w = r.rot && Math.abs(r.rot) === 90 ? 105 : r.w, h = r.bank ? 105 : 120; if (r.corner) { w = 120; h = 120; }
+    let w = r.rot && Math.abs(r.rot) === 90 ? ROW : r.w, h = r.bank ? ROW : D; if (r.corner) { w = D; h = D; }
     const left = r.x + r.w / 2 - w / 2; const top = r.y + r.h / 2 - h / 2;
     const cls = 'c' + (isPlot ? ' t' : '') + (r.bank ? ' bk' : '') + (r.corner ? ' h' : '');
     const e = el('div', { class: cls, id: 'sq' + n, role: 'button', tabindex: 0, 'aria-label': n + ' ' + s.name, style: `left:${left}px;top:${top}px;width:${w}px;height:${h}px;background:${bg};color:${fg};` + (r.rot ? `transform:rotate(${r.rot}deg);` : '') });
@@ -312,10 +315,10 @@ const myPlots = () => Object.keys(S.game.plots).map(Number).filter((n) => S.game
 function fit() {
   const sc = document.getElementById('scaler'); if (!sc || !boardEl) return false; const wrap = sc.parentElement;
   const flow = matchMedia('(max-width:999px),(max-height:619px)').matches;
-  let rebuilt = false; const nextTW = flow ? 105 : Math.round(Math.max(105, Math.min(200, (wrap.clientWidth / (wrap.clientHeight / 1185) - 240) / 10)));
+  let rebuilt = false; const nextTW = flow ? 105 : Math.round(Math.max(105, Math.min(240, (wrap.clientWidth / (wrap.clientHeight / boardH()) - 2 * D) / 10)));
   if (nextTW !== TW) { TW = nextTW; const nb = buildBoard(); boardEl.replaceWith(nb); boardEl = nb; rebuilt = true; }
-  const W = boardW(); const k = flow ? wrap.clientWidth / W : Math.min(wrap.clientWidth / W, wrap.clientHeight / 1185);
-  boardEl.style.transform = `scale(${k})`; sc.style.width = W * k + 'px'; sc.style.height = 1185 * k + 'px'; sc.style.flex = 'none';
+  const W = boardW(); const k = flow ? wrap.clientWidth / W : Math.min(wrap.clientWidth / W, wrap.clientHeight / boardH());
+  boardEl.style.transform = `scale(${k})`; sc.style.width = W * k + 'px'; sc.style.height = boardH() * k + 'px'; sc.style.flex = 'none';
   return rebuilt;
 }
 window.addEventListener('resize', () => { if (fit() && S && S.game) renderGame(); });
