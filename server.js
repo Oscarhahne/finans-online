@@ -10,6 +10,7 @@ const PORT = process.env.PORT || 3000;
 const PUBLIC = path.join(__dirname, 'public');
 const TYPES = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8' };
 const BOT_DELAY = Number(process.env.BOT_DELAY ?? 2700);
+const DICE_TIME = 1600, POPUP_CARD = 7200, POPUP_DRAW = 6200, POPUP_EVENT = 5200; // Samma tider som i webbläsaren, plus lite marginal.
 const TURN_LIMIT = Number(process.env.TURN_LIMIT ?? 120000); // Tid innan spelet agerar åt en spelare
 const GONE_LIMIT = Number(process.env.GONE_LIMIT ?? 20000); // Kortare tid om spelaren tappat kontakten
 const MAX_ROOMS = 300;
@@ -53,15 +54,22 @@ function broadcast(r) {
   r.touched = Date.now();
   schedule(r);
 }
+// Datorspelaren väntar tills tärningen har rullat, pjäsen har gått färdigt och popup-rutorna har stängts.
+function botWait(r, g) {
+  const now = Date.now(); const roll = g.lastRoll; r.hold = Math.max(r.hold || 0, now); r.anim = Math.max(r.anim || 0, now);
+  if (roll && roll.id !== r.seenRoll) { r.seenRoll = roll.id; const walk = roll.path ? Math.min(1900, (roll.path.length - 1) * 220) : 0; r.anim = now + (BOT_DELAY >= 500 ? DICE_TIME : 0) + walk; r.hold = Math.max(r.hold, now + BOT_DELAY + walk); }
+  if (BOT_DELAY >= 500) {
+    if (g.cardNo !== r.seenCard) { if (r.seenCard !== undefined && g.lastCard) r.hold = Math.max(r.hold, r.anim + POPUP_CARD); r.seenCard = g.cardNo; }
+    if (g.drawNo !== r.seenDraw) { if (r.seenDraw !== undefined) r.hold = Math.max(r.hold, r.anim + DICE_TIME + POPUP_DRAW); r.seenDraw = g.drawNo; }
+    if (g.eventNo !== r.seenEvent) { if (r.seenEvent !== undefined) r.hold = Math.max(r.hold, r.anim + POPUP_EVENT); r.seenEvent = g.eventNo; }
+  }
+  return Math.max(BOT_DELAY >= 500 ? 300 : BOT_DELAY, r.hold - now);
+}
 function schedule(r) {
   clearTimeout(r.timer);
   const g = r.game; if (!g || g.phase !== 'play') return;
   const id = G.actor(g); const m = r.members.find((x) => x.id === id); if (!m) return;
-  // Efter ett kast får pjäsen hinna gå färdigt innan datorspelaren gör nästa sak.
-  const roll = g.lastRoll; let walk = 0;
-  if (roll && roll.id !== r.waitedRoll) { r.waitedRoll = roll.id; walk = roll.path ? Math.min(1900, (roll.path.length - 1) * 220) : 0; } else if (roll && Date.now() < (r.walkUntil || 0)) walk = r.walkUntil - Date.now();
-  if (walk) r.walkUntil = Date.now() + walk;
-  const delay = m.bot ? BOT_DELAY + walk : (m.ws ? TURN_LIMIT : GONE_LIMIT);
+  const delay = m.bot ? botWait(r, g) : (m.ws ? TURN_LIMIT : GONE_LIMIT);
   r.timer = setTimeout(() => {
     try {
       if (!r.game || r.game.phase !== 'play') return;

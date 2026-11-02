@@ -81,7 +81,7 @@ body::before{content:'';position:fixed;inset:0;z-index:-1;background:var(--bg) u
 .mini.m{opacity:.85;outline:2px dashed #fff;outline-offset:-3px}
 .note{background:#d9f99d;color:#14532d}.bond{background:#c4b5fd;color:#1a1740;width:38px}
 .events{position:fixed;left:50%;top:128px;transform:translateX(-50%);z-index:42;display:grid;gap:8px;width:min(460px,calc(100vw - 24px));pointer-events:none}
-.evt{background:#101d24;color:#fff;border:4px solid #fff;border-radius:14px;padding:10px 14px;font-weight:800;box-shadow:0 8px 24px rgba(0,0,0,.5);text-align:center;animation:evt .2s ease-out}
+.evt{pointer-events:auto;cursor:pointer;background:#101d24;color:#fff;border:4px solid #fff;border-radius:14px;padding:10px 14px;font-weight:800;box-shadow:0 8px 24px rgba(0,0,0,.5);text-align:center;animation:evt .2s ease-out}
 @keyframes evt{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:none}}
 .scaler{position:relative;width:100%}
 .board{position:absolute;left:0;top:0;width:1290px;height:1185px;transform-origin:0 0;background:#0f4a33;border-radius:28px;overflow:hidden;font-family:Nunito,sans-serif}
@@ -149,7 +149,7 @@ button.waiting::after{content:' (vänta)';font-weight:600}
 .buygrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px;align-items:start;margin-top:10px}
 .buybox{background:#0a2f22;border-radius:16px;padding:14px;min-width:0}
 .bondgrid{display:grid;grid-template-columns:repeat(6,1fr);gap:6px}
-.cardpop{--ac:#f6c945;--lip:#b98516;--band:#fbe89a;position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);z-index:40;width:min(440px,calc(100vw - 24px));max-height:calc(100vh - 16px);overflow:hidden;border-radius:24px;background:#101d24;color:#fff;border:6px solid #fff;box-shadow:0 8px 0 var(--lip),0 22px 55px rgba(0,0,0,.65);pointer-events:none;animation:pop .25s ease-out;font-family:Nunito,sans-serif}
+.cardpop{--ac:#f6c945;--lip:#b98516;--band:#fbe89a;position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);z-index:40;width:min(440px,calc(100vw - 24px));max-height:calc(100vh - 16px);overflow:hidden;border-radius:24px;background:#101d24;color:#fff;border:6px solid #fff;box-shadow:0 8px 0 var(--lip),0 22px 55px rgba(0,0,0,.65);cursor:pointer;animation:pop .25s ease-out;font-family:Nunito,sans-serif}
 .cardpop.tips{--ac:#7cc0ff;--lip:#2f6fb8;--band:#cfe8ff}
 .cphead{display:flex;align-items:center;gap:12px;background:var(--band);color:#18202c;padding:9px 16px}.cphead .tic{width:56px;height:42px;margin:0}
 .cphead b{display:block;font:800 23px/1.1 Nunito,sans-serif;text-transform:uppercase;letter-spacing:.5px}.cphead span{display:block;font:700 12.5px/1.25 Nunito,sans-serif;text-transform:uppercase;letter-spacing:.7px;color:#4b5563;border-top:1px solid rgba(0,0,0,.2);margin-top:3px;padding-top:3px}
@@ -160,10 +160,10 @@ button.waiting::after{content:' (vänta)';font-weight:600}
 .cpeff{display:flex;align-items:center;gap:13px;margin:10px 0 9px;padding:9px 14px;border-radius:14px;background:#14342c;border:1px solid #2f6b57}.cpeff.neg{background:#3a1a1e;border-color:#8c3a40}.cpeff.neu{background:#1a2c3f;border-color:#3f6c96}
 .cpeff .tic{width:60px;height:45px;margin:0}.cpeff b{display:block;font:800 clamp(21px,3.4vh,27px)/1.1 Nunito,sans-serif;color:#86ef8c}.cpeff.neg b{color:#fca5a5}.cpeff.neu b{color:#9dd0ff}.cpeff span{display:block;font:700 15.5px/1.2 Nunito,sans-serif;color:#b5efc0}.cpeff.neg span{color:#fbd0d0}.cpeff.neu span{color:#cfe8ff}
 .cpfoot{text-align:center;font:700 15px/1.2 Nunito,sans-serif;color:#aab7bb}
-.placed{left:var(--x)!important;top:var(--y)!important;transform:scale(var(--s))!important;transform-origin:0 0;max-height:none!important;pointer-events:none;animation:placedpop .22s ease-out!important}
+.placed{left:var(--x)!important;top:var(--y)!important;transform:scale(var(--s))!important;transform-origin:0 0;max-height:none!important;cursor:pointer;animation:placedpop .22s ease-out!important}
 @keyframes placedpop{from{opacity:0;transform:scale(calc(var(--s) * .9))}to{opacity:1;transform:scale(var(--s))}}
 .cardpop.placed{width:440px}.cardpop.placed .cpscene{height:112px}.cardpop.placed .cpbody h2{font-size:31px}.cardpop.placed .cpbody p{font-size:17px}.cardpop.placed .cpeff b{font-size:25px}
-.drawbox.placed{width:500px;overflow:visible;pointer-events:auto}
+.drawbox.placed{width:500px;overflow:visible}
 .events.placed{transform:none!important;animation:none!important;left:var(--x)!important;top:var(--y)!important;right:auto!important;bottom:auto!important;width:var(--w)!important;max-width:none!important}
 .hasart{background:#03381e!important}.artwrap{position:absolute;display:flex;align-items:center;justify-content:center}
 .divart{position:relative;container-type:inline-size;aspect-ratio:321/214;flex:none;text-shadow:none}.divart img{display:block;width:100%;height:100%}
@@ -525,7 +525,7 @@ function onState(m) {
 // Resultatet av obligationsdragningen visas stort för alla.
 function showDraw(d) {
   document.getElementById('drawbox')?.remove(); clearTimeout(drawTimer);
-  const box = el('div', { class: 'drawbox', id: 'drawbox', role: 'status' }, el('h2', {}, (d.kind === 'large' ? 'Stora' : 'Lilla') + ' obligationsdragningen'),
+  const box = el('div', { class: 'drawbox', id: 'drawbox', role: 'status', title: 'Klicka för att stänga', onclick: () => { box.remove(); clearTimeout(drawTimer); updateRollLock(); } }, el('h2', {}, (d.kind === 'large' ? 'Stora' : 'Lilla') + ' obligationsdragningen'),
     el('div', { class: 'dice' }, d.dice.map((v) => el('div', { class: 'die' }, v))),
     d.results.map((r, i) => el('div', { class: 'drawrow' + (r.winner ? '' : ' none') }, el('span', { class: 'drawno' }, r.num), el('div', {}, el('div', { class: 'small' }, ['Högsta vinsten', 'Andra vinsten', 'Tredje vinsten'][i]), r.winner ? el('b', {}, r.winner) : 'Ingen äger obligationen'), el('b', { class: 'money' }, kr(r.prize)))),
     el('button', { onclick: () => { box.remove(); clearTimeout(drawTimer); } }, 'Stäng'));
@@ -572,12 +572,12 @@ function cardPopup(card, tips) {
   const cls = v.tone === '-' ? ' neg' : v.tone === '0' ? ' neu' : '';
   const word = tips ? 'tips' : 'nyhet'; const badge = save ? 'Spara kortet' : v.tone === '+' ? `Positiv${tips ? 't' : ''} ${word}` : v.tone === '-' ? `Negativ${tips ? 't' : ''} ${word}` : `Neutral${tips ? 't' : ''} ${word}`;
   const kind = v.i || (v.tone === '-' ? 'repay' : 'div');
-  return el('div', { class: 'cardpop' + (tips ? ' tips' : ''), id: 'cardpop', role: 'status', 'aria-label': card.text },
+  return el('div', { class: 'cardpop' + (tips ? ' tips' : ''), id: 'cardpop', role: 'status', 'aria-label': card.text, title: 'Klicka för att stänga', onclick: (ev) => { ev.currentTarget.remove(); updateRollLock(); } },
     el('div', { class: 'cphead' }, iconFor({ kind: tips ? 'bor' : 'news' }), el('div', {}, el('b', {}, tips ? 'Börstips' : 'Finanstidningen'), el('span', {}, tips ? 'Affärstips som påverkar din tur' : 'Marknadsnytt som påverkar spelet'))),
     el('div', { class: 'cpscene' }, cardScene(v.tone, v.scene)),
     el('div', { class: 'cpbody' }, el('span', { class: 'cpbadge' + cls }, badge), el('h2', {}, v.h), v.d ? el('p', {}, v.d) : null,
       el('div', { class: 'cpeff' + cls }, iconFor({ kind }), el('div', {}, el('b', {}, v.e), v.f ? el('span', {}, v.f) : null)),
-      el('div', { class: 'cpfoot' }, until ? '🕑 Gäller till nästa tidning.' : save ? 'Sparas tills du använder det.' : 'Gäller direkt.')));
+      el('div', { class: 'cpfoot' }, until ? '🕑 Gäller till nästa tidning.' : save ? 'Sparas tills du använder det.' : 'Gäller direkt.', el('div', { style: 'font-size:12.5px;margin-top:3px;opacity:.8' }, 'Klicka för att stänga'))));
 }
 function showCardPopup(g) {
   const no = g.cardNo || 0;
@@ -812,7 +812,7 @@ function showEvents(g) {
   const no = g.eventNo || 0; if (seenEvent === null) { seenEvent = no; return; }
   const fresh = (g.events || []).filter((e) => e.id > seenEvent); seenEvent = no; if (!fresh.length) return;
   let box = document.getElementById('events'); if (!box) { box = el('div', { class: 'events', id: 'events', role: 'status', 'aria-live': 'polite' }); document.body.append(box); } const area = openArea(); box.classList.toggle('placed', !!area); if (area) { box.style.setProperty('--x', area.left + 'px'); box.style.setProperty('--y', area.deckTop + 'px'); box.style.setProperty('--w', (area.right - area.left) + 'px'); }
-  fresh.slice(-4).forEach((e) => { const d = el('div', { class: 'evt' }, e.text); box.append(d); setTimeout(() => d.remove(), 5000); });
+  fresh.slice(-4).forEach((e) => { const d = el('div', { class: 'evt', title: 'Klicka för att stänga', onclick: () => { d.remove(); updateRollLock(); } }, e.text); box.append(d); setTimeout(() => d.remove(), 5000); });
 }
 const myself = () => S.game.players.find((p) => p.id === S.you);
 // Köpknappen på en tomt följer samma regler som vanliga köp: din tur, före kastet, och i banken, på Bankfilialen eller med Köptips.
