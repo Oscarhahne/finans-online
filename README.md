@@ -26,6 +26,10 @@ Så här gör du på Render:
 
 Pågående spel ligger i serverns minne och försvinner om servern startas om. Kör bara en server åt gången. Gratisnivåer kan somna när ingen spelar.
 
+## 3D-brädet
+
+På dator ritas brädet i 3D med three.js (`public/board3d.js`), som hämtas från jsDelivr. På mobil, om biblioteket eller WebGL saknas, eller med knappen "Bräde" används det enkla brädet.
+
 ## Ändra spelet
 
 All speldata finns i `public/data.js`: namn, tomter, priser, hyror, aktier och korttexter. Spelmotorn finns i `game.js`.

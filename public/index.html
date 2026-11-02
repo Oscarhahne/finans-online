@@ -111,6 +111,12 @@ body::before{content:'';position:fixed;inset:0;z-index:-1;background:var(--bg) u
 .token{position:absolute;width:88px;height:124px;transition:left .35s,top .35s;pointer-events:none;z-index:5}
 .pawn{display:block;width:100%;height:100%;object-fit:contain;overflow:visible;user-select:none;-webkit-user-drag:none;pointer-events:none}
 .rain{position:fixed;z-index:30;pointer-events:none;display:flex;align-items:center;justify-content:center;font-family:Nunito,sans-serif;font-weight:800;line-height:1;will-change:transform}.rain.coin{border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff3b0,#fbbf24 45%,#b7791f);border:1px solid #7c5210;color:#7c5210;box-shadow:0 2px 3px rgba(0,0,0,.45)}.rain.bill2{border-radius:2px;background:linear-gradient(135deg,#bbf7d0,#22a35a 55%,#15803d);border:1px solid #14532d;color:#052e16;box-shadow:0 2px 3px rgba(0,0,0,.45)}
+#stage3d{position:absolute;inset:0;overflow:hidden;border-radius:14px;background:#071a14}
+.boardwrap{position:relative}.board3d .game{width:100%;box-sizing:border-box}.board3d #scaler{visibility:hidden;position:absolute;left:0;top:0;width:1px!important;height:1px!important;overflow:hidden;pointer-events:none}
+.hud3d{position:absolute;inset:0;pointer-events:none}.hud3d .cams{position:absolute;right:10px;bottom:10px;display:flex;gap:5px;flex-wrap:wrap;justify-content:flex-end;pointer-events:auto}.hud3d .cam{min-height:32px;padding:4px 10px;font-size:12.5px;background:rgba(7,40,28,.85);border:1px solid #2c7a5c}.hud3d .cam[aria-pressed="true"]{border-color:var(--gold);color:var(--gold)}
+.hint3d{position:absolute;left:10px;bottom:12px;padding:5px 10px;border-radius:9px;background:rgba(7,40,28,.82);font-size:12.5px;color:#d6f3e3}
+.hud3d .activenews{position:absolute;display:block;width:260px!important;left:0;top:0;border-width:3px;border-radius:13px;pointer-events:none;z-index:1;box-shadow:0 8px 20px rgba(0,0,0,.55)}.hud3d .annow{font-size:11.5px;padding:5px 10px}.hud3d .anhead{font-size:20px;padding:6px 10px 0}.hud3d .anbody{font-size:13px;margin:4px 10px 8px}.hud3d .anbody b{font-size:16px}
+@media (max-height:619px){.board3d .boardwrap{min-height:72vh}}
 .plinth{position:absolute;border-radius:16px;box-shadow:0 4px 8px rgba(0,0,0,.55)}
 .tilted .board{transform-style:preserve-3d;overflow:visible;box-shadow:0 26px 0 #06281c,0 40px 50px rgba(0,0,0,.55)}.tilted .token{transform:translateZ(3px) rotateX(-24deg);transform-origin:50% 88%}.tilted .deck{box-shadow:0 12px 0 rgba(0,0,0,.5),0 22px 24px rgba(0,0,0,.45)}.tilted .activenews{box-shadow:0 10px 0 #7a5a10,0 22px 24px rgba(0,0,0,.5)}
 .token.me .pawn{filter:drop-shadow(0 0 4px #fff)}
@@ -190,8 +196,11 @@ body.rolling .side{pointer-events:none}
 </head>
 <body>
 <div id="app"></div><div id="toast" role="alert"></div>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
 <script src="data.js"></script>
 <script src="cards.js"></script>
+<script src="board3d.js"></script>
 <script>
 const { GAME_NAME, GROUPS, SQUARES, RULES, plotInfo } = window.GAME_DATA;
 document.title = GAME_NAME + ' online';
@@ -273,7 +282,7 @@ function rect(n) {
   if (n === 48) return { x: colX(5), y: BOTTOM, w: TW, h: D };
   return { x: colX(4 - (n - 49)), y: BOTTOM, w: TW, h: D };
 }
-const breakable = (s) => s.replace('Pappersbruk', 'Pappers\u00adbruk').replace('Byggprojekt', 'Bygg\u00adprojekt').replace('Bankutgång', 'Bank\u00adutgång').replace('Bankentré', 'Bank\u00adentré').replace('gratifikation', 'grati\u00adfikation').replace('byggnadsaffärerna', 'byggnads\u00adaffärerna').replace('Kontorshus', 'Kontors\u00adhus').replace('Mäklarfirma', 'Mäklar\u00adfirma').replace('börstips', 'börs\u00adtips').replace('Datakonsult', 'Data\u00adkonsult').replace('Bilverkstad', 'Bil\u00adverkstad').replace('Bensinbolag', 'Bensin\u00adbolag').replace('Återbetala', 'Åter\u00adbetala').replace('motspelarna', 'mot\u00adspelarna').replace('Finanstidning', 'Finans­tidning').replace('Aktieutdelning', 'Aktie­utdelning').replace('obligationsdragningen', 'obligations­dragningen').replace('Försäkringsbolag', 'För­säkrings­bolag').replace('Livsmedelsbutik', 'Livsmedels­butik').replace('Elektronikfirma', 'Elektronik­firma').replace('Ingenjörsbyrå', 'Ingenjörs­byrå').replace('obligationsköp', 'obligations­köp');
+const breakable = (s) => s.replace('obligationsdragningen', 'obligations\u00addragningen').replace('Pappersbruk', 'Pappers\u00adbruk').replace('Byggprojekt', 'Bygg\u00adprojekt').replace('Bankutgång', 'Bank\u00adutgång').replace('Bankentré', 'Bank\u00adentré').replace('gratifikation', 'grati\u00adfikation').replace('byggnadsaffärerna', 'byggnads\u00adaffärerna').replace('Kontorshus', 'Kontors\u00adhus').replace('Mäklarfirma', 'Mäklar\u00adfirma').replace('börstips', 'börs\u00adtips').replace('Datakonsult', 'Data\u00adkonsult').replace('Bilverkstad', 'Bil\u00adverkstad').replace('Bensinbolag', 'Bensin\u00adbolag').replace('Återbetala', 'Åter\u00adbetala').replace('motspelarna', 'mot\u00adspelarna').replace('Finanstidning', 'Finans­tidning').replace('Aktieutdelning', 'Aktie­utdelning').replace('obligationsdragningen', 'obligations­dragningen').replace('Försäkringsbolag', 'För­säkrings­bolag').replace('Livsmedelsbutik', 'Livsmedels­butik').replace('Elektronikfirma', 'Elektronik­firma').replace('Ingenjörsbyrå', 'Ingenjörs­byrå').replace('obligationsköp', 'obligations­köp');
 
 function buildBoard() {
   const W = boardW(); const b = el('div', { class: 'board' + (TW < 122 ? ' narrow' : ''), style: `width:${W}px;height:${boardH()}px` });
@@ -340,7 +349,7 @@ const act = (a) => wsend({ t: 'action', action: a });
 
 function render() { if (!S) renderHome(); else if (!S.game) renderLobby(); else renderGame(); }
 function renderHome() {
-  boardEl = null;
+  if (window.Board3D) Board3D.stop(); boardEl = null;
   const urlCode = new URLSearchParams(location.search).get('kod') || '';
   const focused = document.activeElement && document.activeElement.id;
   const prevName = document.getElementById('name')?.value ?? store.get('name') ?? ''; const prevCode = document.getElementById('code')?.value ?? urlCode;
@@ -366,7 +375,7 @@ function renderHome() {
   if (focused) document.getElementById(focused)?.focus();
 }
 function renderLobby() {
-  boardEl = null; const host = S.host === S.you; const link = location.origin + location.pathname + '?kod=' + S.code;
+  if (window.Board3D) Board3D.stop(); boardEl = null; const host = S.host === S.you; const link = location.origin + location.pathname + '?kod=' + S.code;
   app.replaceChildren(el('div', { class: 'home' },
     el('h1', {}, GAME_NAME),
     el('div', { class: 'card stack', style: 'margin-top:20px' },
@@ -383,6 +392,7 @@ function renderLobby() {
 const myPlots = () => Object.keys(S.game.plots).map(Number).filter((n) => S.game.plots[n].owner === S.you);
 // Anpassar brädet till platsen. Returnerar true om brädet behövde ritas om.
 function fit() {
+  if (window.Board3D && (Board3D.on || Board3D.starting)) { if (Board3D.on) Board3D.resize(); return false; }
   const sc = document.getElementById('scaler'); if (!sc || !boardEl) return false; const wrap = sc.parentElement;
   const flow = matchMedia('(max-width:999px),(max-height:619px)').matches;
   let rebuilt = false; const nextTW = flow ? 105 : Math.round(Math.max(105, Math.min(240, (wrap.clientWidth / (wrap.clientHeight / boardH()) - 2 * D) / 11)));
@@ -473,6 +483,7 @@ function tokenSpot(pos, i) {
 }
 // Pjäsen går ruta för ruta efter ett kast. Vid många steg går den fortare.
 function walkToken(g, roll, done) {
+  if (window.Board3D && Board3D.on) { Board3D.walk(roll.player, roll.path, done); return; }
   const p = g.players.find((v) => v.id === roll.player); const path = roll.path || [];
   const t = p && document.getElementById('tk' + p.color);
   const still = window.matchMedia && matchMedia('(prefers-reduced-motion:reduce)').matches;
@@ -538,6 +549,7 @@ function cardScene(tone, scene) {
 }
 // Den öppna ytan på spelplanen under Börstips, i skärmens koordinater. På små skärmar visas fönstren mitt på.
 function openArea() {
+  if (window.Board3D && Board3D.on) return Board3D.openArea();
   if (!boardEl || matchMedia('(max-width:999px),(max-height:619px)').matches) return null;
   const q = (n) => document.getElementById('sq' + n)?.getBoundingClientRect(); const side = q(3), arm = q(43), low = q(49), deck = boardEl.querySelector('.deck.ct-bor')?.getBoundingClientRect(); if (!side || !arm || !low || !deck) return null;
   return { left: side.right + 8, right: arm.left - 8, top: deck.bottom + 6, bottom: low.top - 6, deckTop: deck.top };
@@ -605,6 +617,7 @@ function renderGame() {
     window.scrollTo(0, 0); // Lobbyn kan vara nedskrollad när spelet startar.
     app.replaceChildren(el('div', { class: 'game' }, el('div', { class: 'leftcol' }, el('aside', { class: 'landing', id: 'landing' }), el('div', { id: 'leaveslot', style: 'display:grid;gap:8px' })), el('div', { class: 'boardwrap' }, el('div', { class: 'scaler', id: 'scaler' }, boardEl)), el('div', { class: 'side', id: 'side' }), el('section', { class: 'holdings', id: 'holdings', 'aria-label': 'Mina investeringar' })));
     renderPiles(); fit();
+    if (window.Board3D && Board3D.wanted()) { const st = el('div', { id: 'stage3d' }); document.querySelector('.boardwrap').append(st); const fail = () => { st.remove(); fit(); toast('3D-brädet kunde inte starta. Du spelar på det enkla brädet.'); }; Board3D.start(st, fail); }
   }
   // Ägare, byggnader och belåning på tomterna.
   for (const n of Object.keys(g.plots)) {
@@ -624,6 +637,7 @@ function renderGame() {
     if (!t) { t = el('div', { class: 'token' + (p.id === S.you ? ' me' : ''), id: 'tk' + p.color, title: p.name }, pawn(p.shape, p.color)); boardEl.append(t); }
     const spot = tokenSpot(p.pos, i); t.style.left = spot.x + 'px'; t.style.top = spot.y + 'px';
   });
+  if (window.Board3D) Board3D.sync(g);
   renderLanding(); renderPiles(); if (fit()) return renderGame(); renderSide(); renderModal(); showEvents(g); showRain(g); celebrate(g);
 }
 function renderSide() {
@@ -645,7 +659,7 @@ function renderSide() {
       g.players.map((p) => { const m = S.members.find((x) => x.id === p.id);
         return el('div', { class: 'pl' + (p.id === current.id ? ' on' : '') + (p.out ? ' out' : '') }, el('div', { style: 'display:flex;gap:8px;align-items:center;min-width:0' }, el('span', { class: 'pawnicon' }, pawn(p.shape, p.color)), el('div', {}, p.name + (p.id === S.you ? ' (du)' : ''), el('div', { class: 'small' }, [p.car ? 'bil' : null, p.loans ? p.loans + ' lån' : null, p.jail ? 'i fängelse ' + p.jail + ' år' : null, m && !m.online ? 'borta' : null].filter(Boolean).join(' · ')))), el('div', { class: 'money' }, kr(p.cash))); })),
     el('div', { class: 'card logcard', style: 'margin:0;padding:10px' }, el('h3', { style: 'margin-bottom:6px' }, 'Händelser'), logBox)].filter(Boolean));
-  const lb = document.getElementById('leaveslot'); if (lb && !lb.firstChild) lb.append(soundButton(), el('button', { style: 'width:100%', onclick: () => wsend({ t: 'leave' }) }, 'Lämna spelet'));
+  const lb = document.getElementById('leaveslot'); if (lb && !lb.firstChild) lb.append(soundButton(), ...(window.THREE && !matchMedia('(max-width:999px)').matches ? [el('button', { style: 'width:100%', onclick: () => { store.set('board', store.get('board') === 'flat' ? '3d' : 'flat'); location.reload(); } }, store.get('board') === 'flat' ? 'Bräde: enkelt' : 'Bräde: 3D')] : []), el('button', { style: 'width:100%', onclick: () => wsend({ t: 'leave' }) }, 'Lämna spelet'));
 }
 const newsIs = (t) => !!(S && S.game && S.game.news && S.game.news.type === t);
 const twoDice = (p) => p.car && !(p.pos >= 35 && p.pos < 48) && !newsIs('fuel');
@@ -711,11 +725,11 @@ function renderLanding() {
   } else if (g.lastCard && (s.kind === 'bor' || s.kind === 'news' || s.kind === 'exit')) rows.push(el('div', { class: 'small' }, g.lastCard.deck), el('div', {}, g.lastCard.text));
   else rows.push(el('div', {}, SQUARE_TEXT[s.kind] || ''));
   box.replaceChildren(el('h3', {}, p.id === S.you ? 'Du landade på' : p.name + ' landade på'),
-    el('div', { class: 'ltile' + (s.kind === 'bor' ? ' ct-bor' : s.kind === 'news' ? ' ct-news' : ''), style: `background:${tileBg(bg)};color:#fff;--g:${bg}` }, isPlot ? el('div', { class: 'lh' }) : null, (s.kind === 'div' ? divArt(n, '100%') : el('div', { class: 'lb' }, el('div', { class: 'small', style: 'color:inherit' }, 'Ruta ' + n), icon, el('div', {}, s.name)))), ...rows);
+    el('div', { class: 'ltile' + (s.kind === 'bor' ? ' ct-bor' : s.kind === 'news' ? ' ct-news' : ''), style: `background:${tileBg(bg)};color:#fff;--g:${bg}` }, isPlot ? el('div', { class: 'lh' }) : null, (s.kind === 'div' ? divArt(n, '100%') : el('div', { class: 'lb' }, el('div', { class: 'small', style: 'color:inherit' }, 'Ruta ' + n), icon, el('div', {}, breakable(s.name))))), ...rows);
 }
 // Rutan på brädet lyser upp när muspekaren eller fokus är på ett bevis.
-const clearGlow = () => document.querySelectorAll('.c.glow').forEach((e) => e.classList.remove('glow'));
-const setGlow = (ns) => { clearGlow(); ns.forEach((n) => document.getElementById('sq' + n)?.classList.add('glow')); };
+const clearGlow = () => { document.querySelectorAll('.c.glow').forEach((e) => e.classList.remove('glow')); if (window.Board3D && Board3D.on) Board3D.glow([]); };
+const setGlow = (ns) => { clearGlow(); ns.forEach((n) => document.getElementById('sq' + n)?.classList.add('glow')); if (window.Board3D && Board3D.on) Board3D.glow(ns); };
 const glowOn = (ns) => ({ onmouseenter: () => setGlow(ns), onmouseleave: clearGlow, onfocus: () => setGlow(ns), onblur: clearGlow });
 const BILL = { 100000: ['#d4a017', '#1a1740'], 50000: ['#7e57c2', '#fff'], 10000: ['#1e88e5', '#fff'], 5000: ['#2e9e5b', '#fff'], 1000: ['#a1623a', '#fff'], 500: ['#e8603c', '#1a1740'] };
 // Egna högar till vänster: tomter, aktier, obligationer och pengar.
@@ -776,6 +790,7 @@ let seenRain = null;
 function showRain(g) {
   const r = g.lastRain; if (seenRain === null) { seenRain = r ? r.id : 0; return; } if (!r || r.id === seenRain) return; seenRain = r.id;
   if (window.matchMedia && matchMedia('(prefers-reduced-motion:reduce)').matches) return;
+  if (window.Board3D && Board3D.on) { setTimeout(() => { const a = Board3D.pawnRect(r.player), b = Board3D.tileRect(r.pos); if (a && b) moneyRain(a, b); }, 400); return; }
   const p = g.players.find((v) => v.id === r.player); const t = p && document.getElementById('tk' + p.color); const sq = document.getElementById('sq' + r.pos); if (!t || !sq) return;
   setTimeout(() => { if (t.isConnected && sq.isConnected) moneyRain(t.getBoundingClientRect(), sq.getBoundingClientRect()); }, 400); // Pjäsen hinner ställa sig på plats först.
 }
