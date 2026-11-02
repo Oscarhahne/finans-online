@@ -81,7 +81,7 @@ const D = require('../public/data.js');
 const tip = (g, match) => { const i = D.BORSTIPS.findIndex(match); g.tipDeck = [i, ...g.tipDeck.filter((v) => v !== i)]; };
 const news = (g, match) => { const i = D.FINANS.findIndex(match); g.newsDeck = [i, ...g.newsDeck.filter((v) => v !== i)]; };
 const landOn = (g, pos, die = 0) => { g.players[g.current].pos = pos - 1; Math.random = () => die; G.apply(g, g.players[g.current].id, { type: 'roll' }); Math.random = orig; };
-assert.equal(D.BORSTIPS.length, 49); assert.equal(D.BORSTIPS.filter((c) => c.t === 'bondwin').length, 1); assert.equal(D.BORSTIPS.filter((c) => c.t === 'back').length, 1); assert.equal(D.BORSTIPS.filter((c) => c.t === 'forward').length, 1); assert.equal(D.FINANS.length, 31);
+assert.equal(D.BORSTIPS.length, 56); assert.equal(D.BORSTIPS.filter((c) => c.t === 'bondwin').length, 1); assert.equal(D.BORSTIPS.filter((c) => c.t === 'back').length, 1); assert.equal(D.BORSTIPS.filter((c) => c.t === 'forward').length, 1); assert.equal(D.FINANS.length, 31);
 g = two(); g.bonds[1] = 'b'; { const c = g.players[1].cash; tip(g, (c) => c.t === 'bondwin' && c.n === 1); landOn(g, 2); assert.equal(g.players[1].cash, c + 10000); assert.equal(g.bonds[1], null); }
 g = two(); tip(g, (c) => c.t === 'smalldraw'); landOn(g, 2); assert.equal(g.bondRound.draw, 'small');
 g = two(); tip(g, (c) => c.t === 'back'); landOn(g, 2); assert.equal(g.players[0].pos, 53);
@@ -120,4 +120,15 @@ g = two(); { const p = g.players[0]; p.pos = 1; g.news = { type: 'good' }; Math.
 g = two(); { const p = g.players[0]; p.pos = 2; g.news = { type: 'good' }; p.car = true; const q = [0, 0.5]; let i = 0; Math.random = () => q[i++ % 2]; G.apply(g, 'a', { type: 'roll' }); Math.random = orig; assert.equal(p.pos, 12); }
 g = two(); { const p = g.players[0]; p.pos = 1; g.news = { type: 'bad' }; const q = [0.99, 0.2]; let i = 0; Math.random = () => q[i++ % 2]; G.apply(g, 'a', { type: 'roll' }); Math.random = orig; assert.equal(g.lastRoll.dice.length, 2); assert.equal(p.pos, 3); }
 g = two(); { const p = g.players[0]; p.pos = 30; g.news = { type: 'good' }; Math.random = () => 0.99; G.apply(g, 'a', { type: 'roll' }); Math.random = orig; assert.equal(p.pos, 34); }
+// Nya kort: per tomt, minst kontanter, vattenskada, bilstöld och Bankutgång.
+g = two(); { const p = g.players[0]; g.plots[10].owner = 'a'; g.plots[13].owner = 'a'; const c = p.cash; tip(g, (x) => x.t === 'perplot'); landOn(g, 2); assert.equal(p.cash, c + 6000); }
+g = two(); { g.players[2].cash = 100; tip(g, (x) => x.t === 'poorest'); landOn(g, 2); assert.equal(g.players[2].cash, 30100); }
+g = two(); { const p = g.players[0]; g.plots[10].owner = 'a'; g.plots[10].built = true; g.plots[13].owner = 'a'; const c = p.cash; tip(g, (x) => x.t === 'perbuild' && x.a === 5000); landOn(g, 2); assert.equal(p.cash, c - 5000); }
+g = two(); { const p = g.players[0]; p.car = true; const i = D.BORSTIPS.findIndex((x) => x.t === 'carloss'); g.tipDeck = [i, ...g.tipDeck.filter((v) => v !== i)]; p.pos = 48; const q = [0, 0.2]; let k = 0; Math.random = () => q[k++ % 2]; G.apply(g, 'a', { type: 'roll' }); Math.random = orig; assert.equal(p.pos, 51); assert.equal(p.car, false); }
+g = two(); { const p = g.players[0]; p.loans = 1; const c = p.cash; const before = g.tipDeck.length; tip(g, (x) => x.t === 'toexit'); landOn(g, 2); assert.equal(p.pos, 47); assert.equal(p.cash, c - 5000); assert.equal(g.tipDeck.length, before); assert.equal(g.stage, 'post'); }
+// Hyresfrihet ger ett val när hyra ska betalas.
+g = two(); { const p = g.players[0]; const i = D.BORSTIPS.findIndex((x) => x.t === 'rentfree'); p.rentFree = [i]; g.tipDeck = g.tipDeck.filter((v) => v !== i); g.plots[10].owner = 'b'; const c = p.cash; landOn(g, 10); assert.equal(g.stage, 'rentchoice'); G.apply(g, 'a', { type: 'useRentFree' }); assert.equal(p.cash, c); assert.equal(p.rentFree.length, 0); assert.ok(g.tipDeck.includes(i)); assert.equal(g.stage, 'post'); }
+g = two(); { const p = g.players[0]; p.rentFree = [3]; g.plots[10].owner = 'b'; const c = p.cash; landOn(g, 10); G.apply(g, 'a', { type: 'payRent' }); assert.equal(p.cash, c - 4000); assert.equal(p.rentFree.length, 1); }
+// Köptips: en gång var som helst, men inte på första varvet.
+g = two(); { const p = g.players[0]; const i = D.BORSTIPS.findIndex((x) => x.t === 'tradepass'); p.tradePass = [i]; g.tipDeck = g.tipDeck.filter((v) => v !== i); p.pos = 3; rejects(g, 'a', { type: 'buyPlot', n: 10 }, /första varvet/); p.lapDone = true; G.apply(g, 'a', { type: 'buyPlot', n: 10 }); assert.equal(g.plots[10].owner, 'a'); assert.equal(p.tradePass.length, 0); rejects(g, 'a', { type: 'buyShare', id: 'A0' }, /banken/); }
 console.log('Alla regeltester klara');

@@ -84,6 +84,13 @@
     { t: 'goto', to: 21, x: 'Gå direkt till ruta 21.' },
     { t: 'visit', x: 'Besök en av dina egna tomter. Har du ingen tomt går du direkt till Bankentré.' },
     { t: 'handover', x: 'Överlämna valfri tomt eller aktie till föregående spelare.' },
+    { t: 'perplot', a: 3000, x: 'Hyresgäster flyttar in. Du får 3 000 kr per tomt du äger.' },
+    { t: 'poorest', a: 30000, x: 'Årets företagare! Spelaren med minst kontanter får 30 000 kr av banken.' },
+    { t: 'perbuild', a: 5000, x: 'Vattenskada! Betala 5 000 kr per bebyggd tomt.' },
+    { t: 'carloss', x: 'Bilstöld! Har du bil förlorar du den utan ersättning.' },
+    { t: 'toexit', x: 'Gå direkt till Bankutgång. Du drar inget nytt kort, men betalar eventuell låneränta.' },
+    { t: 'rentfree', x: 'Hyresfrihet! Spara kortet. Du kan använda det en gång när du ska betala hyra.' },
+    { t: 'tradepass', x: 'Köptips! Spara kortet. Du kan köpa en tomt eller aktie en gång var du än står, före ditt kast.' },
   ];
   const BORSTIPS = TIPS.concat(TIPS, TIPS_EXTRA);
   const FINANS = [].concat(
