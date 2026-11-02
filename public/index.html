@@ -53,6 +53,11 @@ label{display:block;font-weight:700;margin:0 0 6px;color:var(--mute)}
 .stackcard.share{justify-content:flex-start}
 .chips{display:flex;flex-wrap:wrap;gap:3px}.chip{min-height:0;height:24px;padding:0 7px;border:1px solid #1a1740;border-radius:6px;font:800 11.5px Nunito,sans-serif;display:flex;align-items:center;justify-content:center}
 .chip.bond{background:#c4b5fd;color:#1a1740;width:30px;padding:0}.chip.bond:hover{background:#ddd6fe}.chip.note{background:#d9f99d;color:#14532d}
+.bills{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:5px}
+.bill{position:relative;height:28px;display:flex;align-items:center;gap:3px;padding:0 4px;background:var(--b);color:var(--t);border:1px solid rgba(0,0,0,.65);border-radius:3px;outline:1px solid rgba(255,255,255,.55);outline-offset:-3px;font:800 11.5px/1 Nunito,sans-serif;box-shadow:0 2px 3px rgba(0,0,0,.45)}
+.bill.many{box-shadow:2px 2px 0 -1px var(--b),2px 2px 0 0 rgba(0,0,0,.6),4px 4px 0 -1px var(--b),4px 4px 0 0 rgba(0,0,0,.6)}
+.billseal{width:17px;height:17px;flex:none;border-radius:50%;border:1px solid currentColor;display:flex;align-items:center;justify-content:center;font-size:8px}
+.billval{flex:1;text-align:center}.billn{font-size:10.5px}
 .moneysum{font:600 19px Fredoka,sans-serif;margin-bottom:4px}
 @media (max-width:999px){.holdings{grid-template-columns:1fr}.gcols{grid-template-columns:repeat(auto-fill,minmax(120px,1fr))}.gcol{min-height:0}.stackcard{height:44px}.chip{height:44px;min-width:44px}.chip.bond{width:44px}}
 .deedmini{width:100px;min-height:74px;padding:0 0 5px;background:#fbfaf3;color:#1a1740;border:1px solid #1a1740;border-radius:9px;overflow:hidden;display:flex;flex-direction:column;align-items:center;gap:2px;font:800 11.5px/1.1 Nunito,sans-serif;box-shadow:0 3px 5px rgba(0,0,0,.45)}
@@ -535,13 +540,14 @@ function renderLanding() {
 const clearGlow = () => document.querySelectorAll('.c.glow').forEach((e) => e.classList.remove('glow'));
 const setGlow = (ns) => { clearGlow(); ns.forEach((n) => document.getElementById('sq' + n)?.classList.add('glow')); };
 const glowOn = (ns) => ({ onmouseenter: () => setGlow(ns), onmouseleave: clearGlow, onfocus: () => setGlow(ns), onblur: clearGlow });
+const BILL = { 100000: ['#d4a017', '#1a1740'], 50000: ['#7e57c2', '#fff'], 10000: ['#1e88e5', '#fff'], 5000: ['#2e9e5b', '#fff'], 1000: ['#a1623a', '#fff'], 500: ['#e8603c', '#1a1740'] };
 // Egna högar till vänster: tomter, aktier, obligationer och pengar.
 function renderPiles() {
   clearGlow(); const box = document.getElementById('holdings'); if (!box) return; const g = S.game; const me = g.players.find((p) => p.id === S.you);
   if (!me) { box.replaceChildren(); return; }
   const mine = Object.keys(g.plots).map(Number).filter((n) => g.plots[n].owner === S.you).sort((a, b) => a - b);
   const shares = g.shares.filter((v) => v.owner === S.you); const bonds = Object.keys(g.bonds).filter((n) => g.bonds[n] === S.you);
-  const notes = []; let left = me.cash; for (const v of [100000, 50000, 10000, 5000, 1000, 500]) { const c = Math.floor(left / v); if (c) { notes.push(el('div', { class: 'chip note', title: c + ' sedlar' }, (v >= 1000 ? v / 1000 + 'k' : v) + ' × ' + c)); left -= c * v; } }
+  const notes = []; let left = me.cash; for (const v of [100000, 50000, 10000, 5000, 1000, 500]) { const c = Math.floor(left / v); if (c) { notes.push(el('div', { class: 'bill' + (c > 1 ? ' many' : ''), style: `--b:${BILL[v][0]};--t:${BILL[v][1]}`, title: c + (c === 1 ? ' sedel' : ' sedlar') + ' på ' + kr(v), role: 'img', 'aria-label': c + ' × ' + kr(v) }, el('span', { class: 'billseal' }, 'kr'), el('span', { class: 'billval' }, v >= 1000 ? v / 1000 + 'k' : v), el('span', { class: 'billn' }, '×' + c))); left -= c * v; } }
   // Varje koncern har en egen kolumn, med tomter och aktier i två små staplar.
   const cols = Object.keys(GROUPS).map((k) => { const gr = GROUPS[k]; const style = `background:${gr.color};color:${gr.text}`;
     const plots = mine.filter((n) => SQUARES[n].group === k).map((n) => { const x = g.plots[n]; const pic = x.built ? svg(gr.industry ? FACTORY3D : HOUSE3D) : null;
@@ -552,7 +558,7 @@ function renderPiles() {
   box.replaceChildren(
     el('div', { class: 'invbox bonds' }, el('h4', {}, 'Obligationer'), bonds.length ? el('div', { class: 'chips' }, bonds.map((n) => el('button', { class: 'chip bond', onclick: () => showBond(n), 'aria-label': 'Obligation ' + n }, n))) : el('div', { class: 'small' }, 'Inga än'), free.length ? el('div', { class: 'chips', style: 'margin-top:4px' }, free) : null),
     el('div', { class: 'invmain' }, el('h4', {}, 'Mina investeringar: tomter och aktier'), el('div', { class: 'gcols' }, cols)),
-    el('div', { class: 'invbox money' }, el('h4', {}, 'Pengar'), el('div', { class: 'moneysum' }, kr(me.cash)), el('div', { class: 'chips' }, notes)));
+    el('div', { class: 'invbox money' }, el('h4', {}, 'Pengar'), el('div', { class: 'moneysum' }, kr(me.cash)), el('div', { class: 'bills' }, notes)));
 }
 // Bevisen som öppnas när man trycker på ett kort.
 const deedRow = (a, b) => el('div', { class: 'drow' }, el('span', {}, a), el('b', {}, b));
