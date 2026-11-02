@@ -2,7 +2,7 @@
 const { chromium } = require('playwright');
 const path = require('path'); const fs = require('fs');
 const OUT = path.join(__dirname, '..', 'public', 'pawns');
-const COLORS = ['#ff1744', '#2979ff', '#ffea00', '#ffffff', '#d500f9', '#ff6d00'];
+const COLORS = ['#ff1744', '#2979ff', '#ffea00', '#ffffff', '#d500f9', '#00e676'];
 const render = ([shape, hex]) => {
 const smin=(a,b,k)=>{const h=Math.max(k-Math.abs(a-b),0)/k;return Math.min(a,b)-h*h*k*.25};
 const disc=(r,y,rad,y0,y1,c=.04)=>{const dx=r-rad+c,dy=Math.abs(y-(y0+y1)/2)-(y1-y0)/2+c;return Math.min(Math.max(dx,dy),0)+Math.hypot(Math.max(dx,0),Math.max(dy,0))-c};

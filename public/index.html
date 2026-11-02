@@ -191,7 +191,7 @@ body.rolling .side{pointer-events:none}
 <script>
 const { GAME_NAME, GROUPS, SQUARES, RULES, plotInfo } = window.GAME_DATA;
 document.title = GAME_NAME + ' online';
-const COLORS = ['#ff1744', '#2979ff', '#ffea00', '#ffffff', '#d500f9', '#ff6d00'];
+const COLORS = ['#ff1744', '#2979ff', '#ffea00', '#ffffff', '#d500f9', '#00e676'];
 const kr = (v) => Number(v).toLocaleString('sv-SE') + ' kr';
 const app = document.getElementById('app');
 const store = { get(k) { try { return localStorage.getItem(k); } catch { return null; } }, set(k, v) { try { localStorage.setItem(k, v); } catch {} }, del(k) { try { localStorage.removeItem(k); } catch {} } };
