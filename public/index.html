@@ -818,7 +818,7 @@ function showEvents(g) {
   const no = g.eventNo || 0; if (seenEvent === null) { seenEvent = no; return; }
   const fresh = (g.events || []).filter((e) => e.id > seenEvent); seenEvent = no; if (!fresh.length) return;
   const slot3d = window.Board3D && Board3D.on ? document.getElementById('popslot') : null; let box = document.getElementById('events'); if (!box) { box = el('div', { class: 'events', id: 'events', role: 'status', 'aria-live': 'polite' }); if (slot3d) { box.classList.add('inpanel'); slot3d.append(box); } else document.body.append(box); } const area = slot3d ? null : openArea(); box.classList.toggle('placed', !!area); if (area) { box.style.setProperty('--x', area.left + 'px'); box.style.setProperty('--y', area.deckTop + 'px'); box.style.setProperty('--w', (area.right - area.left) + 'px'); }
-  fresh.slice(-4).forEach((e) => { const gone = () => { d.remove(); if (!box.children.length) box.remove(); updateRollLock(); }; const d = el('div', { class: 'evt', title: 'Klicka för att stänga', onclick: gone }, e.text); box.append(d); setTimeout(gone, 2000); });
+  fresh.slice(-4).forEach((e) => { const gone = () => { d.remove(); if (!box.children.length) box.remove(); updateRollLock(); }; const d = el('div', { class: 'evt', title: 'Klicka för att stänga', onclick: gone }, e.text); box.append(d); setTimeout(gone, e.ms || 2000); });
 }
 const myself = () => S.game.players.find((p) => p.id === S.you);
 // Köpknappen på en tomt följer samma regler som vanliga köp: din tur, före kastet, och i banken, på Bankfilialen eller med Köptips.

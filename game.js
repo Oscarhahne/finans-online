@@ -20,10 +20,10 @@ function newGame(players, opts = {}) {
   log(g, `Spelet börjar. ${g.players[0].name} slår först.`, true);
   return g;
 }
-const log = (g, m, quiet) => {
+const log = (g, m, quiet, ms) => {
   g.log.push(m); if (g.log.length > 80) g.log.shift();
   // Händelser visas som korta rutor hos alla spelare. Kast och kort har egna visningar.
-  if (!quiet) { g.eventNo++; g.events.push({ id: g.eventNo, text: m }); if (g.events.length > 20) g.events.shift(); }
+  if (!quiet) { g.eventNo++; g.events.push({ id: g.eventNo, text: m, ...(ms ? { ms } : {}) }); if (g.events.length > 20) g.events.shift(); }
 };
 const setRoll = (g, pid, dice, label) => { g.dice = dice.slice(); g.rollNo++; g.lastRoll = { id: g.rollNo, player: pid, dice: dice.slice(), label }; };
 const newsIs = (g, t) => !!(g.news && g.news.type === t);
@@ -316,7 +316,7 @@ function apply(g, pid, a) {
       g.stage = 'post'; afterLanding(g, p); break; }
     case 'useRentFree': { needTurn(); if (g.stage !== 'rentchoice') fail('Det går inte nu.'); g.tipDeck.push(p.rentFree.shift()); log(g, `${p.name} använder hyresfrihet och slipper hyran.`); g.pendingRent = null; g.stage = 'post'; afterLanding(g, p); break; }
     case 'end': needTurn(); if (g.stage !== 'post') fail('Du måste slå först.'); nextTurn(g); break;
-    case 'buyCar': pre(); if (p.car) fail('Du har redan en bil.'); if (p.cash < R.carPrice) fail('Du har inte råd.'); p.cash -= R.carPrice; p.car = true; log(g, `${p.name} köper bil.`); break;
+    case 'buyCar': pre(); if (p.car) fail('Du har redan en bil.'); if (p.cash < R.carPrice) fail('Du har inte råd.'); p.cash -= R.carPrice; p.car = true; log(g, `${p.name} köper bil.`, false, 1000); break;
     case 'sellCar': if (!raising) fail('Inte nu.'); if (!p.car) fail('Du har ingen bil.'); p.car = false; p.cash += R.carSell; log(g, `${p.name} säljer bilen.`); break;
     case 'buyPlot': { pre(); if (!canBuy(p)) fail(tradeFail(p)); if (g.boughtPlot) fail('Bara en tomt per tur.');
       const x = g.plots[a.n]; if (!x || x.owner) fail('Tomten går inte att köpa.'); const c = plotInfo(a.n).price; if (p.cash < c) fail('Du har inte råd.');

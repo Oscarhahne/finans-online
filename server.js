@@ -61,7 +61,7 @@ function botWait(r, g) {
   if (BOT_DELAY >= 500) {
     if (g.cardNo !== r.seenCard) { if (r.seenCard !== undefined && g.lastCard) r.hold = Math.max(r.hold, r.anim + POPUP_CARD); r.seenCard = g.cardNo; }
     if (g.drawNo !== r.seenDraw) { if (r.seenDraw !== undefined) r.hold = Math.max(r.hold, r.anim + DICE_TIME + POPUP_DRAW); r.seenDraw = g.drawNo; }
-    if (g.eventNo !== r.seenEvent) { if (r.seenEvent !== undefined) r.hold = Math.max(r.hold, r.anim + POPUP_EVENT); r.seenEvent = g.eventNo; }
+    if (g.eventNo !== r.seenEvent) { if (r.seenEvent !== undefined) { const ev = g.events[g.events.length - 1]; r.hold = Math.max(r.hold, r.anim + (ev && ev.ms ? ev.ms + 200 : POPUP_EVENT)); } r.seenEvent = g.eventNo; }
   }
   return Math.max(BOT_DELAY >= 500 ? 300 : BOT_DELAY, r.hold - now);
 }

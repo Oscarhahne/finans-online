@@ -155,3 +155,5 @@ console.log('Alla regeltester klara');
 { const roll = (q, pos) => { q.players[0].pos = pos; const o = Math.random; Math.random = () => 0; G.apply(q, 'a', { type: 'roll' }); Math.random = o; };
   let q = two(); roll(q, 3); assert.equal(q.lastRain, undefined);
   q = two(); q.shares[0].owner = 'a'; roll(q, 3); assert.equal(q.players[0].pos, 4); assert.deepEqual(q.lastRain, { id: 1, player: 'a', pos: 4 }); }
+// Köp av bil visas bara en sekund.
+{ const q = two(); q.players[0].cash = 100000; G.apply(q, 'a', { type: 'buyCar' }); assert.equal(q.events[q.events.length - 1].ms, 1000); }
