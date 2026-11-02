@@ -767,11 +767,15 @@ function showEvents(g) {
   let box = document.getElementById('events'); if (!box) { box = el('div', { class: 'events', id: 'events', role: 'status', 'aria-live': 'polite' }); document.body.append(box); } const area = openArea(); box.classList.toggle('placed', !!area); if (area) { box.style.setProperty('--x', area.left + 'px'); box.style.setProperty('--y', area.deckTop + 'px'); box.style.setProperty('--w', (area.right - area.left) + 'px'); }
   fresh.slice(-4).forEach((e) => { const d = el('div', { class: 'evt' }, e.text); box.append(d); setTimeout(() => d.remove(), 5000); });
 }
+const myself = () => S.game.players.find((p) => p.id === S.you);
+// Köpknappen på en tomt följer samma regler som vanliga köp: din tur, före kastet, och i banken, på Bankfilialen eller med Köptips.
+function canBuyPlotNow(x) { const g = S.game, me = myself(); return !x.owner && !!me && !me.out && g.phase === 'play' && g.players[g.current].id === S.you && g.stage === 'pre' && !g.debts.length && !g.bondRound && me.lapDone && (canTrade(me) || (me.tradePass || []).length > 0); }
 function showSquare(n) {
   if (!S || !S.game) return;
   open(() => { const s = SQUARES[n]; const box = [el('h2', {}, n + '. ' + s.name)];
     if (s.kind === 'plot') { const i = plotInfo(n); const x = S.game.plots[n]; const g = GROUPS[s.group];
-      box.push(el('p', {}, g.name + (g.industry ? ', industritomt' : '')), el('div', { class: 'item' }, 'Pris', el('b', {}, kr(i.price))), el('div', { class: 'item' }, 'Byggkostnad', el('b', {}, kr(i.build))), el('div', { class: 'item' }, 'Hyra obebyggd', el('b', {}, kr(i.rent))), el('div', { class: 'item' }, 'Hyra bebyggd', el('b', {}, kr(i.rentBuilt))), el('div', { class: 'item' }, 'Ägare', el('b', {}, x.owner ? ownerName(x.owner) : 'Banken')), el('p', { class: 'small' }, 'Äger någon hela gruppen med aktier fördubblas hyran.')); }
+      box.push(el('p', {}, g.name + (g.industry ? ', industritomt' : '')), el('div', { class: 'item' }, 'Pris', el('b', {}, kr(i.price))), el('div', { class: 'item' }, 'Byggkostnad', el('b', {}, kr(i.build))), el('div', { class: 'item' }, 'Hyra obebyggd', el('b', {}, kr(i.rent))), el('div', { class: 'item' }, 'Hyra bebyggd', el('b', {}, kr(i.rentBuilt))), el('div', { class: 'item' }, 'Ägare', el('b', {}, x.owner ? ownerName(x.owner) : 'Banken')), el('p', { class: 'small' }, 'Äger någon hela gruppen med aktier fördubblas hyran.'));
+      if (canBuyPlotNow(x)) box.push(el('button', { class: 'primary', style: 'width:100%', disabled: S.game.boughtPlot || myself().cash < i.price, onclick: () => act({ type: 'buyPlot', n }) }, S.game.boughtPlot ? 'Du har redan köpt en tomt den här turen' : myself().cash < i.price ? 'Du har inte råd med tomten' : 'Köp tomten för ' + kr(i.price))); }
     else box.push(el('p', {}, SQUARE_TEXT[s.kind] || ''));
     return el('div', {}, box); });
 }
