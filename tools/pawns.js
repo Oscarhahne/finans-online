@@ -22,7 +22,7 @@ const SHAPES = [
 // Detaljer per pjäs. null ger spelarens färg, { t } mörkar eller ljusar den och { c } ger en egen färg.
 const GOLD = { c: '#f4c542', m: 1 }, DARK = { c: '#23262d' }, STEEL = { c: '#c9d1da', m: 1 }, GLASS = { c: '#1d3a57', m: 1 };
 const fr = (v) => v - Math.floor(v);
-const inBase = (y) => y > 0.2 && y < 0.33;
+const inBase = (y) => y < 0.235;
 const MATS = [
   (x, y, z) => { // Portfölj
     if (y > 1.8) return DARK;
