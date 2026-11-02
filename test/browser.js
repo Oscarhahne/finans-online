@@ -18,7 +18,7 @@ const out = process.argv[2];
       await p.waitForFunction(() => !document.body.classList.contains('rolling'));
       const buy = p.locator('button:has-text("Köp tomt/aktie")');
       if (await buy.count()) { await buy.click(); if (p === A) await p.screenshot({ path: out + '/buy.png' }); const k = p.locator('.modal .item button:not([disabled])').first(); if (await k.count()) { await k.click(); bought++; await p.waitForTimeout(100); } await p.locator('.modal button:has-text("Stäng")').click(); }
-      for (const t of ['Slå gratifikation', 'Slå hur länge', 'Slå för att komma ut', 'Slå igen', 'Slå tärningen', 'Slå två tärningar',  'Avsluta turen', 'Köp ingen']) { const q = p.locator(`.side button:has-text("${t}")`); if (await q.count()) { await q.first().click({ timeout: 3000 }).catch(() => {}); await p.waitForTimeout(40); break; } }
+      for (const t of ['Slå gratifikation', 'Slå hur länge', 'Slå för att komma ut', 'Slå igen', 'Slå tärningen', 'Slå två tärningar',  'Avsluta turen', 'Köp ingen']) { const q = p.locator(`.side button:has-text("${t}")`); if (await q.count()) { await p.evaluate(() => document.querySelectorAll('#cardpop, #drawbox, #events .evt').forEach((e) => e.remove())); await p.waitForTimeout(170); await q.first().click({ timeout: 3000 }).catch(() => {}); await p.waitForTimeout(40); break; } }
     }
     await A.waitForTimeout(50);
   }
