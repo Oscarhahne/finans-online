@@ -64,7 +64,9 @@ label{display:block;font-weight:700;margin:0 0 6px;color:var(--mute)}
 .dpic{display:flex;justify-content:center;padding:10px 0 2px}.dpic svg{width:84px;height:84px;margin:0}
 .drows{display:grid;margin-top:8px}.drow{display:flex;justify-content:space-between;gap:12px;padding:6px 2px;border-bottom:1px dotted #64748b;font-size:14.5px}.drow b{text-align:right;font-family:Nunito,sans-serif}
 .dfoot{margin:10px 0 0;font-size:13px;line-height:1.3}
-.activenews{position:absolute;left:875px;top:640px;width:275px;padding:10px 12px;border-radius:12px;background:#fef3a0;color:#1a1740;font:800 14px/1.25 Nunito,sans-serif;box-shadow:0 6px 16px rgba(0,0,0,.45);border:2px solid #1a1740}
+.activenews{position:absolute;top:636px;padding:14px 16px;border-radius:14px;background:#fef3a0;color:#1a1740;box-shadow:0 6px 16px rgba(0,0,0,.5);border:3px solid #1a1740;z-index:3}
+.annow{font:800 15px/1.2 Nunito,sans-serif;text-transform:uppercase;letter-spacing:.5px;border-bottom:2px solid #1a1740;padding-bottom:5px;margin-bottom:8px}
+.anhead{font:600 40px/1.05 Fredoka,sans-serif}.anbody{font:800 24px/1.22 Nunito,sans-serif;margin-top:8px}
 .c.glow{filter:brightness(1.3) saturate(1.2);box-shadow:0 0 0 4px #fff,0 0 26px 10px rgba(255,255,255,.9);z-index:4}
 .c.glow:hover{filter:brightness(1.3) saturate(1.2)}
 .mini{min-height:44px;padding:4px 6px;border:0;border-radius:8px;font:800 11.5px/1.1 Nunito,sans-serif;box-shadow:0 2px 3px rgba(0,0,0,.45),inset 0 0 0 1px rgba(0,0,0,.45);text-align:center;width:70px;display:flex;align-items:center;justify-content:center}
@@ -211,7 +213,7 @@ function buildBoard() {
   const leftC = 120 + 2 * TW; const rightC = colX(8) + 1.5 * TW;
   b.append(el('div', { class: 'deck', style: `left:${leftC - 85}px;top:560px;background:#7dd3fc;transform:rotate(-4deg)` }, svg(CHART), 'Börstips'));
   b.append(el('div', { class: 'deck', style: `left:${rightC - 85}px;top:520px;background:#fde047;transform:rotate(4deg)` }, svg(PAPER), 'Finanstidningen'));
-  b.append(el('div', { class: 'activenews', id: 'activenews', style: `left:${rightC - 137}px` }));
+  b.append(el('div', { class: 'activenews', id: 'activenews', style: `left:${colX(8) + 10}px;width:${3 * TW - 20}px` }));
   for (let n = 1; n <= 53; n++) {
     const s = SQUARES[n]; const r = rect(n); const isPlot = s.kind === 'plot';
     const g = isPlot ? GROUPS[s.group] : null;
@@ -425,7 +427,8 @@ function renderGame() {
     if (x.owner) { const i = g.players.findIndex((p) => p.id === x.owner); h.append(el('span', { class: 'own', style: 'background:' + COLORS[i], title: g.players[i].name })); if (x.built) { const r = rect(Number(n)); const b3 = svg(GROUPS[SQUARES[n].group].industry ? FACTORY3D : HOUSE3D); if (r.rot) b3.style.transform = `rotate(${-r.rot}deg)`; h.append(b3); } }
   }
   // Aktivt tidningskort ligger under Finanstidningen på brädet.
-  const an = document.getElementById('activenews'); an.replaceChildren(...(g.news ? [el('div', { class: 'small', style: 'color:#1a1740;font-weight:800' }, 'Gäller nu'), g.news.text] : [])); an.style.display = g.news ? 'block' : 'none';
+  const an = document.getElementById('activenews'); if (g.news) { const i = g.news.text.indexOf('!'); const head = i > 0 ? g.news.text.slice(0, i + 1) : 'Finanstidningen'; const body = (i > 0 ? g.news.text.slice(i + 1) : g.news.text).replace(' Gäller tills nästa tidning.', '').trim();
+    an.replaceChildren(el('div', { class: 'annow' }, 'Finanstidningen gäller nu'), el('div', { class: 'anhead' }, head), el('div', { class: 'anbody' }, body)); } else an.replaceChildren(); an.style.display = g.news ? 'block' : 'none';
   // Pjäser.
   boardEl.querySelectorAll('.token').forEach((t) => { if (!g.players.some((p) => 'tk' + p.color === t.id && !p.out)) t.remove(); });
   const counts = {};
