@@ -19,6 +19,47 @@ const SHAPES = [
   (x,y,z)=>{let d=base(x,y,z);d=Math.min(d,box(x,y,z,0,.85,0,1,.28,.52,.14));d=smin(d,box(x,y,z,-.08,1.3,0,.56,.28,.46,.16),.05);[[-.6,.52],[-.6,-.52],[.6,.52],[.6,-.52]].forEach(([a,b])=>{const dx=Math.hypot(x-a,y-.58)-.25;d=Math.min(d,Math.max(dx,Math.abs(z-b)-.09)-.015)});return d},
   (x,y,z)=>{let d=base(x,y,z);const n=8,a=Math.atan2(z,x),s=2*Math.PI/n,fa=Math.abs(((a%s)+s)%s-s/2),r=Math.hypot(x,z)*Math.cos(fa);const top=Math.max((r+(y-2.1)*.8-.56)*.78,(r-(y-.42)*.72)*.81);const dia=Math.max(top,y-2.12,.42-y);d=smin(d,cy(x,y,z,.25,.28,.6,.03),.05);return Math.min(d,dia)},
 ];
+// Detaljer per pjäs. null ger spelarens färg, { t } mörkar eller ljusar den och { c } ger en egen färg.
+const GOLD = { c: '#f4c542', m: 1 }, DARK = { c: '#23262d' }, STEEL = { c: '#c9d1da', m: 1 }, GLASS = { c: '#1d3a57', m: 1 };
+const fr = (v) => v - Math.floor(v);
+const inBase = (y) => y > 0.2 && y < 0.33;
+const MATS = [
+  (x, y, z) => { // Portfölj
+    if (y > 1.8) return DARK;
+    if (z > 0.335 && Math.abs(x) < 0.18 && Math.abs(y - 1.08) < 0.15) return GOLD;
+    if (Math.abs(y - 1.05) < 0.045 && z > 0.3) return DARK;
+    if (y > 0.34 && Math.abs(x) > 0.76 && Math.abs(y - 1.05) > 0.52) return GOLD;
+    if (y > 0.34 && Math.abs(Math.abs(x) - 0.52) < 0.045) return { t: 0.55 };
+    return inBase(y) ? GOLD : null; },
+  (x, y, z) => { // Myntstapel
+    if (y > 1.98 && Math.abs(z) < 0.13) { const r = Math.hypot(x, y - 2.45); if (Math.abs(z) > 0.075) { if (r < 0.13) return DARK; if (r < 0.36) return GOLD; if (r < 0.41) return DARK; } return null; }
+    if (y > 0.34 && y < 2.2) { const a = Math.atan2(z, x); return Math.sin(a * 36) > 0.25 ? { t: 0.68 } : (Math.floor((y - 0.34) / 0.26) % 2 ? GOLD : null); }
+    return inBase(y) ? GOLD : null; },
+  (x, y, z, n) => { // Skyskrapa
+    if (y > 2.98) return { c: '#ff3b30' }; if (y > 2.68) return STEEL;
+    if (y > 0.34 && Math.abs(n[1]) < 0.5) { const h = Math.abs(n[0]) > Math.abs(n[2]) ? z : x; const u = fr((h + 2) / 0.21), v = fr((y + 0.08) / 0.24); if (u > 0.2 && u < 0.8 && v > 0.22 && v < 0.78) { const lit = fr(Math.sin(Math.floor((h + 2) / 0.21) * 12.9 + Math.floor((y + 0.08) / 0.24) * 78.2 + (Math.abs(n[0]) > Math.abs(n[2]) ? 3 : 0)) * 437.5) > 0.62; return lit ? { c: '#ffe08a' } : GLASS; } }
+    return inBase(y) ? GOLD : null; },
+  (x, y, z, n) => { // Sparbössa
+    if (Math.hypot(x - 0.92, y - 1.56, Math.abs(z) - 0.2) < 0.06) return { c: '#101216' };
+    if (x > 0.9 && Math.hypot(y - 1.36, z) < 0.24) { if (x > 1.08 && Math.hypot(y - 1.36, Math.abs(z) - 0.07) < 0.05) return { c: '#6b2d3a' }; return { c: '#ffb3c1' }; }
+    if (y > 1.72 && Math.abs(x + 0.1) < 0.22 && Math.abs(z) < 0.07) return DARK;
+    if (y > 0.34 && y < 0.5 && Math.hypot(Math.abs(x + 0.05) - 0.4, Math.abs(z) - 0.3) < 0.2) return DARK;
+    if (y > 1.68 && x > 0.42 && Math.abs(z) > 0.15) return { t: 0.62 };
+    return inBase(y) ? GOLD : null; },
+  (x, y, z, n) => { // Bil
+    const w = Math.hypot(Math.abs(x) - 0.6, y - 0.58); if (Math.abs(z) > 0.42 && w < 0.29) return w < 0.12 ? STEEL : DARK;
+    if (y > 1.12 && y < 1.5 && n[1] < 0.55) return GLASS;
+    if (x > 0.93 && y > 0.78 && y < 1.02 && Math.abs(z) > 0.22) return { c: '#fff2a8' };
+    if (x < -0.93 && y > 0.78 && y < 1.02 && Math.abs(z) > 0.22) return { c: '#ff3b30' };
+    if (y > 0.57 && y < 0.72) return STEEL;
+    if (Math.abs(z) > 0.45 && Math.abs(x + 0.08) < 0.018 && y > 0.72 && y < 1.12) return { t: 0.45 };
+    return inBase(y) ? GOLD : null; },
+  (x, y, z, n) => { // Diamant
+    if (y < 0.72 && Math.hypot(x, z) < 0.3 && y > 0.3) return GOLD;
+    if (y > 0.42) { if (n[1] > 0.93) return { t: 1.28 }; const s = Math.floor((Math.atan2(z, x) + 7) / (Math.PI / 4)); const low = y < 1.6; return { t: s % 2 ? (low ? 0.68 : 1.08) : (low ? 0.9 : 1.32) }; }
+    return inBase(y) ? GOLD : null; },
+];
+const toLin = (h) => [1, 3, 5].map((k) => Math.pow(parseInt(h.slice(k, k + 2), 16) / 255, 2.2));
 const f = SHAPES[shape]; const W = 264, H = 372, E = 0.42, ce = Math.cos(E), se = Math.sin(E), Az = 0.55, ca = Math.cos(Az), sa = Math.sin(Az);
 const A = [1, 3, 5].map((k) => Math.pow(parseInt(hex.slice(k, k + 2), 16) / 255, 2.2));
 const big = document.createElement('canvas'); big.width = W; big.height = H; const g = big.getContext('2d'), im = g.createImageData(W, H);
@@ -31,7 +72,8 @@ for (let py = 0; py < H; py++) for (let px = 0; px < W; px++) {
   const x = u, y = oy - se * t, z = oz - ce * t, e = 0.005; const n = nm(sdf(x + e, y, z) - sdf(x - e, y, z), sdf(x, y + e, z) - sdf(x, y - e, z), sdf(x, y, z + e) - sdf(x, y, z - e));
   let ao = 1; for (let k = 1; k <= 4; k++) { const q = 0.09 * k; ao -= Math.max(q - sdf(x + n[0] * q, y + n[1] * q, z + n[2] * q), 0) * 0.85 / k; } ao = Math.max(ao, 0.2);
   const dot = (l) => n[0] * l[0] + n[1] * l[1] + n[2] * l[2]; const nv = Math.max(dot(view), 0), sp = Math.pow(Math.max(dot(half), 0), 90) * 1.2 + Math.pow(Math.max(dot(half), 0), 14) * 0.12, edge = 1 - Math.pow(1 - nv, 5) * 0.75, light = (Math.max(dot(key), 0) * 1.05 + Math.max(dot(fill), 0) * 0.22 + (0.5 + 0.5 * n[1]) * 0.32) * ao;
-  const q = (py * W + px) * 4; for (let k = 0; k < 3; k++) im.data[q + k] = 255 * Math.pow(Math.min((A[k] * light + sp * ao + Math.pow(1 - nv, 3) * 0.14 * (0.5 + 0.5 * n[1])) * edge, 1), 1 / 2.2); im.data[q + 3] = 255;
+  const X = x * ca - z * sa, Z = x * sa + z * ca, N = [n[0] * ca - n[2] * sa, n[1], n[0] * sa + n[2] * ca]; const mt = MATS[shape](X, y, Z, N); const alb = !mt ? A : mt.c ? toLin(mt.c) : A.map((v) => Math.min(v * mt.t, 1)); const shine = mt && mt.m ? 1.6 : 1;
+  const q = (py * W + px) * 4; for (let k = 0; k < 3; k++) im.data[q + k] = 255 * Math.pow(Math.min((alb[k] * light + sp * shine * ao + Math.pow(1 - nv, 3) * 0.14 * (0.5 + 0.5 * n[1])) * edge, 1), 1 / 2.2); im.data[q + 3] = 255;
 }
 g.putImageData(im, 0, 0);
 const out = document.createElement('canvas'); out.width = W / 2; out.height = H / 2; const o = out.getContext('2d');
