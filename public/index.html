@@ -110,6 +110,8 @@ body::before{content:'';position:fixed;inset:0;z-index:-1;background:var(--bg) u
 .mort{outline:3px dashed #fff;outline-offset:-6px;opacity:.72}
 .token{position:absolute;width:88px;height:124px;transition:left .35s,top .35s;pointer-events:none;z-index:5}
 .pawn{display:block;width:100%;height:100%;object-fit:contain;overflow:visible;user-select:none;-webkit-user-drag:none;pointer-events:none}
+.plinth{position:absolute;border-radius:16px;box-shadow:0 4px 8px rgba(0,0,0,.55)}
+.tilted .board{transform-style:preserve-3d;overflow:visible;box-shadow:0 26px 0 #06281c,0 40px 50px rgba(0,0,0,.55)}.tilted .token{transform:translateZ(3px) rotateX(-24deg);transform-origin:50% 88%}.tilted .deck{box-shadow:0 12px 0 rgba(0,0,0,.5),0 22px 24px rgba(0,0,0,.45)}.tilted .activenews{box-shadow:0 10px 0 #7a5a10,0 22px 24px rgba(0,0,0,.5)}
 .token.me .pawn{filter:drop-shadow(0 0 4px #fff)}
 .title{position:absolute;left:195px;top:128px;width:900px;text-align:center;font:600 76px/1 Fredoka,sans-serif;color:#fff;text-shadow:0 2px 10px #06261b}
 .mid{position:absolute;border-radius:16px;box-shadow:inset 0 0 0 2px #fde68a,0 0 9px #fbbf24;background:linear-gradient(160deg,#eab308,#a16207 55%,#713f12);color:#fff;text-shadow:0 2px 3px rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;writing-mode:vertical-rl;font:600 36px/1 Fredoka,sans-serif}
@@ -251,6 +253,7 @@ const tileBg = (c) => `linear-gradient(145deg,color-mix(in srgb,${c} 78%,white) 
 let TW = 105;
 const D = 200; const ROW = 105; // D är rutornas djup och hörnens storlek. ROW är höjden på rutorna längs sidorna.
 const BOTTOM = D + 9 * ROW; const boardH = () => BOTTOM + D;
+const TILT = 24;
 const boardW = () => 2 * D + TW * 11;
 const colX = (c) => D + (c - 1) * TW;
 function rect(n) {
@@ -279,6 +282,7 @@ function buildBoard() {
   Object.values(GROUPS).forEach((g) => lg.append(el('div', { class: 'l' }, el('div', { class: 's', style: 'background:' + g.color }), g.name)));
   [[KIND_BG.bank || KIND_BG.branch, 'Bank och handel'], [KIND_BG.bor, 'Börstips'], [KIND_BG.news, 'Finanstidning'], [KIND_BG.div, 'Aktieutdelning'], [KIND_BG.lilla, 'Obligationer']].forEach(([c, t]) => lg.append(el('div', { class: 'l' }, el('div', { class: 's', style: 'background:' + c }), t)));
   b.append(lg);
+  b.append(el('div', { class: 'plinth', style: `left:${colX(6) + 2}px;top:${BOTTOM - 5 * ROW + 12}px;width:${TW - 4}px;height:${5 * ROW + D - 2}px;background:#5c3a06` }));
   b.append(el('div', { class: 'mid', style: `left:${colX(6)}px;width:${TW}px;top:${BOTTOM - 5 * ROW}px;height:${5 * ROW + D}px` }, 'Bankens huvudkontor'));
   const leftC = D + 2 * TW; const rightC = colX(8) + 2 * TW;
   b.append(el('div', { class: 'deck ct-bor', style: `left:${leftC - 85}px;top:${BOTTOM - 705}px;transform:rotate(-4deg)` }, iconFor(SQUARES[2]), 'Börstips'));
@@ -291,6 +295,7 @@ function buildBoard() {
     let w = r.rot && Math.abs(r.rot) === 90 ? ROW : r.w, h = r.bank ? ROW : D; if (r.corner) { w = D; h = D; }
     const left = r.x + r.w / 2 - w / 2; const top = r.y + r.h / 2 - h / 2;
     const cls = 'c' + (isPlot ? ' t' : '') + (r.bank ? ' bk' : '') + (r.corner ? ' h' : '') + (s.kind === 'bor' ? ' ct-bor' : s.kind === 'news' ? ' ct-news' : '');
+    b.append(el('div', { class: 'plinth', style: `left:${r.x + 2}px;top:${r.y + 12}px;width:${r.w - 4}px;height:${r.h - 2}px;background:color-mix(in srgb,${s.kind === 'bor' ? '#2f6fb8' : s.kind === 'news' ? '#a97412' : s.kind === 'div' ? '#0b4f26' : base} 45%,black)` }));
     const e = el('div', { class: cls, id: 'sq' + n, role: 'button', tabindex: 0, 'aria-label': n + ' ' + s.name, style: `left:${left}px;top:${top}px;width:${w}px;height:${h}px;background:${tileBg(base)};--g:${base};` + (r.rot ? `transform:rotate(${r.rot}deg);` : '') });
     e.onclick = () => showSquare(n); e.onkeydown = (ev) => { if (ev.key === 'Enter') showSquare(n); };
     const icon = iconFor(s);
@@ -381,8 +386,13 @@ function fit() {
   const flow = matchMedia('(max-width:999px),(max-height:619px)').matches;
   let rebuilt = false; const nextTW = flow ? 105 : Math.round(Math.max(105, Math.min(240, (wrap.clientWidth / (wrap.clientHeight / boardH()) - 2 * D) / 11)));
   if (nextTW !== TW) { TW = nextTW; const nb = buildBoard(); boardEl.replaceWith(nb); boardEl = nb; rebuilt = true; }
-  const W = boardW(); const k = flow ? wrap.clientWidth / W : Math.min(wrap.clientWidth / W, wrap.clientHeight / boardH());
-  boardEl.style.transform = `scale(${k})`; sc.style.width = W * k + 'px'; sc.style.height = boardH() * k + 'px'; sc.style.flex = 'none';
+  const W = boardW(), H = boardH();
+  if (flow) { const k = wrap.clientWidth / W; document.body.classList.remove('tilted'); sc.style.perspective = ''; boardEl.style.top = ''; boardEl.style.transform = `scale(${k})`; sc.style.width = W * k + 'px'; sc.style.height = H * k + 'px'; sc.style.flex = 'none'; return rebuilt; }
+  // Spelplanen lutas bakåt i verkligt 3D. Närmaste kanten blir större, så planen krymps så att allt får plats.
+  document.body.classList.add('tilted'); const P = 2300, A = TILT * Math.PI / 180, ca = Math.cos(A), sa = Math.sin(A);
+  let k = Math.min(wrap.clientWidth / W, wrap.clientHeight / (H * ca)); for (let i = 0; i < 6; i++) { const f = P / (P - H * k * sa); k = Math.min(wrap.clientWidth / (W * f), wrap.clientHeight / (H * ca * f)) * 0.995; }
+  sc.style.perspective = P + 'px'; sc.style.perspectiveOrigin = '50% 0%'; boardEl.style.transform = `rotateX(${TILT}deg) scale(${k})`; sc.style.width = W * k + 'px'; sc.style.height = wrap.clientHeight + 'px'; sc.style.flex = 'none';
+  const shown = H * ca * P / (P - H * k * sa); boardEl.style.top = Math.max(0, (wrap.clientHeight - shown) / 2 - 8) + 'px';
   return rebuilt;
 }
 window.addEventListener('resize', () => { if (fit() && S && S.game) renderGame(); });
@@ -528,9 +538,8 @@ function cardScene(tone, scene) {
 // Den öppna ytan på spelplanen under Börstips, i skärmens koordinater. På små skärmar visas fönstren mitt på.
 function openArea() {
   if (!boardEl || matchMedia('(max-width:999px),(max-height:619px)').matches) return null;
-  const b = boardEl.getBoundingClientRect(), arm = document.getElementById('sq43'); if (!arm) return null; const k = b.width / boardW();
-  const left = b.left + (D + 12) * k, right = arm.getBoundingClientRect().left - 12 * k;
-  return { left, right, top: b.top + (BOTTOM - 590) * k, bottom: b.top + (BOTTOM - 10) * k, deckTop: b.top + (BOTTOM - 705) * k };
+  const q = (n) => document.getElementById('sq' + n)?.getBoundingClientRect(); const side = q(3), arm = q(43), low = q(49), deck = boardEl.querySelector('.deck.ct-bor')?.getBoundingClientRect(); if (!side || !arm || !low || !deck) return null;
+  return { left: side.right + 8, right: arm.left - 8, top: deck.bottom + 6, bottom: low.top - 6, deckTop: deck.top };
 }
 function placePopup(e) {
   document.body.append(e); const a = openArea(); if (!a) return;
