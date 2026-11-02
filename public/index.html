@@ -397,7 +397,10 @@ const sfx = {
   dice() { if (!this.ac()) return; const t = this.ctx.currentTime; [0, .16, .34, .56, .84, 1.08].forEach((d, i) => this.noise(t + d, .07, 280 + Math.random() * 180, 1.2, i > 3 ? .035 : .06)); },
   bills() { if (!this.ac()) return; const t = this.ctx.currentTime; [0, .1, .19].forEach((d) => this.noise(t + d, .1, 4200, .8, .16, 'highpass')); },
   register() { if (!this.ac()) return; const t = this.ctx.currentTime; this.noise(t, .07, 900, 2, .3); this.noise(t + .09, .09, 500, 2, .3); this.tone(t + .17, 2093, .55, .22); this.tone(t + .17, 3136, .4, .13); this.tone(t + .29, 2637, .6, .18); },
-  door() { if (!this.ac()) return; const t = this.ctx.currentTime; this.noise(t, .14, 650, 3, .4); [110, 165, 247].forEach((f) => this.tone(t + .02, f, .55, .13, 'square')); this.noise(t + .38, .09, 1300, 6, .32); this.tone(t + .39, 82, .4, .25, 'sawtooth'); },
+  // Ett slag mot en metallstång: korta, ojämna deltoner och ett litet klick.
+  clank(at, base, vol) { [1, 2.76, 4.07, 5.93].forEach((m, i) => this.tone(at + Math.random() * .004, base * m * (1 + (Math.random() - .5) * .03), .12 + .1 / (i + 1), vol / (i * .6 + 1))); this.noise(at, .025, 2600, 1.5, vol * 1.3); },
+  // Någon skakar i gallret: fram och tillbaka i tre ryck, med stänger som slår olika hårt.
+  door() { if (!this.ac()) return; const t = this.ctx.currentTime; [[0, .2], [.09, .12], [.17, .16], [.27, .09], [.42, .22], [.5, .13], [.59, .17], [.68, .08], [.84, .2], [.93, .11], [1.03, .14], [1.14, .07], [1.26, .05]].forEach(([d, v], i) => this.clank(t + d, 300 + (i % 3) * 55 + Math.random() * 25, v * .7)); [0, .42, .84].forEach((d) => this.noise(t + d, .1, 170, 1, .2)); },
 };
 document.addEventListener('pointerdown', () => { if (sfx.on) sfx.ac(); });
 let soundPrev = null;
