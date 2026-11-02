@@ -142,3 +142,6 @@ g = two(); { const p = g.players[0]; p.cash = 0; g.shares[1].owner = 'a'; g.news
 for (const [t, want] of [['divup', 25000], ['divdown', 6250]]) { g = two(); const p = g.players[0]; g.shares[0].owner = 'a'; g.news = { type: t }; const c = p.cash; landOn(g, 4); assert.equal(p.cash, c + want); }
 g = two(); { const p = g.players[0]; p.car = true; p.pos = 1; g.news = { type: 'fuel' }; Math.random = () => 0.2; G.apply(g, 'a', { type: 'roll' }); Math.random = orig; assert.equal(g.lastRoll.dice.length, 1); assert.equal(p.pos, 3); }
 console.log('Alla regeltester klara');
+// Alla kort har en egen visning med rubrik och effekt.
+{ const D = require('../public/data.js'); const view = require('../public/cards.js');
+  for (const c of D.BORSTIPS.concat(D.FINANS)) { const v = view(c.x); assert.ok(v.d && v.e && v.h, 'Kort saknar visning: ' + c.x); } }

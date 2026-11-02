@@ -70,9 +70,9 @@ label{display:block;font-weight:700;margin:0 0 6px;color:var(--mute)}
 .dpic{display:flex;justify-content:center;padding:10px 0 2px}.dpic svg{width:84px;height:84px;margin:0}
 .drows{display:grid;margin-top:8px}.drow{display:flex;justify-content:space-between;gap:12px;padding:6px 2px;border-bottom:1px dotted #64748b;font-size:14.5px}.drow b{text-align:right;font-family:Nunito,sans-serif}
 .dfoot{margin:10px 0 0;font-size:13px;line-height:1.3}
-.activenews{position:absolute;top:636px;padding:14px 16px;border-radius:14px;background:#fef3a0;color:#1a1740;box-shadow:0 6px 16px rgba(0,0,0,.5);border:3px solid #1a1740;z-index:3}
-.annow{font:800 15px/1.2 Nunito,sans-serif;text-transform:uppercase;letter-spacing:.5px;border-bottom:2px solid #1a1740;padding-bottom:5px;margin-bottom:8px}
-.anhead{font:600 40px/1.05 Fredoka,sans-serif}.anbody{font:800 24px/1.22 Nunito,sans-serif;margin-top:8px}
+.activenews{position:absolute;top:636px;border-radius:18px;background:#101d24;color:#fff;box-shadow:0 8px 20px rgba(0,0,0,.55),0 5px 0 #b98516;border:4px solid #f6c945;z-index:3;overflow:hidden}
+.annow{font:800 18px/1.2 Nunito,sans-serif;text-transform:uppercase;letter-spacing:.6px;background:#fbe89a;color:#18202c;padding:9px 14px}
+.anhead{font:800 37px/1.06 Nunito,sans-serif;padding:11px 14px 0}.anbody{font:700 22px/1.2 Nunito,sans-serif;margin:8px 14px 13px;color:#cbd5d8}.anbody b{display:block;font-size:29px;font-weight:800;color:#86ef8c}.anbody.neg b{color:#fca5a5}.anbody.neu b{color:#fde68a}
 .c.glow{filter:brightness(1.3) saturate(1.2);box-shadow:0 0 0 4px #fff,0 0 26px 10px rgba(255,255,255,.9);z-index:4}
 .c.glow:hover{filter:brightness(1.3) saturate(1.2)}
 .mini{min-height:44px;padding:4px 6px;border:0;border-radius:8px;font:800 11.5px/1.1 Nunito,sans-serif;box-shadow:0 2px 3px rgba(0,0,0,.45),inset 0 0 0 1px rgba(0,0,0,.45);text-align:center;width:70px;display:flex;align-items:center;justify-content:center}
@@ -135,8 +135,23 @@ label{display:block;font-weight:700;margin:0 0 6px;color:var(--mute)}
 .buygrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px;align-items:start;margin-top:10px}
 .buybox{background:#0a2f22;border-radius:16px;padding:14px;min-width:0}
 .bondgrid{display:grid;grid-template-columns:repeat(6,1fr);gap:6px}
-.cardpop{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);z-index:40;width:min(420px,calc(100vw - 32px));padding:24px;border-radius:24px;color:var(--dark);text-align:center;box-shadow:0 18px 50px rgba(0,0,0,.6);pointer-events:none;animation:pop .25s ease-out}
-.cardpop h2{font-size:26px;margin:6px 0 10px}.cardpop p{margin:0;font-size:19px;font-weight:800;line-height:1.3}.cardpop .tic{width:100px;height:75px;margin:0 auto}
+.cardpop{--ac:#f6c945;--lip:#b98516;--band:#fbe89a;position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);z-index:40;width:min(440px,calc(100vw - 24px));max-height:calc(100vh - 16px);overflow:hidden;border-radius:24px;background:#101d24;color:#fff;border:4px solid var(--ac);box-shadow:0 8px 0 var(--lip),0 22px 55px rgba(0,0,0,.65);pointer-events:none;animation:pop .25s ease-out;font-family:Nunito,sans-serif}
+.cardpop.tips{--ac:#7cc0ff;--lip:#2f6fb8;--band:#cfe8ff}
+.cphead{display:flex;align-items:center;gap:12px;background:var(--band);color:#18202c;padding:9px 16px}.cphead .tic{width:56px;height:42px;margin:0}
+.cphead b{display:block;font:800 23px/1.1 Nunito,sans-serif;text-transform:uppercase;letter-spacing:.5px}.cphead span{display:block;font:700 12.5px/1.25 Nunito,sans-serif;text-transform:uppercase;letter-spacing:.7px;color:#4b5563;border-top:1px solid rgba(0,0,0,.2);margin-top:3px;padding-top:3px}
+.cpscene{position:relative;height:clamp(95px,23vh,195px);overflow:hidden}.cpscene svg{display:block;width:100%;height:100%}.cpscene::after{content:'';position:absolute;inset:45% 0 0;background:linear-gradient(transparent,#101d24)}
+.cpbody{padding:0 22px 13px;margin-top:-16px;position:relative;z-index:1}
+.cpbadge{display:inline-block;padding:4px 11px;border-radius:8px;font:800 14px/1.2 Nunito,sans-serif;letter-spacing:.5px;text-transform:uppercase;background:#7a6410;color:#ffe98f;border:1px solid #d4af37}.cpbadge.neg{background:#7f1d1d;color:#fecaca;border-color:#ef4444}.cpbadge.neu{background:#1e4f7a;color:#cfe8ff;border-color:#60a5fa}
+.cpbody h2{margin:8px 0 5px;font:800 clamp(25px,4.4vh,33px)/1.1 Nunito,sans-serif}.cpbody p{margin:0;font:600 clamp(15px,2.5vh,18px)/1.28 Nunito,sans-serif;color:#b9c5c9}
+.cpeff{display:flex;align-items:center;gap:13px;margin:10px 0 9px;padding:9px 14px;border-radius:14px;background:#14342c;border:1px solid #2f6b57}.cpeff.neg{background:#3a1a1e;border-color:#8c3a40}.cpeff.neu{background:#1a2c3f;border-color:#3f6c96}
+.cpeff .tic{width:60px;height:45px;margin:0}.cpeff b{display:block;font:800 clamp(21px,3.4vh,27px)/1.1 Nunito,sans-serif;color:#86ef8c}.cpeff.neg b{color:#fca5a5}.cpeff.neu b{color:#9dd0ff}.cpeff span{display:block;font:700 15.5px/1.2 Nunito,sans-serif;color:#b5efc0}.cpeff.neg span{color:#fbd0d0}.cpeff.neu span{color:#cfe8ff}
+.cpfoot{text-align:center;font:700 15px/1.2 Nunito,sans-serif;color:#aab7bb}
+.ct-news,.ct-bor{color:#18202c!important;text-shadow:none!important}.ct-news{background:linear-gradient(150deg,#ffe07a,#f7bf30 60%,#eeac1c)!important}.ct-bor{background:linear-gradient(150deg,#c0e1ff,#7cbcf9 60%,#5aa4ee)!important}
+.ct-news .n,.ct-bor .n{background:none;color:#18202c;font-size:21px;font-weight:800}
+.ct-news .sidelab,.ct-bor .sidelab{font-size:21px}.ct-news .sidelab .tic,.ct-bor .sidelab .tic{width:50px;height:38px}.ct-news.bk .tic,.ct-bor.bk .tic{width:44px;height:33px}.ct-news .lab,.ct-bor .lab{opacity:1}
+.ct-news::after,.ct-bor::after{background:none}
+.deck.ct-news{border:3px solid #000;box-shadow:0 6px 0 #b98516,0 10px 18px rgba(0,0,0,.45)}.deck.ct-bor{border:3px solid #000;box-shadow:0 6px 0 #2f6fb8,0 10px 18px rgba(0,0,0,.45)}
+.lastcard .news{background:#101d24!important;color:#fff;border:3px solid #f6c945;padding:0;overflow:hidden}.lastcard .news.tips{border-color:#7cc0ff}.lcband{background:#fbe89a;color:#18202c;font:800 13px/1.2 Nunito,sans-serif;text-transform:uppercase;letter-spacing:.5px;padding:3px 11px}.tips .lcband{background:#cfe8ff}.lcbody{padding:4px 11px 6px;font:700 14.5px/1.2 Nunito,sans-serif}.lcbody b{display:block;font-size:17px;font-weight:800;margin-bottom:1px}
 @keyframes pop{from{opacity:0;transform:translate(-50%,-50%) scale(.85)}to{opacity:1;transform:translate(-50%,-50%) scale(1)}}
 @media (prefers-reduced-motion:reduce){.cardpop{animation:none}}
 .dicestage{position:fixed;inset:0;z-index:45;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:28px;background:rgba(2,20,13,.45);pointer-events:none}
@@ -161,6 +176,7 @@ body.rolling .side{pointer-events:none}
 <body>
 <div id="app"></div><div id="toast" role="alert"></div>
 <script src="data.js"></script>
+<script src="cards.js"></script>
 <script>
 const { GAME_NAME, GROUPS, SQUARES, RULES, plotInfo } = window.GAME_DATA;
 document.title = GAME_NAME + ' online';
@@ -189,12 +205,12 @@ function pawn(i) {
   return `<svg class="pawn" viewBox="0 0 44 62" role="img" aria-label="Pjäs"><defs><radialGradient id="${id}" cx=".34" cy=".28" r=".85"><stop offset="0" stop-color="#fff"/><stop offset=".22" stop-color="${c}"/><stop offset=".72" stop-color="${c}"/><stop offset="1" stop-color="#14123a"/></radialGradient><linearGradient id="${id}b" x1="0" x2="1"><stop offset="0" stop-color="#14123a"/><stop offset=".22" stop-color="${c}"/><stop offset=".42" stop-color="#fff"/><stop offset=".62" stop-color="${c}"/><stop offset="1" stop-color="#14123a"/></linearGradient></defs><ellipse cx="22" cy="56" rx="20" ry="6" fill="#000" opacity=".45"/><path d="M17 24C16 36 10 44 7 50H37C34 44 28 36 27 24Z" fill="url(#${id}b)" stroke="#0b0a24" stroke-width="1"/><path d="M15 25.5C18 28 26 28 29 25.5L28 22H16Z" fill="url(#${id}b)" stroke="#0b0a24" stroke-width="1"/><path d="M6 50C6 47 38 47 38 50V53C38 57 6 57 6 53Z" fill="url(#${id}b)" stroke="#0b0a24" stroke-width="1"/><ellipse cx="22" cy="50" rx="16" ry="3.4" fill="${c}" stroke="#0b0a24" stroke-width=".7"/><circle cx="22" cy="14" r="13" fill="url(#${id})" stroke="#0b0a24" stroke-width="1"/><ellipse cx="17" cy="9" rx="4" ry="2.6" fill="#fff" opacity=".85"/></svg>`;
 }
 const CITY = `<svg role="img" aria-label="Illustration av en hög kontorsbyggnad i ett finansdistrikt i skymning" width="1050" height="945" viewBox="0 0 1000 900" style="position:absolute;left:120px;top:120px;filter:blur(1.5px)"><defs><linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#06261b"/><stop offset=".55" stop-color="#1b7a54"/><stop offset="1" stop-color="#a7e3a1"/></linearGradient><pattern id="lit" width="24" height="30" patternUnits="userSpaceOnUse"><rect x="6" y="7" width="12" height="16" fill="#fde68a" opacity=".7"/></pattern><pattern id="glass" width="18" height="24" patternUnits="userSpaceOnUse"><rect x="4" y="5" width="10" height="14" fill="#93c5fd" opacity=".5"/></pattern></defs><rect width="1000" height="900" fill="url(#sky)"/><rect y="520" width="100" height="380" fill="#14513b"/><rect x="340" y="560" width="70" height="340" fill="#14513b"/><rect x="710" y="460" width="60" height="440" fill="#14513b"/><rect x="930" y="480" width="70" height="420" fill="#14513b"/><rect y="520" width="100" height="380" fill="url(#glass)"/><rect x="930" y="480" width="70" height="420" fill="url(#glass)"/><rect x="198" y="300" width="4" height="110" fill="#07291e"/><rect x="165" y="400" width="70" height="70" fill="#07291e"/><rect x="130" y="460" width="140" height="80" fill="#07291e"/><rect x="90" y="530" width="220" height="290" fill="#07291e"/><rect x="130" y="460" width="140" height="80" fill="url(#lit)"/><rect x="96" y="535" width="208" height="280" fill="url(#lit)"/><polygon points="80,820 200,780 320,820" fill="#0d3d2c"/><rect x="80" y="820" width="240" height="80" fill="#0d3d2c"/><rect x="100" y="826" width="14" height="74" fill="#c7d2fe"/><rect x="140" y="826" width="14" height="74" fill="#c7d2fe"/><rect x="180" y="826" width="14" height="74" fill="#c7d2fe"/><rect x="220" y="826" width="14" height="74" fill="#c7d2fe"/><rect x="260" y="826" width="14" height="74" fill="#c7d2fe"/><rect x="300" y="826" width="14" height="74" fill="#c7d2fe"/><polygon points="760,560 930,470 930,900 760,900" fill="#0d3d2c"/><rect x="772" y="590" width="146" height="310" fill="url(#glass)"/></svg>`;
-const KIND_BG = { bor: '#1d4ed8', news: '#c98a0a', div: '#15803d', lilla: '#0e7490', bonddiv: '#15803d', branch: '#a16207', entry: '#a16207', exit: '#a16207', buildsq: '#c2570c', repay: '#be123c', give: '#be123c', prison: '#334155', gotoprison: '#334155' };
+const KIND_BG = { bor: '#7cbcf9', news: '#f7bf30', div: '#15803d', lilla: '#0e7490', bonddiv: '#15803d', branch: '#a16207', entry: '#a16207', exit: '#a16207', buildsq: '#c2570c', repay: '#be123c', give: '#be123c', prison: '#334155', gotoprison: '#334155' };
 const COIN = (x, y, w) => `<ellipse cx="${x}" cy="${y}" rx="${w}" ry="${w * .35}" fill="#fcd34d" stroke="#92400e"/>`;
 const STACK = (x, y, n, w = 9) => Array.from({ length: n }, (_, i) => `<path d="M${x - w} ${y - i * 4}v3a${w} ${w * .35} 0 0 0 ${w * 2} 0v-3" fill="#d97706" stroke="#92400e" stroke-width=".6"/>${COIN(x, y - i * 4, w)}`).join('');
 const ICON = {
-  bor: '<path d="M6 40L18 32L28 35L42 20L58 10" fill="none" stroke="#7dd3fc" stroke-width="2"/><g stroke-width="1.5"><path d="M10 22v18M22 14v22M34 12v22M46 6v18" stroke="#e2e8f0"/><rect x="7" y="26" width="6" height="10" fill="#34d399"/><rect x="19" y="18" width="6" height="12" fill="#f87171"/><rect x="31" y="16" width="6" height="12" fill="#34d399"/><rect x="43" y="9" width="6" height="11" fill="#34d399"/></g><path d="M52 6h9v9l-3-3-5 5-3-3 5-5z" fill="#7dd3fc"/>',
-  news: '<path d="M8 10l36-6 6 34-36 6z" fill="#94a3b8"/><path d="M12 7l36-4 5 34-36 5z" fill="#f8fafc" stroke="#475569"/><path d="M17 11l26-3M18 15l13-1M19 20l12-1M20 25l12-1M21 30l26-3" stroke="#334155" stroke-width="2"/><path d="M34 13l10-1 1.500 11-10 1z" fill="#475569"/><path d="M54 6l5-4M55 14h7M54 21l6 3" stroke="#fde047" stroke-width="3" stroke-linecap="round"/>',
+  bor: '<path d="M10 7l40-3 3 38-40 3z" fill="#94a3b8"/><rect x="9" y="3" width="44" height="39" rx="3" fill="#fff" stroke="#1e3a5f" stroke-width="1.5"/><path d="M14 10h22" stroke="#1e3a5f" stroke-width="2.500"/><path d="M15 36V18M15 36h33" stroke="#94a3b8" stroke-width="1.5"/><rect x="19" y="28" width="5" height="8" fill="#22a06b"/><rect x="27" y="24" width="5" height="12" fill="#e5484d"/><rect x="35" y="20" width="5" height="16" fill="#22a06b"/><path d="M17 26l9-6 7 3 14-13M41 9l6 1-1 6" fill="none" stroke="#1d4ed8" stroke-width="2.500" stroke-linecap="round" stroke-linejoin="round"/>',
+  news: '<path d="M9 13l34-9 8 32-34 9z" fill="#a8b2c3"/><g transform="rotate(-9 32 24)"><rect x="14" y="4" width="38" height="40" rx="2.500" fill="#fff" stroke="#3b4658" stroke-width="1.500"/><text x="33" y="15.500" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="900" font-size="11" fill="#3b4658">NEWS</text><path d="M18 19h30" stroke="#3b4658" stroke-width="2"/><path d="M18 24h13M18 29h13M18 34h13M18 39h13" stroke="#8892a3" stroke-width="2"/><rect x="34" y="23" width="14" height="17" rx="1.500" fill="#4b5563"/></g>',
   div: `${STACK(14, 38, 5)}${STACK(30, 40, 3)}<circle cx="42" cy="28" r="13" fill="#fbbf24" stroke="#92400e" stroke-width="1.500"/><circle cx="42" cy="28" r="9.500" fill="none" stroke="#92400e"/><text x="42" y="33" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="800" font-size="13" fill="#78350f">kr</text><path d="M50 14l6-6M50 5h8v8" fill="none" stroke="#86efac" stroke-width="3"/>`,
   bond: '<rect x="10" y="5" width="44" height="34" rx="3" fill="#f8fafc" stroke="#334155"/><rect x="14" y="9" width="36" height="26" rx="1" fill="none" stroke="#0e7490"/><path d="M19 15h26M19 20h18M19 25h14" stroke="#475569" stroke-width="2"/><circle cx="44" cy="31" r="8" fill="#fbbf24" stroke="#92400e"/><path d="M40 38l-3 8 7-3 7 3-3-8" fill="#ef4444"/>',
   bank: '<path d="M32 3L60 17H4z" fill="#fde68a" stroke="#78350f"/><path d="M8 19h48v4H8zM6 40h52v5H6z" fill="#fef3c7" stroke="#78350f"/><path d="M12 24h6v15h-6zM24 24h6v15h-6zM36 24h6v15h-6zM47 24h6v15h-6z" fill="#fef9c3" stroke="#78350f"/>',
@@ -250,8 +266,8 @@ function buildBoard() {
   b.append(lg);
   b.append(el('div', { class: 'mid', style: `left:${colX(6)}px;width:${TW}px;top:${BOTTOM - 5 * ROW}px;height:${5 * ROW + D}px` }, 'Bankens huvudkontor'));
   const leftC = D + 2 * TW; const rightC = colX(8) + 1.5 * TW;
-  b.append(el('div', { class: 'deck', style: `left:${leftC - 85}px;top:${BOTTOM - 505}px;background:${tileBg(KIND_BG.bor)};color:#fff;--g:#60a5fa;transform:rotate(-4deg)` }, iconFor(SQUARES[2]), 'Börstips'));
-  b.append(el('div', { class: 'deck', style: `left:${rightC - 85}px;top:${BOTTOM - 545}px;background:${tileBg(KIND_BG.news)};color:#fff;--g:#fde047;transform:rotate(4deg)` }, iconFor(SQUARES[6]), 'Finanstidningen'));
+  b.append(el('div', { class: 'deck ct-bor', style: `left:${leftC - 85}px;top:${BOTTOM - 505}px;transform:rotate(-4deg)` }, iconFor(SQUARES[2]), 'Börstips'));
+  b.append(el('div', { class: 'deck ct-news', style: `left:${rightC - 85}px;top:${BOTTOM - 545}px;transform:rotate(4deg)` }, iconFor(SQUARES[6]), 'Finanstidningen'));
   b.append(el('div', { class: 'activenews', id: 'activenews', style: `left:${colX(8) + 10}px;width:${3 * TW - 20}px;top:${BOTTOM - 429}px` }));
   for (let n = 1; n <= 53; n++) {
     const s = SQUARES[n]; const r = rect(n); const isPlot = s.kind === 'plot';
@@ -259,7 +275,7 @@ function buildBoard() {
     const base = isPlot ? g.color : KIND_BG[s.kind];
     let w = r.rot && Math.abs(r.rot) === 90 ? ROW : r.w, h = r.bank ? ROW : D; if (r.corner) { w = D; h = D; }
     const left = r.x + r.w / 2 - w / 2; const top = r.y + r.h / 2 - h / 2;
-    const cls = 'c' + (isPlot ? ' t' : '') + (r.bank ? ' bk' : '') + (r.corner ? ' h' : '');
+    const cls = 'c' + (isPlot ? ' t' : '') + (r.bank ? ' bk' : '') + (r.corner ? ' h' : '') + (s.kind === 'bor' ? ' ct-bor' : s.kind === 'news' ? ' ct-news' : '');
     const e = el('div', { class: cls, id: 'sq' + n, role: 'button', tabindex: 0, 'aria-label': n + ' ' + s.name, style: `left:${left}px;top:${top}px;width:${w}px;height:${h}px;background:${tileBg(base)};--g:${base};` + (r.rot ? `transform:rotate(${r.rot}deg);` : '') });
     e.onclick = () => showSquare(n); e.onkeydown = (ev) => { if (ev.key === 'Enter') showSquare(n); };
     const icon = iconFor(s);
@@ -436,6 +452,40 @@ function showDraw(d) {
     el('button', { onclick: () => { box.remove(); clearTimeout(drawTimer); } }, 'Stäng'));
   document.body.append(box); drawTimer = setTimeout(() => box.remove(), 4000);
 }
+// Målad stadsbild för korten. Tonen styr himlen och scenen vad som står i förgrunden.
+function cardScene(tone, scene) {
+  const sky = tone === '+' ? ['#27527a', '#b98a63', '#ffc36b'] : tone === '-' ? ['#1b2433', '#4c3a4d', '#a4574f'] : ['#1f4f86', '#5f9ccb', '#d8e6e4'];
+  const glass = tone === '-' ? ['#2b3647', '#141c29'] : ['#35697f', '#142f3d']; const lit = tone === '-' ? '#d98a5f' : '#ffd98a';
+  let rnd = 7; const next = () => (rnd = (rnd * 73 + 41) % 101) / 101;
+  const tower = (x, w, top) => { let o = `<rect x="${x}" y="${top}" width="${w}" height="${210 - top}" fill="url(#cpG)" stroke="#0b1a22"/><rect x="${x}" y="${top}" width="${w * 0.28}" height="${210 - top}" fill="#fff" opacity=".08"/><path d="M${x + w / 2} ${top}v-9" stroke="#0b1a22" stroke-width="2"/>`; for (let y = top + 7; y < 200; y += 10) for (let c = x + 4; c < x + w - 5; c += 8) o += `<rect x="${c}" y="${y}" width="5" height="6" fill="${next() > 0.62 ? lit : '#0f2733'}" opacity=".9"/>`; return o; };
+  const far = [[0, 50, 92], [55, 42, 76], [130, 38, 102], [235, 46, 84], [340, 42, 72], [392, 40, 98]].map(([x, w, t]) => `<rect x="${x}" y="${t}" width="${w}" height="${210 - t}" fill="#4b6b7d" opacity=".45"/>`).join('');
+  const near = [[16, 58, 74], [88, 66, 34], [168, 48, 92], [226, 56, 56], [296, 60, 82], [362, 54, 48]].map(([x, w, t]) => tower(x, w, t)).join('');
+  const arrow = (d, c) => `<path d="${d}" fill="none" stroke="${c}" stroke-width="16" opacity=".22" stroke-linejoin="round"/><path d="${d}" fill="none" stroke="${c}" stroke-width="7" stroke-linejoin="round"/>`;
+  const fg = {
+    up: arrow('M205 150l50-48 26 24 72-90', '#7cf08a') + '<path d="M372 12l-4 50-40-30z" fill="#7cf08a"/>',
+    down: arrow('M205 30l50 50 28-22 68 80', '#ff7a70') + '<path d="M372 164l-48-8 34-36z" fill="#ff7a70"/>',
+    crane: '<g stroke="#f3b63c" stroke-width="5" fill="none"><path d="M340 200V30M270 44h130M340 26l-70 18M340 26l60 18"/><path d="M286 44v58" stroke-width="2.500"/></g><rect x="270" y="102" width="32" height="22" fill="#e5484d" stroke="#5f1414" stroke-width="2"/>',
+    bars: '<g opacity=".93"><rect x="0" y="0" width="420" height="210" fill="#0b121a" opacity=".55"/><path d="M42 0v210M112 0v210M182 0v210M252 0v210M322 0v210M392 0v210" stroke="#c4ccd6" stroke-width="15"/><path d="M0 44h420" stroke="#8e98a5" stroke-width="13"/></g>',
+    car: '<g transform="translate(210 88)"><path d="M6 66l14-32q5-9 15-9h74q10 0 16 9l20 32q14 2 14 14v16H-6V80q0-12 12-14z" fill="#e5484d" stroke="#3f0d0d" stroke-width="3"/><path d="M28 62l10-25h28v25zM74 62V37h31l17 25z" fill="#b7e4f4" stroke="#3f0d0d" stroke-width="2"/><circle cx="34" cy="96" r="17" fill="#111" stroke="#d1d5db" stroke-width="5"/><circle cx="118" cy="96" r="17" fill="#111" stroke="#d1d5db" stroke-width="5"/></g>',
+    bond: '<g transform="rotate(-7 300 90)"><rect x="222" y="26" width="165" height="112" rx="6" fill="#fdf7df" stroke="#3b3115" stroke-width="3"/><rect x="232" y="36" width="145" height="92" fill="none" stroke="#b08b24" stroke-width="2.500"/><path d="M246 56h116M246 72h86M246 88h62" stroke="#544722" stroke-width="5"/><circle cx="348" cy="110" r="21" fill="#f6c945" stroke="#8a6410" stroke-width="3"/></g>',
+    coins: [[255, 158, 6], [325, 166, 4], [292, 172, 9]].map(([x, y, n]) => { let o = ''; for (let i = 0; i < n; i++) o += `<ellipse cx="${x}" cy="${y - i * 11}" rx="32" ry="13" fill="#f6c945" stroke="#8a6410" stroke-width="2.500"/>`; return o; }).join(''),
+    city: '',
+  }[scene] || '';
+  const sun = tone === '-' ? '' : `<circle cx="330" cy="118" r="62" fill="url(#cpS)"/>`;
+  return svg(`<svg viewBox="0 0 420 210" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><defs><linearGradient id="cpK" x2="0" y2="1"><stop offset="0" stop-color="${sky[0]}"/><stop offset=".65" stop-color="${sky[1]}"/><stop offset="1" stop-color="${sky[2]}"/></linearGradient><linearGradient id="cpG" x2="1" y2="0"><stop offset="0" stop-color="${glass[0]}"/><stop offset="1" stop-color="${glass[1]}"/></linearGradient><radialGradient id="cpS"><stop offset="0" stop-color="#fff2c0"/><stop offset=".35" stop-color="#ffd27a" stop-opacity=".75"/><stop offset="1" stop-color="#ffd27a" stop-opacity="0"/></radialGradient></defs><rect width="420" height="210" fill="url(#cpK)"/>${sun}${far}${near}${fg}</svg>`);
+}
+function cardPopup(card, tips) {
+  const v = cardView(card.text); const until = /Gäller tills nästa tidning/.test(card.text); const save = /Spara kortet/.test(card.text);
+  const cls = v.tone === '-' ? ' neg' : v.tone === '0' ? ' neu' : '';
+  const word = tips ? 'tips' : 'nyhet'; const badge = save ? 'Spara kortet' : v.tone === '+' ? `Positiv${tips ? 't' : ''} ${word}` : v.tone === '-' ? `Negativ${tips ? 't' : ''} ${word}` : `Neutral${tips ? 't' : ''} ${word}`;
+  const kind = v.i || (v.tone === '-' ? 'repay' : 'div');
+  return el('div', { class: 'cardpop' + (tips ? ' tips' : ''), id: 'cardpop', role: 'status', 'aria-label': card.text },
+    el('div', { class: 'cphead' }, iconFor({ kind: tips ? 'bor' : 'news' }), el('div', {}, el('b', {}, tips ? 'Börstips' : 'Finanstidningen'), el('span', {}, tips ? 'Affärstips som påverkar din tur' : 'Marknadsnytt som påverkar spelet'))),
+    el('div', { class: 'cpscene' }, cardScene(v.tone, v.scene)),
+    el('div', { class: 'cpbody' }, el('span', { class: 'cpbadge' + cls }, badge), el('h2', {}, v.h), v.d ? el('p', {}, v.d) : null,
+      el('div', { class: 'cpeff' + cls }, iconFor({ kind }), el('div', {}, el('b', {}, v.e), v.f ? el('span', {}, v.f) : null)),
+      el('div', { class: 'cpfoot' }, until ? '🕑 Gäller till nästa tidning.' : save ? 'Sparas tills du använder det.' : 'Gäller direkt.')));
+}
 function showCardPopup(g) {
   const no = g.cardNo || 0;
   if (seenCard === null) { seenCard = no; return; } // Ingen popup för gamla kort vid omladdning.
@@ -443,7 +493,7 @@ function showCardPopup(g) {
   if (!g.lastCard || g.lastCard.id !== no) return;
   document.getElementById('cardpop')?.remove(); clearTimeout(cardTimer);
   const tips = g.lastCard.deck === 'Börstips';
-  document.body.append(el('div', { class: 'cardpop', id: 'cardpop', role: 'status', style: `background:${tileBg(tips ? KIND_BG.bor : KIND_BG.news)};color:#fff;text-shadow:0 2px 3px rgba(0,0,0,.55);border:3px solid ${tips ? '#60a5fa' : '#fde047'}` }, iconFor(tips ? SQUARES[2] : SQUARES[6]), el('h2', {}, g.lastCard.deck), el('p', {}, g.lastCard.text)));
+  document.body.append(cardPopup(g.lastCard, tips));
   cardTimer = setTimeout(() => document.getElementById('cardpop')?.remove(), 5000);
 }
 // Fyrverkerier när spelet är slut.
@@ -487,8 +537,8 @@ function renderGame() {
     if (x.owner) { const i = g.players.findIndex((p) => p.id === x.owner); h.append(el('span', { class: 'own', style: 'background:' + COLORS[i], title: g.players[i].name })); if (x.built) { const r = rect(Number(n)); const b3 = svg(GROUPS[SQUARES[n].group].industry ? FACTORY3D : HOUSE3D); if (r.rot) b3.style.transform = `rotate(${-r.rot}deg)`; h.append(b3); } }
   }
   // Aktivt tidningskort ligger under Finanstidningen på brädet.
-  const an = document.getElementById('activenews'); if (g.news) { const i = g.news.text.indexOf('!'); const head = i > 0 ? g.news.text.slice(0, i + 1) : 'Finanstidningen'; const body = (i > 0 ? g.news.text.slice(i + 1) : g.news.text).replace(' Gäller tills nästa tidning.', '').trim();
-    an.replaceChildren(el('div', { class: 'annow' }, 'Finanstidningen gäller nu'), el('div', { class: 'anhead' }, head), el('div', { class: 'anbody' }, body)); } else an.replaceChildren(); an.style.display = g.news ? 'block' : 'none';
+  const an = document.getElementById('activenews'); if (g.news) { const v = cardView(g.news.text);
+    an.replaceChildren(el('div', { class: 'annow' }, 'Finanstidningen gäller nu'), el('div', { class: 'anhead' }, v.h), el('div', { class: 'anbody' + (v.tone === '-' ? ' neg' : v.tone === '0' ? ' neu' : '') }, el('b', {}, v.e), v.f)); } else an.replaceChildren(); an.style.display = g.news ? 'block' : 'none';
   // Pjäser.
   boardEl.querySelectorAll('.token').forEach((t) => { if (!g.players.some((p) => 'tk' + p.color === t.id && !p.out)) t.remove(); });
   const counts = {};
@@ -522,7 +572,7 @@ function renderSide() {
       g.finalRound && g.phase === 'play' ? el('div', { class: 'lastround' }, 'Sista rundan! ' + (g.players.find((p) => p.id === g.finalRound)?.name || '') + ' har nått målet.') : null,
       el('div', { style: 'margin-top:12px' }, actionsFor(me, myTurn, debt, bond))),
     g.lastCard ? el('div', { class: 'card lastcard', style: 'margin:0;padding:8px;display:grid;gap:6px' },
-      g.lastCard ? el('div', { class: 'news', style: 'background:' + (g.lastCard.deck === 'Börstips' ? '#7dd3fc' : '#fde047') }, el('div', { class: 'small', style: 'color:#1a1740' }, g.lastCard.deck), g.lastCard.text) : null,
+      g.lastCard ? el('div', { class: 'news' + (g.lastCard.deck === 'Börstips' ? ' tips' : '') }, el('div', { class: 'lcband' }, g.lastCard.deck), el('div', { class: 'lcbody' }, el('b', {}, cardView(g.lastCard.text).h), cardView(g.lastCard.text).e + (cardView(g.lastCard.text).f ? ' ' + cardView(g.lastCard.text).f : ''))) : null,
       null) : null,
     el('div', { class: 'card', style: 'margin:0;padding:10px' }, el('h3', {}, 'Spelare · mål ' + kr(g.target)),
       g.players.map((p) => { const m = S.members.find((x) => x.id === p.id);
@@ -593,7 +643,7 @@ function renderLanding() {
   } else if (g.lastCard && (s.kind === 'bor' || s.kind === 'news' || s.kind === 'exit')) rows.push(el('div', { class: 'small' }, g.lastCard.deck), el('div', {}, g.lastCard.text));
   else rows.push(el('div', {}, SQUARE_TEXT[s.kind] || ''));
   box.replaceChildren(el('h3', {}, p.id === S.you ? 'Du landade på' : p.name + ' landade på'),
-    el('div', { class: 'ltile', style: `background:${tileBg(bg)};color:#fff;--g:${bg}` }, isPlot ? el('div', { class: 'lh' }) : null, el('div', { class: 'lb' }, el('div', { class: 'small', style: 'color:#fff' }, 'Ruta ' + n), icon, el('div', {}, s.name))), ...rows);
+    el('div', { class: 'ltile' + (s.kind === 'bor' ? ' ct-bor' : s.kind === 'news' ? ' ct-news' : ''), style: `background:${tileBg(bg)};color:#fff;--g:${bg}` }, isPlot ? el('div', { class: 'lh' }) : null, el('div', { class: 'lb' }, el('div', { class: 'small', style: 'color:inherit' }, 'Ruta ' + n), icon, el('div', {}, s.name))), ...rows);
 }
 // Rutan på brädet lyser upp när muspekaren eller fokus är på ett bevis.
 const clearGlow = () => document.querySelectorAll('.c.glow').forEach((e) => e.classList.remove('glow'));
