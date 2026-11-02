@@ -495,6 +495,8 @@ function renderSide() {
     el('div', { class: 'card logcard', style: 'margin:0;padding:10px' }, el('h3', { style: 'margin-bottom:6px' }, 'Händelser'), logBox)].filter(Boolean));
   const lb = document.getElementById('leaveslot'); if (lb && !lb.firstChild) lb.append(soundButton(), el('button', { style: 'width:100%', onclick: () => wsend({ t: 'leave' }) }, 'Lämna spelet'));
 }
+const newsIs = (t) => !!(S && S.game && S.game.news && S.game.news.type === t);
+const twoDice = (p) => p.car && !(p.pos >= 34 && p.pos < 47) && !newsIs('fuel');
 const canTrade = (p) => p.lapDone && (p.pos === 12 || (p.pos >= 35 && p.pos <= 46));
 function actionsFor(me, myTurn, debt, bond) {
   const g = S.game;
@@ -502,7 +504,7 @@ function actionsFor(me, myTurn, debt, bond) {
   if (!me || me.out) return el('p', { class: 'small' }, 'Du är ute ur spelet och tittar på.');
   if (debt && debt.from === S.you) {
     return el('div', { class: 'stack' }, el('div', {}, `Du måste betala ${kr(debt.amount)} (${debt.why}) men har ${kr(me.cash)}. Skaffa pengar:`),
-      el('div', { class: 'actions' }, el('button', { onclick: () => act({ type: 'loan' }), disabled: me.loans >= RULES.maxLoans || me.pos === 38 }, 'Ta lån 50 000 kr'), el('button', { onclick: () => open(assetsModal) }, 'Mina tillgångar'), me.car ? el('button', { onclick: () => act({ type: 'sellCar' }) }, 'Sälj bilen') : null, el('button', { class: 'danger', onclick: () => open(bankruptModal) }, 'Gå i konkurs')));
+      el('div', { class: 'actions' }, el('button', { onclick: () => act({ type: 'loan' }), disabled: newsIs('creditstop') || me.loans >= RULES.maxLoans || me.pos === 38 }, 'Ta lån 50 000 kr'), el('button', { onclick: () => open(assetsModal) }, 'Mina tillgångar'), me.car ? el('button', { onclick: () => act({ type: 'sellCar' }) }, 'Sälj bilen') : null, el('button', { class: 'danger', onclick: () => open(bankruptModal) }, 'Gå i konkurs')));
   }
   if (debt) return el('p', { class: 'small' }, 'Väntar på en betalning.');
   if (bond === S.you) return el('div', { class: 'stack' }, el('div', {}, 'Välj en obligation för 500 kr:'),
@@ -517,12 +519,12 @@ function actionsFor(me, myTurn, debt, bond) {
     return el('div', { class: 'stack' }, el('div', {}, 'Välj vad du lämnar över till ' + (prev ? prev.name : '') + ':'), el('div', { class: 'actions' }, myPlots().filter((n) => !full(SQUARES[n].group)).map((n) => el('button', { onclick: () => act({ type: 'handover', kind: 'plot', n }) }, SQUARES[n].name)), g.shares.filter((v) => v.owner === S.you && !full(v.group)).map((v) => el('button', { onclick: () => act({ type: 'handover', kind: 'share', id: v.id }) }, 'Aktie ' + GROUPS[v.group].name + ' ' + kr(v.value))))); }
   if (g.stage === 'pre') {
     const trade = canTrade(me); const pass = me.lapDone && !trade && (me.tradePass || []).length > 0; const atBuild = me.pos === 17 || me.pos === 40; const hasPermit = (me.permits || []).length > 0; const bld = (atBuild || hasPermit) && !(g.news && g.news.type === 'buildstop');
-    return el('div', { class: 'stack' }, el('button', { class: 'primary', onclick: () => act({ type: 'roll' }) }, me.jail ? 'Slå för att komma ut' : (g.doubles ? 'Slå igen: ' : '') + (g.news && g.news.type === 'bad' ? 'Slå två tärningar, lägsta gäller' : g.news && g.news.type === 'good' ? (me.car && !(me.pos >= 34 && me.pos < 47) ? 'Slå två tärningar, dubbla steg' : 'Slå tärningen, dubbla steg') : me.car && !(me.pos >= 34 && me.pos < 47) ? 'Slå två tärningar' : 'Slå tärningen')),
-      el('div', { class: 'actions' }, trade ? el('button', { onclick: () => open(buyModal) }, 'Köp tomt/aktie') : null, pass ? el('button', { onclick: () => open(buyModal) }, 'Använd köptips') : null, trade ? el('button', { onclick: () => open(meetingModal) }, 'Bolagsstämma') : null, bld ? el('button', { onclick: () => open(buildModal) }, atBuild ? 'Bygg' : 'Använd bygglov') : null,
+    return el('div', { class: 'stack' }, el('button', { class: 'primary', onclick: () => act({ type: 'roll' }) }, me.jail ? 'Slå för att komma ut' : (g.doubles ? 'Slå igen: ' : '') + (g.news && g.news.type === 'bad' ? 'Slå två tärningar, lägsta gäller' : g.news && g.news.type === 'good' ? (twoDice(me) ? 'Slå två tärningar, dubbla steg' : 'Slå tärningen, dubbla steg') : twoDice(me) ? 'Slå två tärningar' : 'Slå tärningen')),
+      el('div', { class: 'actions' }, trade ? el('button', { onclick: () => open(buyModal) }, 'Köp tomt/aktie') : null, pass ? el('button', { onclick: () => open(buyModal) }, 'Använd köptips') : null, trade && !newsIs('stockclose') ? el('button', { onclick: () => open(meetingModal) }, 'Bolagsstämma') : null, bld ? el('button', { onclick: () => open(buildModal) }, atBuild ? 'Bygg' : 'Använd bygglov') : null,
         !me.car ? el('button', { onclick: () => act({ type: 'buyCar' }), disabled: me.cash < RULES.carPrice }, 'Köp bil 50 000 kr') : null,
-        el('button', { onclick: () => open(assetsModal) }, 'Mina tillgångar'), el('button', { onclick: () => act({ type: 'loan' }), disabled: me.loans >= RULES.maxLoans }, 'Ta lån 50 000 kr')));
+        el('button', { onclick: () => open(assetsModal) }, 'Mina tillgångar'), el('button', { onclick: () => act({ type: 'loan' }), disabled: newsIs('creditstop') || me.loans >= RULES.maxLoans }, 'Ta lån 50 000 kr')));
   }
-  return el('div', { class: 'stack' }, el('button', { class: 'primary', onclick: () => act({ type: 'end' }) }, 'Avsluta turen'), el('div', { class: 'actions' }, el('button', { onclick: () => open(assetsModal) }, 'Mina tillgångar'), el('button', { onclick: () => act({ type: 'loan' }), disabled: me.loans >= RULES.maxLoans || me.pos === 38 }, 'Ta lån 50 000 kr')));
+  return el('div', { class: 'stack' }, el('button', { class: 'primary', onclick: () => act({ type: 'end' }) }, 'Avsluta turen'), el('div', { class: 'actions' }, el('button', { onclick: () => open(assetsModal) }, 'Mina tillgångar'), el('button', { onclick: () => act({ type: 'loan' }), disabled: newsIs('creditstop') || me.loans >= RULES.maxLoans || me.pos === 38 }, 'Ta lån 50 000 kr')));
 }
 function open(fn) { modal = fn; renderModal(); }
 function close() { modal = null; renderModal(); }
@@ -538,7 +540,9 @@ function currentRent(n) {
   const g = S.game; const x = g.plots[n]; if (!x.owner || x.mort) return 0; const i = plotInfo(n); const k = SQUARES[n].group;
   const full = plotsIn(k).every((m) => g.plots[m].owner === x.owner) && g.shares.filter((s) => s.group === k).every((s) => s.owner === x.owner);
   const boom = g.news && g.news.type === 'double' && g.news.group === k;
-  return (x.built ? i.rentBuilt : i.rent) * (full || boom ? 2 : 1);
+  let r = (x.built ? i.rentBuilt : i.rent) * (full || boom || (newsIs('shortage') && x.built) ? 2 : 1);
+  if (newsIs('rentcontrol')) r = Math.ceil(r / 2 / 500) * 500;
+  return r;
 }
 function renderLanding() {
   const box = document.getElementById('landing'); if (!box) return; const g = S.game; const L = g.landed;
@@ -637,12 +641,12 @@ function grouped(fn) {
 const plotsIn = (k) => Object.keys(SQUARES).map(Number).filter((n) => SQUARES[n].group === k);
 function buyModal() { const g = S.game; const me = g.players.find((p) => p.id === S.you);
   const plots = grouped((k) => plotsIn(k).filter((n) => !g.plots[n].owner).map((n) => el('div', { class: 'item' }, el('span', {}, SQUARES[n].name, el('div', { class: 'small' }, kr(plotInfo(n).price))), el('button', { disabled: g.boughtPlot || me.cash < plotInfo(n).price, onclick: () => act({ type: 'buyPlot', n }) }, 'Köp'))));
-  const shares = grouped((k) => g.shares.filter((s) => s.group === k && !s.owner).map((s) => el('div', { class: 'item' }, el('span', {}, kr(s.value), el('div', { class: 'small' }, 'ger ' + s.pct + ' % i utdelning')), el('button', { disabled: g.boughtShare || me.cash < s.value, onclick: () => act({ type: 'buyShare', id: s.id }) }, 'Köp'))));
+  const shares = grouped((k) => g.shares.filter((s) => s.group === k && !s.owner).map((s) => el('div', { class: 'item' }, el('span', {}, kr(s.value), el('div', { class: 'small' }, 'ger ' + s.pct + ' % i utdelning')), el('button', { disabled: newsIs('stockclose') || g.boughtShare || me.cash < s.value, onclick: () => act({ type: 'buyShare', id: s.id }) }, 'Köp'))));
   const none = (t) => el('p', { class: 'small' }, t);
   return el('div', {}, el('h2', {}, 'Köp i banken'), el('p', { class: 'small' }, (canTrade(me) ? 'Du får köpa en tomt och en aktie per tur.' : 'Köptipset räcker till ett köp.') + ' Kontanter: ' + kr(me.cash)),
     el('div', { class: 'buygrid' },
       el('section', { class: 'buybox', 'aria-label': 'Tomter' }, el('h3', {}, 'Tomter'), g.boughtPlot ? none('Du har redan köpt en tomt den här turen.') : null, plots.some(Boolean) ? plots : none('Alla tomter är sålda.')),
-      el('section', { class: 'buybox', 'aria-label': 'Aktier' }, el('h3', {}, 'Aktier'), g.boughtShare ? none('Du har redan köpt en aktie den här turen.') : null, shares.some(Boolean) ? shares : none('Alla aktier är sålda.')))); }
+      el('section', { class: 'buybox', 'aria-label': 'Aktier' }, el('h3', {}, 'Aktier'), newsIs('stockclose') ? none('Börsen är stängd just nu.') : null, g.boughtShare ? none('Du har redan köpt en aktie den här turen.') : null, shares.some(Boolean) ? shares : none('Alla aktier är sålda.')))); }
 function buildModal() { const g = S.game; const me = g.players.find((p) => p.id === S.you); const list = myPlots().filter((n) => !g.plots[n].built && !g.plots[n].mort);
   return el('div', {}, el('h2', {}, 'Bygg'), el('p', { class: 'small' }, 'Kontanter: ' + kr(me.cash) + (me.pos === 17 || me.pos === 40 ? '' : '. Bygglovet används när du bygger.')), list.length ? list.map((n) => el('div', { class: 'item' }, SQUARES[n].name + ', ' + kr(plotInfo(n).build), el('button', { disabled: me.cash < plotInfo(n).build, onclick: () => act({ type: 'build', n }) }, 'Bygg'))) : el('p', {}, 'Du har inga tomter att bygga på.')); }
 function assetsModal() { const g = S.game; const me = g.players.find((p) => p.id === S.you); if (!me) return null; const isTurn = g.players[g.current].id === S.you; const pre = isTurn && g.stage === 'pre' && !g.debts.length && !g.bondRound;
@@ -651,7 +655,7 @@ function assetsModal() { const g = S.game; const me = g.players.find((p) => p.id
     me.loans ? el('button', { disabled: !isTurn || me.cash < RULES.loan, onclick: () => act({ type: 'repay' }) }, 'Betala tillbaka ett lån') : null,
     grouped((k) => [...myPlots().filter((n) => SQUARES[n].group === k).map((n) => { const x = g.plots[n]; const i = plotInfo(n); const mv = x.built ? i.mortgageBuilt : i.mortgage; const sv = x.built ? i.sellBuilt : i.sell;
       return el('div', { class: 'item' }, SQUARES[n].name + (x.built ? ', bebyggd' : '') + (x.mort ? ', belånad' : ''), el('div', { class: 'btns' }, x.mort ? el('button', { disabled: !pre, onclick: () => act({ type: 'redeem', n }) }, 'Lös ' + kr(Math.round(mv * RULES.redeemPct))) : [el('button', { onclick: () => act({ type: 'mortgage', n }) }, 'Belåna ' + kr(mv)), el('button', { onclick: () => act({ type: 'sellPlot', n }) }, 'Sälj ' + kr(sv))])); }),
-      ...myShares.filter((s) => s.group === k).map((s) => el('div', { class: 'item' }, `Aktie ${kr(s.value)}, ger ${s.pct} %`, el('button', { onclick: () => act({ type: 'sellShare', id: s.id }) }, 'Sälj ' + kr(Math.round(s.value * 0.75 / 500) * 500))))])); }
+      ...myShares.filter((s) => s.group === k).map((s) => el('div', { class: 'item' }, `Aktie ${kr(s.value)}, ger ${s.pct} %`, el('button', { disabled: newsIs('stockclose') && !(g.debts[0] && g.debts[0].from === S.you), onclick: () => act({ type: 'sellShare', id: s.id }) }, 'Sälj ' + kr(Math.round(s.value * 0.75 / 500) * 500))))])); }
 function meetingModal() { const g = S.game; const me = g.players.find((p) => p.id === S.you);
   return el('div', {}, el('h2', {}, 'Bolagsstämma'), el('p', {}, 'Köp ut motspelarna ur en grupp där du redan äger något. Högre avgift ger bättre chans: du lyckas om två tärningar visar högst avgiften delat med 10 000. Med 120 000 kr lyckas du alltid.'),
     grouped((k) => { const mine = plotsIn(k).some((n) => g.plots[n].owner === S.you) || g.shares.some((s) => s.group === k && s.owner === S.you); let x = 0; plotsIn(k).forEach((n) => { const q = g.plots[n]; if (q.owner && q.owner !== S.you) x += plotInfo(n).price + (q.built ? plotInfo(n).build : 0); }); g.shares.forEach((s) => { if (s.group === k && s.owner && s.owner !== S.you) x += s.value; }); if (!mine || !x) return [];

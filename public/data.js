@@ -104,6 +104,13 @@
     Array(2).fill({ t: 'boom', x: 'Byggboom! Alla får 5 000 kr per byggnad.' }),
     Array(2).fill({ t: 'rate', x: 'Räntehöjning! Alla betalar 5 000 kr per banklån.' }),
     Array(2).fill({ t: 'grant', x: 'Företagsstöd! Alla spelare får 10 000 kr.' }),
+    { t: 'rentcontrol', until: true, x: 'Hyresreglering! Alla hyror halveras. Gäller tills nästa tidning.' },
+    { t: 'shortage', until: true, x: 'Bostadsbrist! Hyrorna fördubblas på alla bebyggda tomter. Gäller tills nästa tidning.' },
+    { t: 'creditstop', until: true, x: 'Kreditstopp! Banken ger inga nya lån. Gäller tills nästa tidning.' },
+    { t: 'stockclose', until: true, x: 'Börsstängning! Ingen får köpa eller sälja aktier. Gäller tills nästa tidning.' },
+    { t: 'divup', until: true, x: 'Högkonjunktur på börsen! All aktieutdelning från banken fördubblas. Gäller tills nästa tidning.' },
+    { t: 'divdown', until: true, x: 'Lågkonjunktur på börsen! All aktieutdelning från banken halveras. Gäller tills nästa tidning.' },
+    { t: 'fuel', until: true, x: 'Bränslebrist! Bilägare slår bara en tärning. Gäller tills nästa tidning.' },
     { t: 'buildstop', until: true, x: 'Byggstopp! Ingen får bygga. Gäller tills nästa tidning.' },
     { t: 'rebuild', x: 'Ombyggnad i banken! Alla som är inne i banken hamnar direkt på Bankutgång.' },
     Object.keys(GROUPS).map((k) => ({ t: 'double', group: k, until: true, x: `Högkonjunktur för ${GROUPS[k].name}! Dubbel hyra på gruppens tomter. Gäller tills nästa tidning.` }))
