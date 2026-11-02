@@ -151,3 +151,7 @@ console.log('Alla regeltester klara');
   let q = it(); let c = q.players[0].cash; G.apply(q, 'a', { type: 'itPay' }); assert.equal(q.players[0].cash, c - 5000); assert.equal(q.stage, 'post');
   for (const [r, cost] of [[0.45, 15000], [0.5, 0], [0, 15000], [0.99, 0]]) { q = it(); c = q.players[0].cash; const o = Math.random; Math.random = () => r; G.apply(q, 'a', { type: 'itRoll' }); Math.random = o; assert.equal(q.players[0].cash, c - cost); assert.equal(q.stage, 'post'); }
   q = it(); rejects(q, 'a', { type: 'roll' }, /./); }
+// Pengaregn bara när man landar på en utdelningsruta och faktiskt får pengar.
+{ const roll = (q, pos) => { q.players[0].pos = pos; const o = Math.random; Math.random = () => 0; G.apply(q, 'a', { type: 'roll' }); Math.random = o; };
+  let q = two(); roll(q, 3); assert.equal(q.lastRain, undefined);
+  q = two(); q.shares[0].owner = 'a'; roll(q, 3); assert.equal(q.players[0].pos, 4); assert.deepEqual(q.lastRain, { id: 1, player: 'a', pos: 4 }); }

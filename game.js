@@ -54,7 +54,10 @@ function dividendTo(g, p, why) {
   let a = g.shares.filter((s) => s.owner === p.id).reduce((t, s) => t + Math.round(s.value * s.pct / 100), 0);
   if (newsIs(g, 'divup')) a *= 2; else if (newsIs(g, 'divdown')) a = Math.round(a / 2);
   if (a) { p.cash += a; log(g, `${p.name} får ${kr(a)} i aktieutdelning${why || ''}.`); }
+  return a;
 }
+// Pengaregn på rutan när spelaren får utdelning av att landa på en utdelningsruta.
+function rainOn(g, p) { g.rainNo = (g.rainNo || 0) + 1; g.lastRain = { id: g.rainNo, player: p.id, pos: p.pos }; }
 function giveDividends(g, p) {
   const gs = new Set(plotsOf(g, p).map((n) => SQUARES[n].group));
   for (const o of alive(g)) {
@@ -161,7 +164,7 @@ function land(g, p, depth = 0) {
       break; }
     case 'bor': drawTip(g, p, depth); break;
     case 'news': drawNews(g, p, depth); break;
-    case 'div': dividendTo(g, p); break;
+    case 'div': if (dividendTo(g, p)) rainOn(g, p); break;
     case 'prison': sendToPrison(g, p); break;
     case 'gotoprison':
       if (p.fromPrison) { log(g, `${p.name} har redan suttit i fängelse under det här varvet och klarar sig.`); break; }
@@ -176,7 +179,7 @@ function land(g, p, depth = 0) {
     case 'itsec': g.stage = 'itsec'; break;
     case 'lilla': startBonds(g, p, false, 'small'); break;
     case 'bonddiv': { const good = g.news && g.news.type === 'good';
-      (good ? alive(g) : [p]).forEach((o) => dividendTo(g, o)); startBonds(g, p, good, null); break; }
+      (good ? alive(g) : [p]).forEach((o) => { if (dividendTo(g, o) && o === p) rainOn(g, p); }); startBonds(g, p, good, null); break; }
     default: break;
   }
 }
