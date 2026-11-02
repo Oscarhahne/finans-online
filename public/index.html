@@ -34,7 +34,7 @@ label{display:block;font-weight:700;margin:0 0 6px;color:var(--mute)}
 @media (max-width:1199px){.leftcol{flex:1 1 100%;width:100%;order:-1;grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}}
 .pile{display:grid;gap:5px}.pile h4{margin:0;font:800 13px Nunito,sans-serif;color:var(--mute);display:flex;justify-content:space-between}
 .minis{display:flex;flex-wrap:wrap;gap:4px}
-.stacks{display:grid;gap:8px}.stack3{display:grid;gap:3px}.cardstack{display:grid}
+.stacks{display:grid;gap:8px}.stack3{display:grid;gap:6px}.cardstack{display:grid}
 .stackcard{position:relative;display:block;width:100%;min-height:0;height:58px;padding:0;background:#fbfaf3;color:#1a1740;border:1px solid #1a1740;border-radius:9px;overflow:hidden;text-align:left;font:800 12px/1.1 Nunito,sans-serif;box-shadow:0 -1px 4px rgba(0,0,0,.4)}
 .stackcard+.stackcard{margin-top:-28px}
 .stackcard:hover,.stackcard:focus-visible{background:#fff;z-index:3;transform:translateY(-2px)}
@@ -515,10 +515,10 @@ function renderPiles() {
   const pile = (title, count, items, empty) => el('section', { class: 'pile' }, el('h4', {}, title, el('span', {}, count)), items.length ? el('div', { class: title === 'Tomter och aktier' ? 'stacks' : 'minis' }, items) : el('div', { class: 'small' }, empty));
   // Kort i samma koncern staplas, så att listan tar mindre plats.
   const stacks = Object.keys(GROUPS).map((k) => { const gr = GROUPS[k]; const style = `background:${gr.color};color:${gr.text}`;
-    const cards = [...mine.filter((n) => SQUARES[n].group === k).map((n) => { const x = g.plots[n]; const pic = svg(gr.industry ? FACTORY3D : HOUSE3D); if (!x.built) pic.classList.add('unbuilt');
-      return el('button', { class: 'stackcard' + (x.mort ? ' m' : ''), ...glowOn([n]), onclick: () => showDeed(n), 'aria-label': 'Lagfartsbevis ' + SQUARES[n].name }, el('span', { class: 'band', style }, SQUARES[n].name), el('span', { class: 'sbody' }, pic, x.mort ? 'Belånad' : x.built ? 'Bebyggd' : 'Obebyggd')); }),
-      ...shares.filter((v) => v.group === k).map((v) => el('button', { class: 'stackcard', ...glowOn(plotsIn(k)), onclick: () => showShare(v.id), 'aria-label': 'Aktiebrev ' + gr.name }, el('span', { class: 'band', style }, 'Aktie ' + kr(v.value)), el('span', { class: 'sbody' }, 'Utdelning ' + v.pct + ' %')))];
-    return cards.length ? el('div', { class: 'stack3' }, el('div', { class: 'small' }, gr.name), el('div', { class: 'cardstack' }, cards)) : null; }).filter(Boolean);
+    const plotCards = mine.filter((n) => SQUARES[n].group === k).map((n) => { const x = g.plots[n]; const pic = svg(gr.industry ? FACTORY3D : HOUSE3D); if (!x.built) pic.classList.add('unbuilt');
+      return el('button', { class: 'stackcard' + (x.mort ? ' m' : ''), ...glowOn([n]), onclick: () => showDeed(n), 'aria-label': 'Lagfartsbevis ' + SQUARES[n].name }, el('span', { class: 'band', style }, SQUARES[n].name), el('span', { class: 'sbody' }, pic, x.mort ? 'Belånad' : x.built ? 'Bebyggd' : 'Obebyggd')); });
+    const shareCards = shares.filter((v) => v.group === k).map((v) => el('button', { class: 'stackcard', ...glowOn(plotsIn(k)), onclick: () => showShare(v.id), 'aria-label': 'Aktiebrev ' + gr.name }, el('span', { class: 'band', style }, 'Aktie ' + kr(v.value)), el('span', { class: 'sbody' }, 'Utdelning ' + v.pct + ' %')));
+    return plotCards.length || shareCards.length ? el('div', { class: 'stack3' }, el('div', { class: 'small' }, gr.name), plotCards.length ? el('div', { class: 'cardstack' }, plotCards) : null, shareCards.length ? el('div', { class: 'cardstack' }, shareCards) : null) : null; }).filter(Boolean);
   box.replaceChildren(el('h3', {}, 'Mina högar'), el('div', { class: 'small' }, 'Tryck på ett kort för att se vad det gäller.'),
     pile('Tomter och aktier', mine.length + shares.length, stacks, 'Inga tomter eller aktier än'),
     pile('Obligationer', bonds.length, bonds.map((n) => el('button', { class: 'deedmini', onclick: () => showBond(n), 'aria-label': 'Obligation ' + n }, el('span', { class: 'band', style: 'background:#c4b5fd;color:#1a1740' }, 'Obligation'), el('b', { style: 'font-size:18px' }, 'Nr ' + n))), 'Inga obligationer än'),
