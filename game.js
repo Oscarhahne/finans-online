@@ -208,6 +208,7 @@ function nextTurn(g) {
     if (p.out) continue;
     break;
   }
+  g.players[g.current].loanTaken = false; // Ett nytt lån får tas först när spelarens egen tur kommer igen.
   g.stage = 'pre'; g.boughtPlot = false; g.boughtShare = false; g.doubles = 0; g.extraRoll = false; g.turnNo++;
 }
 // Kör allt som kan köras automatiskt: skulder, dragning, vinst.
@@ -327,7 +328,7 @@ function apply(g, pid, a) {
     case 'redeem': { pre(); const x = needOwnPlot(a.n); if (!x.mort) fail('Tomten är inte belånad.'); const i = plotInfo(a.n); const c = Math.round((x.built ? i.mortgageBuilt : i.mortgage) * R.redeemPct); if (p.cash < c) fail('Du har inte råd.'); p.cash -= c; x.mort = false; log(g, `${p.name} löser lånet på ${SQUARES[a.n].name}.`); break; }
     case 'sellPlot': { if (!raising) fail('Inte nu.'); const x = needOwnPlot(a.n); if (x.mort) fail('Lös belåningen först.'); const i = plotInfo(a.n); p.cash += x.built ? i.sellBuilt : i.sell; x.owner = null; x.built = false; log(g, `${p.name} säljer ${SQUARES[a.n].name} till banken.`); break; }
     case 'sellShare': { if (!raising) fail('Inte nu.'); if (newsIs(g, 'stockclose') && !inDebt) fail('Börsen är stängd just nu.'); const s = g.shares.find((v) => v.id === a.id); if (!s || s.owner !== pid) fail('Du äger inte aktien.'); p.cash += Math.round(s.value * 0.75 / 500) * 500; s.owner = null; log(g, `${p.name} säljer en aktie till banken.`); break; }
-    case 'loan': if (!raising) fail('Inte nu.'); if (newsIs(g, 'creditstop')) fail('Kreditstopp gäller just nu.'); if (p.pos === 39) fail('Du får inte låna på den här rutan.'); if (p.loans >= R.maxLoans) fail('Du har redan tre lån.'); p.loans++; p.cash += R.loan; log(g, `${p.name} tar ett banklån.`); break;
+    case 'loan': if (!raising) fail('Inte nu.'); if (newsIs(g, 'creditstop')) fail('Kreditstopp gäller just nu.'); if (p.pos === 39) fail('Du får inte låna på den här rutan.'); if (p.loans >= R.maxLoans) fail('Du har redan tre lån.'); if (p.loanTaken) fail('Du får bara ta ett lån per omgång.'); p.loanTaken = true; p.loans++; p.cash += R.loan; log(g, `${p.name} tar ett banklån.`); break;
     case 'repay': needTurn(); if (!p.loans) fail('Du har inga lån.'); if (p.cash < R.loan) fail('Du har inte råd.'); p.cash -= R.loan; p.loans--; log(g, `${p.name} betalar tillbaka ett lån.`); break;
     case 'meeting': { pre(); if (newsIs(g, 'stockclose')) fail('Börsen är stängd just nu.'); if (!canTrade(p)) fail(tradeFail(p)); const k = a.group; if (!GROUPS[k]) fail('Okänd företagsgrupp.');
       const fee = Number(a.fee); if (!Number.isInteger(fee) || fee % 10000 || fee < R.feeMin || fee > R.feeMax) fail('Ogiltig förmedlingsavgift.');
@@ -360,7 +361,7 @@ function actor(g) {
 function botAction(g, pid, passive) {
   const p = P(g, pid);
   if (g.debts.length && g.debts[0].from === pid) {
-    if (p.pos !== 39 && !newsIs(g, 'creditstop') && p.loans < R.maxLoans) return { type: 'loan' };
+    if (p.pos !== 39 && !newsIs(g, 'creditstop') && p.loans < R.maxLoans && !p.loanTaken) return { type: 'loan' };
     const free = plotsOf(g, p).find((n) => !g.plots[n].mort); if (free) return { type: 'mortgage', n: free };
     const sh = g.shares.find((s) => s.owner === pid); if (sh) return { type: 'sellShare', id: sh.id };
     if (p.car) return { type: 'sellCar' };
