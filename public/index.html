@@ -23,27 +23,38 @@ label{display:block;font-weight:700;margin:0 0 6px;color:var(--mute)}
 .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}.row>*{flex:1 1 140px}.stack{display:grid;gap:12px}
 .roomrow{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:8px 0;border-top:1px solid var(--line)}
 .code{font:600 36px Fredoka,sans-serif;letter-spacing:3px;color:var(--gold)}
-.game{display:flex;gap:16px;padding:12px;align-items:flex-start;flex-wrap:wrap;justify-content:center}
-.boardwrap{flex:1 1 640px;min-width:0;max-width:990px}
-.leftcol{flex:0 0 210px;width:210px;max-width:100%;display:grid;gap:12px;align-content:start}
+.game{display:grid;grid-template-columns:200px minmax(0,1fr) 300px;grid-template-rows:minmax(0,1fr) auto;gap:10px;padding:10px;height:100vh;height:100dvh}
+.holdings{grid-column:1/-1}
+.boardwrap{min-width:0;min-height:0;display:flex;justify-content:center;align-items:flex-start}
+.leftcol{min-height:0;overflow:auto}.side{min-height:0;overflow:auto;display:flex;flex-direction:column;gap:8px}
+.side>.logcard{flex:1 1 0;min-height:0;overflow:hidden;display:flex;flex-direction:column}.side>.logcard .log{flex:1;min-height:0;max-height:none}
+@media (max-height:760px){.side button{min-height:36px;padding:4px 10px;font-size:13.5px}.pl{margin-top:2px;padding:1px 8px}.side .pawnicon{width:18px;height:25px}.side .actions{gap:5px}.side .stack{gap:6px}}
+@media (max-height:860px){.lastcard{display:none !important}.die{width:32px;height:32px;font-size:19px}.side h2{font-size:18px}.side h3{font-size:14px}}
+@media (max-width:999px),(max-height:619px){.game{display:flex;flex-direction:column;height:auto}.boardwrap{display:block}.side{overflow:visible}.leftcol{overflow:visible}}
+.leftcol{display:grid;gap:12px;align-content:start}
 .landing{background:var(--panel);border-radius:20px;padding:14px;display:grid;gap:10px;align-content:start}
 .ltile{border-radius:14px;box-shadow:inset 0 0 0 1px rgba(0,0,0,.7);overflow:hidden;font-weight:800;text-align:center}
 .ltile .lh{height:30px;background:rgba(255,255,255,.4);border-bottom:1px solid rgba(0,0,0,.45)}
 .ltile .lb{padding:14px 8px;display:grid;gap:6px;justify-items:center;font:600 19px/1.15 Fredoka,sans-serif}
 .lrow{display:flex;justify-content:space-between;gap:8px;font-size:13.5px}
-@media (max-width:1199px){.leftcol{flex:1 1 100%;width:100%;order:-1;grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}}
 .pile{display:grid;gap:5px}.pile h4{margin:0;font:800 13px Nunito,sans-serif;color:var(--mute);display:flex;justify-content:space-between}
 .minis{display:flex;flex-wrap:wrap;gap:4px}
 .otherpiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;align-items:start;padding-top:10px;border-top:1px solid var(--line)}
-.holdings{background:var(--panel);border-radius:20px;padding:14px;margin-top:12px;display:grid;gap:10px}.hhead{display:flex;flex-wrap:wrap;gap:4px 12px;align-items:baseline}
-.stacks{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:12px;align-items:start}.stack3{display:grid;gap:6px}.cardstack{display:grid}
-.stackcard{position:relative;display:block;width:100%;min-height:0;height:58px;padding:0;background:#fbfaf3;color:#1a1740;border:1px solid #1a1740;border-radius:9px;overflow:hidden;text-align:left;font:800 12px/1.1 Nunito,sans-serif;box-shadow:0 -1px 4px rgba(0,0,0,.4)}
-.stackcard+.stackcard{margin-top:-28px}
-.stackcard:hover,.stackcard:focus-visible{background:#fff;z-index:3;transform:translateY(-2px)}
-.stackcard.m{outline:2px dashed #b91c1c;outline-offset:-3px}
-.stackcard .band{display:flex;align-items:center;height:30px;padding:0 8px;font-size:13px}
-.stackcard .sbody{display:flex;align-items:center;gap:6px;height:28px;padding:0 8px}
-.stackcard .b3d{width:24px;height:24px}.stackcard .unbuilt{opacity:.35;filter:grayscale(1)}
+.holdings{background:var(--panel);border-radius:14px;padding:8px 10px;display:grid;grid-template-columns:150px minmax(0,1fr) 170px;gap:12px}
+.holdings h4{margin:0 0 4px;font:800 12.5px Nunito,sans-serif;color:var(--mute)}
+.gcols{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px}
+.gcol{min-width:0;display:grid;gap:3px;align-content:start;min-height:138px}.gcol.empty{opacity:.45}
+.gname{font:700 10.5px/1.2 Nunito,sans-serif;color:#e3f8ec;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cardstack{display:grid}
+.stackcard{position:relative;display:flex;align-items:center;justify-content:space-between;gap:3px;width:100%;min-height:0;height:21px;padding:0 5px;background:#fbfaf3;color:#1a1740;border:1px solid #1a1740;border-radius:6px;font:800 11px/1 Nunito,sans-serif;box-shadow:0 1px 2px rgba(0,0,0,.4);overflow:hidden}
+.stackcard+.stackcard{margin-top:-1px}.stackcard:hover,.stackcard:focus-visible{filter:brightness(1.15);background-color:inherit;z-index:2}
+.stackcard.share:hover{background:#fff}.stackcard.m{outline:2px dashed #fff;outline-offset:-3px}
+.stackcard .sname{overflow:hidden;white-space:nowrap;text-overflow:ellipsis;min-width:0;text-align:left}.stackcard .b3d{width:18px;height:18px;flex:none}.sdot{width:9px;height:9px;border-radius:50%;flex:none;border:1px solid #1a1740}
+.stackcard.share{justify-content:flex-start}
+.chips{display:flex;flex-wrap:wrap;gap:3px}.chip{min-height:0;height:24px;padding:0 7px;border:1px solid #1a1740;border-radius:6px;font:800 11.5px Nunito,sans-serif;display:flex;align-items:center;justify-content:center}
+.chip.bond{background:#c4b5fd;color:#1a1740;width:30px;padding:0}.chip.bond:hover{background:#ddd6fe}.chip.note{background:#d9f99d;color:#14532d}
+.moneysum{font:600 19px Fredoka,sans-serif;margin-bottom:4px}
+@media (max-width:999px){.holdings{grid-template-columns:1fr}.gcols{grid-template-columns:repeat(auto-fill,minmax(120px,1fr))}.gcol{min-height:0}.stackcard{height:44px}.chip{height:44px;min-width:44px}.chip.bond{width:44px}}
 .deedmini{width:100px;min-height:74px;padding:0 0 5px;background:#fbfaf3;color:#1a1740;border:1px solid #1a1740;border-radius:9px;overflow:hidden;display:flex;flex-direction:column;align-items:center;gap:2px;font:800 11.5px/1.1 Nunito,sans-serif;box-shadow:0 3px 5px rgba(0,0,0,.45)}
 .deedmini:hover{background:#fff}.deedmini.m{opacity:.75;outline:2px dashed #b91c1c;outline-offset:-3px}
 .deedmini .band{align-self:stretch;padding:3px 2px;font-size:10px;letter-spacing:.3px;text-transform:uppercase}
@@ -64,7 +75,7 @@ label{display:block;font-weight:700;margin:0 0 6px;color:var(--mute)}
 @keyframes evt{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:none}}
 .scaler{position:relative;width:100%}
 .board{position:absolute;left:0;top:0;width:1290px;height:1185px;transform-origin:0 0;background:#0f4a33;border-radius:28px;overflow:hidden;font-family:Nunito,sans-serif}
-.side{flex:0 1 320px;width:320px;max-width:100%;display:grid;gap:12px;min-width:0}
+.side{min-width:0}
 .c{position:absolute;width:105px;height:120px;border-radius:14px;box-shadow:inset 0 0 0 1px rgba(0,0,0,.7),0 2px 6px rgba(0,0,0,.25);color:var(--dark);padding:0;font:600 13.5px/1.15 Nunito,sans-serif;text-align:center;overflow-wrap:break-word;cursor:pointer;background:none}
 .c[style*='rotate(90deg)'] .lab,.c[style*='rotate(-90deg)'] .lab{font-size:12px}
 .pr{font:800 12px/1.1 Nunito,sans-serif;opacity:.95;white-space:nowrap}
@@ -90,10 +101,10 @@ label{display:block;font-weight:700;margin:0 0 6px;color:var(--mute)}
 .s{width:22px;height:22px;flex:none;border-radius:50%}
 .deck{position:absolute;width:170px;height:100px;border-radius:16px;display:flex;flex-direction:column;gap:6px;align-items:center;justify-content:center;font:600 19px/1 Fredoka,sans-serif;color:var(--dark);box-shadow:0 6px 16px rgba(0,0,0,.45)}
 .deck svg{width:66px;height:45px}
-.pl{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:8px 10px;border-radius:12px;background:#0d4230;margin-top:6px}
+.pl{display:flex;justify-content:space-between;align-items:center;gap:6px;padding:3px 8px;border-radius:10px;background:#0d4230;margin-top:4px}
 .pl.on{outline:2px solid var(--gold)}.pl.out{opacity:.45;text-decoration:line-through}
 .dot{width:16px;height:16px;border-radius:50%;flex:none;border:2px solid #111}
-.pawnicon{display:block;width:26px;height:37px;flex:none}
+.pawnicon{display:block;width:21px;height:30px;flex:none}
 .money{font-weight:800;white-space:nowrap}
 .small{font-size:13px;color:var(--mute)}
 .dice{display:flex;gap:8px}.die{width:44px;height:44px;border-radius:10px;background:#fff;color:var(--dark);font:600 26px Fredoka,sans-serif;display:flex;align-items:center;justify-content:center}
@@ -285,7 +296,12 @@ function renderLobby() {
       el('button', { onclick: () => wsend({ t: 'leave' }) }, 'Lämna'))));
 }
 const myPlots = () => Object.keys(S.game.plots).map(Number).filter((n) => S.game.plots[n].owner === S.you);
-function fit() { const sc = document.getElementById('scaler'); if (!sc || !boardEl) return; const k = sc.clientWidth / 1290; boardEl.style.transform = `scale(${k})`; sc.style.height = 1185 * k + 'px'; }
+function fit() {
+  const sc = document.getElementById('scaler'); if (!sc || !boardEl) return; const wrap = sc.parentElement;
+  const flow = matchMedia('(max-width:999px),(max-height:619px)').matches;
+  const k = flow ? wrap.clientWidth / 1290 : Math.min(wrap.clientWidth / 1290, wrap.clientHeight / 1185);
+  boardEl.style.transform = `scale(${k})`; sc.style.width = 1290 * k + 'px'; sc.style.height = 1185 * k + 'px'; sc.style.flex = 'none';
+}
 window.addEventListener('resize', fit);
 
 // Nya kort visas stort i 5 sekunder och ligger sedan kvar i panelen till höger.
@@ -390,8 +406,8 @@ function renderGame() {
   const g = S.game; showCardPopup(g);
   if (!boardEl) {
     boardEl = buildBoard();
-    app.replaceChildren(el('div', { class: 'game' }, el('div', { class: 'leftcol' }, el('aside', { class: 'landing', id: 'landing' })), el('div', { class: 'boardwrap' }, el('div', { class: 'scaler', id: 'scaler' }, boardEl), el('section', { class: 'holdings', id: 'holdings', 'aria-label': 'Mina investeringar' })), el('div', { class: 'side', id: 'side' })));
-    fit();
+    app.replaceChildren(el('div', { class: 'game' }, el('div', { class: 'leftcol' }, el('aside', { class: 'landing', id: 'landing' }), el('div', { id: 'leaveslot' })), el('div', { class: 'boardwrap' }, el('div', { class: 'scaler', id: 'scaler' }, boardEl)), el('div', { class: 'side', id: 'side' }), el('section', { class: 'holdings', id: 'holdings', 'aria-label': 'Mina investeringar' })));
+    renderPiles(); fit();
   }
   // Ägare, byggnader och belåning på tomterna.
   for (const n of Object.keys(g.plots)) {
@@ -419,7 +435,7 @@ function renderGame() {
     else { tx = r.x + r.w - 46 - step; ty = r.y + 1; }
     t.style.left = tx + 'px'; t.style.top = ty + 'px';
   });
-  renderLanding(); renderPiles(); renderSide(); renderModal(); showEvents(g); celebrate(g);
+  renderLanding(); renderPiles(); fit(); renderSide(); renderModal(); showEvents(g); celebrate(g);
 }
 function renderSide() {
   const g = S.game; const side = document.getElementById('side'); const me = g.players.find((p) => p.id === S.you);
@@ -428,19 +444,19 @@ function renderSide() {
   const waiting = debt ? g.players.find((p) => p.id === debt.from) : bond ? g.players.find((p) => p.id === bond) : current;
   const logBox = el('div', { class: 'log', id: 'logbox' }, [...g.log].reverse().slice(0, 40).map((l) => el('div', {}, l)));
   side.replaceChildren(...[
-    el('div', { class: 'card', style: 'margin:0;padding:14px' },
+    el('div', { class: 'card', style: 'margin:0;padding:10px' },
       g.phase === 'over' ? el('h2', {}, g.players.find((p) => p.id === g.winner).name + ' vann!') : el('h2', {}, waiting.id === S.you ? 'Din tur' : waiting.name + ' spelar'),
-      g.dice.length ? el('div', { class: 'dice', style: 'margin-top:10px' }, g.dice.map((d) => el('div', { class: 'die' }, d))) : null,
+      g.dice.length ? el('div', { class: 'dice', style: 'margin-top:6px' }, g.dice.map((d) => el('div', { class: 'die' }, d))) : null,
       g.finalRound && g.phase === 'play' ? el('div', { class: 'lastround' }, 'Sista rundan! ' + (g.players.find((p) => p.id === g.finalRound)?.name || '') + ' har nått målet.') : null,
       el('div', { style: 'margin-top:12px' }, actionsFor(me, myTurn, debt, bond))),
-    g.lastCard ? el('div', { class: 'card', style: 'margin:0;padding:14px;display:grid;gap:8px' },
+    g.lastCard ? el('div', { class: 'card lastcard', style: 'margin:0;padding:8px;display:grid;gap:6px' },
       g.lastCard ? el('div', { class: 'news', style: 'background:' + (g.lastCard.deck === 'Börstips' ? '#7dd3fc' : '#fde047') }, el('div', { class: 'small', style: 'color:#1a1740' }, g.lastCard.deck), g.lastCard.text) : null,
       null) : null,
-    el('div', { class: 'card', style: 'margin:0;padding:14px' }, el('h3', {}, 'Spelare · mål ' + kr(g.target)),
+    el('div', { class: 'card', style: 'margin:0;padding:10px' }, el('h3', {}, 'Spelare · mål ' + kr(g.target)),
       g.players.map((p) => { const m = S.members.find((x) => x.id === p.id);
         return el('div', { class: 'pl' + (p.id === current.id ? ' on' : '') + (p.out ? ' out' : '') }, el('div', { style: 'display:flex;gap:8px;align-items:center;min-width:0' }, el('span', { class: 'pawnicon' }, svg(pawn(p.color))), el('div', {}, p.name + (p.id === S.you ? ' (du)' : ''), el('div', { class: 'small' }, [p.car ? 'bil' : null, p.loans ? p.loans + ' lån' : null, p.jail ? 'i fängelse ' + p.jail + ' år' : null, m && !m.online ? 'borta' : null].filter(Boolean).join(' · ')))), el('div', { class: 'money' }, kr(p.cash))); })),
-    el('div', { class: 'card', style: 'margin:0;padding:14px' }, el('h3', { style: 'margin-bottom:8px' }, 'Händelser'), logBox),
-    el('button', { onclick: () => wsend({ t: 'leave' }) }, 'Lämna spelet')].filter(Boolean));
+    el('div', { class: 'card logcard', style: 'margin:0;padding:10px' }, el('h3', { style: 'margin-bottom:6px' }, 'Händelser'), logBox)].filter(Boolean));
+  const lb = document.getElementById('leaveslot'); if (lb && !lb.firstChild) lb.append(el('button', { style: 'width:100%', onclick: () => wsend({ t: 'leave' }) }, 'Lämna spelet'));
 }
 const canTrade = (p) => p.lapDone && (p.pos === 12 || (p.pos >= 35 && p.pos <= 46));
 function actionsFor(me, myTurn, debt, bond) {
@@ -513,19 +529,18 @@ function renderPiles() {
   if (!me) { box.replaceChildren(); return; }
   const mine = Object.keys(g.plots).map(Number).filter((n) => g.plots[n].owner === S.you).sort((a, b) => a - b);
   const shares = g.shares.filter((v) => v.owner === S.you); const bonds = Object.keys(g.bonds).filter((n) => g.bonds[n] === S.you);
-  const notes = []; let left = me.cash; for (const v of [100000, 50000, 10000, 5000, 1000, 500]) { const c = Math.floor(left / v); if (c) { notes.push(el('div', { class: 'mini note', title: c + ' sedlar' }, (v / 1000) + 'k × ' + c)); left -= c * v; } }
-  const pile = (title, count, items, empty) => el('section', { class: 'pile' }, el('h4', {}, title, el('span', {}, count)), items.length ? el('div', { class: 'minis' }, items) : el('div', { class: 'small' }, empty));
-  // Kort i samma koncern staplas, så att listan tar mindre plats.
-  const stacks = Object.keys(GROUPS).map((k) => { const gr = GROUPS[k]; const style = `background:${gr.color};color:${gr.text}`;
-    const plotCards = mine.filter((n) => SQUARES[n].group === k).map((n) => { const x = g.plots[n]; const pic = svg(gr.industry ? FACTORY3D : HOUSE3D); if (!x.built) pic.classList.add('unbuilt');
-      return el('button', { class: 'stackcard' + (x.mort ? ' m' : ''), ...glowOn([n]), onclick: () => showDeed(n), 'aria-label': 'Lagfartsbevis ' + SQUARES[n].name }, el('span', { class: 'band', style }, SQUARES[n].name), el('span', { class: 'sbody' }, pic, x.mort ? 'Belånad' : x.built ? 'Bebyggd' : 'Obebyggd')); });
-    const shareCards = shares.filter((v) => v.group === k).map((v) => el('button', { class: 'stackcard', ...glowOn(plotsIn(k)), onclick: () => showShare(v.id), 'aria-label': 'Aktiebrev ' + gr.name }, el('span', { class: 'band', style }, 'Aktie ' + kr(v.value)), el('span', { class: 'sbody' }, 'Utdelning ' + v.pct + ' %')));
-    return plotCards.length || shareCards.length ? el('div', { class: 'stack3' }, el('div', { class: 'small' }, gr.name), plotCards.length ? el('div', { class: 'cardstack' }, plotCards) : null, shareCards.length ? el('div', { class: 'cardstack' }, shareCards) : null) : null; }).filter(Boolean);
-  box.replaceChildren(el('div', { class: 'hhead' }, el('h3', {}, 'Mina investeringar'), el('span', { class: 'small' }, 'Tryck på ett kort för att se vad det gäller.')), stacks.length ? el('div', { class: 'stacks' }, stacks) : el('div', { class: 'small' }, 'Inga tomter eller aktier än'),
-    el('div', { class: 'otherpiles' },
-    pile('Obligationer', bonds.length, bonds.map((n) => el('button', { class: 'deedmini', onclick: () => showBond(n), 'aria-label': 'Obligation ' + n }, el('span', { class: 'band', style: 'background:#c4b5fd;color:#1a1740' }, 'Obligation'), el('b', { style: 'font-size:18px' }, 'Nr ' + n))), 'Inga obligationer än'),
-    pile('Frikort', (me.jailFree || []).length, (me.jailFree || []).map(() => el('button', { class: 'deedmini', onclick: () => showFree(), 'aria-label': 'Frikort' }, el('span', { class: 'band', style: 'background:#7dd3fc;color:#1a1740' }, 'Frikort'), el('span', {}, 'Slipp fängelset'))), 'Inga frikort'),
-    pile('Pengar', kr(me.cash), notes, 'Inga pengar')));
+  const notes = []; let left = me.cash; for (const v of [100000, 50000, 10000, 5000, 1000, 500]) { const c = Math.floor(left / v); if (c) { notes.push(el('div', { class: 'chip note', title: c + ' sedlar' }, (v >= 1000 ? v / 1000 + 'k' : v) + ' × ' + c)); left -= c * v; } }
+  // Varje koncern har en egen kolumn, med tomter och aktier i två små staplar.
+  const cols = Object.keys(GROUPS).map((k) => { const gr = GROUPS[k]; const style = `background:${gr.color};color:${gr.text}`;
+    const plots = mine.filter((n) => SQUARES[n].group === k).map((n) => { const x = g.plots[n]; const pic = x.built ? svg(gr.industry ? FACTORY3D : HOUSE3D) : null;
+      return el('button', { class: 'stackcard' + (x.mort ? ' m' : ''), style, ...glowOn([n]), onclick: () => showDeed(n), 'aria-label': 'Lagfartsbevis ' + SQUARES[n].name, title: SQUARES[n].name + (x.mort ? ', belånad' : x.built ? ', bebyggd' : ', obebyggd') }, el('span', { class: 'sname' }, SQUARES[n].name), pic); });
+    const sh = shares.filter((v) => v.group === k).map((v) => el('button', { class: 'stackcard share', ...glowOn(plotsIn(k)), onclick: () => showShare(v.id), 'aria-label': 'Aktiebrev ' + gr.name + ' ' + v.value, title: 'Aktie ' + kr(v.value) + ', utdelning ' + v.pct + ' %' }, el('span', { class: 'sdot', style: 'background:' + gr.color }), el('span', { class: 'sname' }, (v.value / 1000) + 'k aktie')));
+    return el('div', { class: 'gcol' + (plots.length || sh.length ? '' : ' empty') }, el('div', { class: 'gname', title: gr.name }, gr.name), plots.length ? el('div', { class: 'cardstack' }, plots) : null, sh.length ? el('div', { class: 'cardstack' }, sh) : null); });
+  const free = (me.jailFree || []).map(() => el('button', { class: 'chip', style: 'background:#7dd3fc;color:#1a1740', onclick: () => showFree(), 'aria-label': 'Frikort' }, 'Frikort'));
+  box.replaceChildren(
+    el('div', { class: 'invbox bonds' }, el('h4', {}, 'Obligationer'), bonds.length ? el('div', { class: 'chips' }, bonds.map((n) => el('button', { class: 'chip bond', onclick: () => showBond(n), 'aria-label': 'Obligation ' + n }, n))) : el('div', { class: 'small' }, 'Inga än'), free.length ? el('div', { class: 'chips', style: 'margin-top:4px' }, free) : null),
+    el('div', { class: 'invmain' }, el('h4', {}, 'Mina investeringar: tomter och aktier'), el('div', { class: 'gcols' }, cols)),
+    el('div', { class: 'invbox money' }, el('h4', {}, 'Pengar'), el('div', { class: 'moneysum' }, kr(me.cash)), el('div', { class: 'chips' }, notes)));
 }
 // Bevisen som öppnas när man trycker på ett kort.
 const deedRow = (a, b) => el('div', { class: 'drow' }, el('span', {}, a), el('b', {}, b));
