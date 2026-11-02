@@ -602,6 +602,7 @@ function renderGame() {
   const g = S.game; gameSounds(g); showCardPopup(g);
   if (!boardEl) {
     boardEl = buildBoard();
+    window.scrollTo(0, 0); // Lobbyn kan vara nedskrollad när spelet startar.
     app.replaceChildren(el('div', { class: 'game' }, el('div', { class: 'leftcol' }, el('aside', { class: 'landing', id: 'landing' }), el('div', { id: 'leaveslot', style: 'display:grid;gap:8px' })), el('div', { class: 'boardwrap' }, el('div', { class: 'scaler', id: 'scaler' }, boardEl)), el('div', { class: 'side', id: 'side' }), el('section', { class: 'holdings', id: 'holdings', 'aria-label': 'Mina investeringar' })));
     renderPiles(); fit();
   }
