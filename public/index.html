@@ -34,6 +34,14 @@ label{display:block;font-weight:700;margin:0 0 6px;color:var(--mute)}
 @media (max-width:1199px){.leftcol{flex:1 1 100%;width:100%;order:-1;grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}}
 .pile{display:grid;gap:5px}.pile h4{margin:0;font:800 13px Nunito,sans-serif;color:var(--mute);display:flex;justify-content:space-between}
 .minis{display:flex;flex-wrap:wrap;gap:4px}
+.stacks{display:grid;gap:8px}.stack3{display:grid;gap:3px}.cardstack{display:grid}
+.stackcard{position:relative;display:block;width:100%;min-height:0;height:58px;padding:0;background:#fbfaf3;color:#1a1740;border:1px solid #1a1740;border-radius:9px;overflow:hidden;text-align:left;font:800 12px/1.1 Nunito,sans-serif;box-shadow:0 -1px 4px rgba(0,0,0,.4)}
+.stackcard+.stackcard{margin-top:-28px}
+.stackcard:hover,.stackcard:focus-visible{background:#fff;z-index:3;transform:translateY(-2px)}
+.stackcard.m{outline:2px dashed #b91c1c;outline-offset:-3px}
+.stackcard .band{display:flex;align-items:center;height:30px;padding:0 8px;font-size:13px}
+.stackcard .sbody{display:flex;align-items:center;gap:6px;height:28px;padding:0 8px}
+.stackcard .b3d{width:24px;height:24px}.stackcard .unbuilt{opacity:.35;filter:grayscale(1)}
 .deedmini{width:100px;min-height:74px;padding:0 0 5px;background:#fbfaf3;color:#1a1740;border:1px solid #1a1740;border-radius:9px;overflow:hidden;display:flex;flex-direction:column;align-items:center;gap:2px;font:800 11.5px/1.1 Nunito,sans-serif;box-shadow:0 3px 5px rgba(0,0,0,.45)}
 .deedmini:hover{background:#fff}.deedmini.m{opacity:.75;outline:2px dashed #b91c1c;outline-offset:-3px}
 .deedmini .band{align-self:stretch;padding:3px 2px;font-size:10px;letter-spacing:.3px;text-transform:uppercase}
@@ -504,10 +512,15 @@ function renderPiles() {
   const mine = Object.keys(g.plots).map(Number).filter((n) => g.plots[n].owner === S.you).sort((a, b) => a - b);
   const shares = g.shares.filter((v) => v.owner === S.you); const bonds = Object.keys(g.bonds).filter((n) => g.bonds[n] === S.you);
   const notes = []; let left = me.cash; for (const v of [100000, 50000, 10000, 5000, 1000, 500]) { const c = Math.floor(left / v); if (c) { notes.push(el('div', { class: 'mini note', title: c + ' sedlar' }, (v / 1000) + 'k × ' + c)); left -= c * v; } }
-  const pile = (title, count, items, empty) => el('section', { class: 'pile' }, el('h4', {}, title, el('span', {}, count)), items.length ? el('div', { class: 'minis' }, items) : el('div', { class: 'small' }, empty));
+  const pile = (title, count, items, empty) => el('section', { class: 'pile' }, el('h4', {}, title, el('span', {}, count)), items.length ? el('div', { class: title === 'Tomter och aktier' ? 'stacks' : 'minis' }, items) : el('div', { class: 'small' }, empty));
+  // Kort i samma koncern staplas, så att listan tar mindre plats.
+  const stacks = Object.keys(GROUPS).map((k) => { const gr = GROUPS[k]; const style = `background:${gr.color};color:${gr.text}`;
+    const cards = [...mine.filter((n) => SQUARES[n].group === k).map((n) => { const x = g.plots[n]; const pic = svg(gr.industry ? FACTORY3D : HOUSE3D); if (!x.built) pic.classList.add('unbuilt');
+      return el('button', { class: 'stackcard' + (x.mort ? ' m' : ''), ...glowOn([n]), onclick: () => showDeed(n), 'aria-label': 'Lagfartsbevis ' + SQUARES[n].name }, el('span', { class: 'band', style }, SQUARES[n].name), el('span', { class: 'sbody' }, pic, x.mort ? 'Belånad' : x.built ? 'Bebyggd' : 'Obebyggd')); }),
+      ...shares.filter((v) => v.group === k).map((v) => el('button', { class: 'stackcard', ...glowOn(plotsIn(k)), onclick: () => showShare(v.id), 'aria-label': 'Aktiebrev ' + gr.name }, el('span', { class: 'band', style }, 'Aktie ' + kr(v.value)), el('span', { class: 'sbody' }, 'Utdelning ' + v.pct + ' %')))];
+    return cards.length ? el('div', { class: 'stack3' }, el('div', { class: 'small' }, gr.name), el('div', { class: 'cardstack' }, cards)) : null; }).filter(Boolean);
   box.replaceChildren(el('h3', {}, 'Mina högar'), el('div', { class: 'small' }, 'Tryck på ett kort för att se vad det gäller.'),
-    pile('Tomter', mine.length, mine.map((n) => { const k = SQUARES[n].group; const gr = GROUPS[k]; const x = g.plots[n]; const pic = svg(gr.industry ? FACTORY3D : HOUSE3D); return el('button', { class: 'deedmini' + (x.mort ? ' m' : ''), ...glowOn([n]), onclick: () => showDeed(n), 'aria-label': 'Lagfartsbevis ' + SQUARES[n].name }, el('span', { class: 'band', style: `background:${gr.color};color:${gr.text}` }, 'Lagfart'), (() => { if (!x.built) pic.classList.add('unbuilt'); return pic; })(), el('span', {}, breakable(SQUARES[n].name))); }), 'Inga tomter än'),
-    pile('Aktier', shares.length, shares.map((v) => { const gr = GROUPS[v.group]; return el('button', { class: 'deedmini', ...glowOn(plotsIn(v.group)), onclick: () => showShare(v.id), 'aria-label': 'Aktiebrev ' + gr.name }, el('span', { class: 'band', style: `background:${gr.color};color:${gr.text}` }, 'Aktie'), el('span', {}, gr.name), el('b', {}, kr(v.value))); }), 'Inga aktier än'),
+    pile('Tomter och aktier', mine.length + shares.length, stacks, 'Inga tomter eller aktier än'),
     pile('Obligationer', bonds.length, bonds.map((n) => el('button', { class: 'deedmini', onclick: () => showBond(n), 'aria-label': 'Obligation ' + n }, el('span', { class: 'band', style: 'background:#c4b5fd;color:#1a1740' }, 'Obligation'), el('b', { style: 'font-size:18px' }, 'Nr ' + n))), 'Inga obligationer än'),
     pile('Frikort', (me.jailFree || []).length, (me.jailFree || []).map(() => el('button', { class: 'deedmini', onclick: () => showFree(), 'aria-label': 'Frikort' }, el('span', { class: 'band', style: 'background:#7dd3fc;color:#1a1740' }, 'Frikort'), el('span', {}, 'Slipp fängelset'))), 'Inga frikort'),
     pile('Pengar', kr(me.cash), notes, 'Inga pengar'));
