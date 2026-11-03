@@ -57,7 +57,7 @@ function broadcast(r) {
 // Datorspelaren väntar tills tärningen har rullat, pjäsen har gått färdigt och popup-rutorna har stängts.
 function botWait(r, g) {
   const now = Date.now(); const roll = g.lastRoll; r.hold = Math.max(r.hold || 0, now); r.anim = Math.max(r.anim || 0, now);
-  if (roll && roll.id !== r.seenRoll) { r.seenRoll = roll.id; const walk = roll.path ? Math.min(1900, (roll.path.length - 1) * 220) : 0; r.anim = now + (BOT_DELAY >= 500 ? DICE_TIME : 0) + walk; r.hold = Math.max(r.hold, now + BOT_DELAY + walk); }
+  if (roll && roll.id !== r.seenRoll) { r.seenRoll = roll.id; const owner = g.players.find((p) => p.id === roll.player); const walk = roll.path ? Math.min(1900, (roll.path.length - 1) * 220) + (owner && owner.car ? 500 : 0) : 0; r.anim = now + (BOT_DELAY >= 500 ? DICE_TIME : 0) + walk; r.hold = Math.max(r.hold, now + BOT_DELAY + walk); }
   if (BOT_DELAY >= 500) {
     if (g.cardNo !== r.seenCard) { if (r.seenCard !== undefined && g.lastCard) r.hold = Math.max(r.hold, r.anim + POPUP_CARD); r.seenCard = g.cardNo; }
     if (g.drawNo !== r.seenDraw) { if (r.seenDraw !== undefined) r.hold = Math.max(r.hold, r.anim + DICE_TIME + POPUP_DRAW); r.seenDraw = g.drawNo; }
