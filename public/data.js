@@ -93,6 +93,8 @@
     { t: 'poorest', a: 30000, x: 'Årets företagare! Spelaren med minst kontanter får 30 000 kr av banken.' },
     { t: 'perbuild', a: 5000, x: 'Vattenskada! Betala 5 000 kr per bebyggd tomt.' },
     { t: 'audit', pct: 5, x: 'Revision! Betala 5 % av dina kontanter till banken.' },
+    { t: 'sharecrash', pct: 30, x: 'Kursras! Alla spelares 30 %-aktier blir värdelösa och går tillbaka till banken utan ersättning.' },
+    { t: 'sharecrash', pct: 40, x: 'Börskrasch! Alla spelares 40 %-aktier blir värdelösa och går tillbaka till banken utan ersättning.' },
     { t: 'fundshare', x: 'Gratis fondaktie! Du får en fondaktie på 20 000 kr som ger 20 % i utdelning.' },
     { t: 'carloss', x: 'Bilstöld! Har du bil förlorar du den utan ersättning.' },
     { t: 'toexit', x: 'Gå direkt till Bankutgång. Du drar inget nytt kort, men betalar eventuell låneränta.' },

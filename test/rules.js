@@ -81,7 +81,7 @@ const D = require('../public/data.js');
 const tip = (g, match) => { const i = D.BORSTIPS.findIndex(match); g.tipDeck = [i, ...g.tipDeck.filter((v) => v !== i)]; };
 const news = (g, match) => { const i = D.FINANS.findIndex(match); g.newsDeck = [i, ...g.newsDeck.filter((v) => v !== i)]; };
 const landOn = (g, pos, die = 0) => { g.players[g.current].pos = pos - 1; Math.random = () => die; G.apply(g, g.players[g.current].id, { type: 'roll' }); Math.random = orig; };
-assert.equal(D.BORSTIPS.length, 58); assert.equal(D.BORSTIPS.filter((c) => c.t === 'bondwin').length, 1); assert.equal(D.BORSTIPS.filter((c) => c.t === 'back').length, 1); assert.equal(D.BORSTIPS.filter((c) => c.t === 'forward').length, 1); assert.equal(D.FINANS.length, 38);
+assert.equal(D.BORSTIPS.length, 60); assert.equal(D.BORSTIPS.filter((c) => c.t === 'bondwin').length, 1); assert.equal(D.BORSTIPS.filter((c) => c.t === 'back').length, 1); assert.equal(D.BORSTIPS.filter((c) => c.t === 'forward').length, 1); assert.equal(D.FINANS.length, 38);
 g = two(); g.bonds[1] = 'b'; { const c = g.players[1].cash; tip(g, (c) => c.t === 'bondwin' && c.n === 1); landOn(g, 2); assert.equal(g.players[1].cash, c + 10000); assert.equal(g.bonds[1], null); }
 g = two(); tip(g, (c) => c.t === 'smalldraw'); landOn(g, 2); assert.equal(g.bondRound.draw, 'small');
 g = two(); tip(g, (c) => c.t === 'back'); landOn(g, 2); assert.equal(g.players[0].pos, 54);
@@ -170,3 +170,5 @@ console.log('Alla regeltester klara');
 { const q = two(); const p = q.players[0]; const f = q.shares.find((x) => x.value === 20000); f.owner = 'a'; const c = p.cash; G.apply(q, 'a', { type: 'sellShare', id: f.id }); assert.equal(p.cash, c + 20000); const a50 = q.shares.find((x) => x.value === 50000); a50.owner = 'a'; const c2 = p.cash; G.apply(q, 'a', { type: 'sellShare', id: a50.id }); assert.equal(p.cash, c2 + 37500); }
 // Börstips: gratis fondaktie, och inget när alla redan är utdelade.
 { const q = two(); tip(q, (x) => x.t === 'fundshare'); landOn(q, 2); assert.equal(q.shares.filter((x) => x.value === 20000 && x.owner === 'a').length, 1); const r = two(); r.shares.filter((x) => x.value === 20000).forEach((x) => { x.owner = 'b'; }); tip(r, (x) => x.t === 'fundshare'); landOn(r, 2); assert.equal(r.shares.filter((x) => x.value === 20000 && x.owner === 'a').length, 0); }
+// Kursras och börskrasch: alla spelares aktier med rätt procent går tillbaka till banken utan ersättning.
+for (const pct of [30, 40]) { const q = two(); q.shares.forEach((x, i) => { x.owner = ['a', 'b', 'c'][i % 3]; }); const cash = q.players.map((p) => p.cash); tip(q, (x) => x.t === 'sharecrash' && x.pct === pct); landOn(q, 2); assert.equal(q.shares.filter((x) => x.pct === pct && x.owner).length, 0); assert.ok(q.shares.filter((x) => x.pct !== pct && x.owner).length > 0); assert.deepEqual(q.players.map((p) => p.cash), cash); }
