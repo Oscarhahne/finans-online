@@ -15,7 +15,7 @@ function newGame(players, opts = {}) {
     tipDeck: shuffled(BORSTIPS.length), newsDeck: shuffled(FINANS.length), lastCard: null,
   };
   for (const n of Object.keys(SQUARES)) if (SQUARES[n].kind === 'plot') g.plots[n] = { owner: null, built: false, mort: false };
-  for (const k of Object.keys(GROUPS)) GROUPS[k].shares.forEach((v, i) => g.shares.push({ id: k + i, group: k, value: v, pct: sharePct(v), owner: null }));
+  for (const k of Object.keys(GROUPS)) GROUPS[k].shares.forEach((v, i) => g.shares.push({ id: k + i, group: k, value: v, pct: GROUPS[k].sharePct ?? sharePct(v), owner: null }));
   for (let i = 1; i <= 12; i++) g.bonds[i] = null;
   log(g, `Spelet börjar. ${g.players[0].name} slår först.`, true);
   return g;

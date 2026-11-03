@@ -13,7 +13,7 @@
     F: { name: 'Finanstrusten', color: '#2563eb', text: '#fff', plot: 25000, build: 25000, rent: 4000, rentBuilt: 16000, shares: [75000, 75000, 50000] },
     T: { name: 'Teknikföretagen', color: '#0f766e', text: '#fff', plot: 30000, build: 30000, rent: 5000, rentBuilt: 20000, shares: [100000, 75000, 50000] },
     K: { name: 'Kemibolaget', color: '#7c3aed', text: '#fff', plot: 40000, build: 40000, rent: 7000, rentBuilt: 28000, shares: [100000, 75000, 75000], industry: true },
-    I: { name: 'Industrikoncernen', color: '#dc2626', text: '#fff', plot: 50000, build: 50000, rent: 9000, rentBuilt: 36000, shares: [100000, 100000, 75000], industry: true },
+    I: { name: 'Industrikoncernen', color: '#dc2626', text: '#fff', plot: 50000, build: 50000, rent: 9000, rentBuilt: 36000, shares: [150000, 75000, 75000], sharePct: 50, industry: true },
   };
   // Utdelning i procent per aktievärde: billiga aktier ger mindre.
   const sharePct = (v) => (v >= 100000 ? 40 : v >= 75000 ? 30 : 25);
