@@ -4,7 +4,7 @@
   if (typeof module === 'object' && module.exports) module.exports = factory();
   else root.GAME_DATA = factory();
 })(typeof self !== 'undefined' ? self : this, function () {
-  const GAME_NAME = 'Finans'; // Byt till ett eget namn innan publik lansering, se README.
+  const GAME_NAME = 'Ekonomimästaren';
 
   const GROUPS = {
     H: { name: 'Hantverkshuset', color: '#92400e', text: '#fff', plot: 10000, build: 10000, rent: 1500, rentBuilt: 6000, shares: [50000, 25000, 20000] },

@@ -1,4 +1,4 @@
-# Affärsspel online
+# Ekonomimästaren
 
 Svenskt affärsspel för 2–6 spelare i webbläsaren. Servern håller reda på spelet, så att ingen kan fuska genom att ändra i sin webbläsare.
 
@@ -44,5 +44,5 @@ Pjäsbilderna i `public/pawns` skapas med `node tools/pawns.js`. `node test/rule
 
 ## Innan du lanserar
 
-- Namnet Finans, Alga och originalets design kan vara skyddade. Byt `GAME_NAME` i `public/data.js` till ett eget namn eller be BRIO/Alga om lov, och fråga gärna en jurist.
+- Spelet heter Ekonomimästaren (`GAME_NAME` i `public/data.js`). Namnet Finans, Alga och originalets design kan vara skyddade, så fråga gärna en jurist före en publik lansering.
 - Sidan har inga konton. Spelare anger bara ett namn, och namnet syns för andra i samma spel.
