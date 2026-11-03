@@ -179,6 +179,7 @@ function land(g, p, depth = 0) {
     case 'repay': if (p.loans) { p.loans--; pay(g, p, null, R.loan + R.loanInterest, 'tvingad lånebetalning'); log(g, `${p.name} måste återbetala ett lån plus ränta.`); } break;
     case 'give': giveDividends(g, p); log(g, `${p.name} ger utdelning till motspelarna.`); break;
     case 'itsec': g.stage = 'itsec'; break;
+    case 'tax': { const tax = Math.min(R.taxMax, Math.floor(p.cash * R.taxPct / 100 / 500) * 500); if (tax) { log(g, `${p.name} betalar ${kr(tax)} i skatt till Skatteverket.`); pay(g, p, null, tax, 'skatt'); } else log(g, `${p.name} har inget att skatta för.`); break; }
     case 'lilla': startBonds(g, p, false, 'small'); break;
     case 'bonddiv': { const good = g.news && g.news.type === 'good';
       (good ? alive(g) : [p]).forEach((o) => { if (dividendTo(g, o) && o === p) rainOn(g, p); }); startBonds(g, p, good, null); break; }

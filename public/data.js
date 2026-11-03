@@ -36,7 +36,7 @@
     10: plot('Kontorshus', 'F'), 11: BOR, 12: { kind: 'branch', name: 'Bankfilial', sub: 'köp tomt och aktie' },
     13: plot('Försäkringsbolag', 'F'), 14: NEWS, 15: plot('Mäklarfirma', 'F'), 16: DIV,
     17: { kind: 'buildsq', name: 'Byggprojekt AB', sub: 'bygg här' }, 18: plot('Elektronikfirma', 'T'), 19: BOR,
-    20: NEWS, 21: plot('Datakonsult', 'T'), 22: plot('Ingenjörsbyrå', 'T'), 23: BOR,
+    20: { kind: 'tax', name: 'Skatteverket' }, 21: plot('Datakonsult', 'T'), 22: plot('Ingenjörsbyrå', 'T'), 23: BOR,
     24: plot('Plastfabrik', 'K'), 25: plot('Bensinbolag', 'K'), 26: NEWS, 27: plot('Raffinaderi', 'K'), 28: BOR, 29: DIV,
     30: { kind: 'gotoprison', name: 'Gå direkt i fängelse' },
     31: plot('Sågverk', 'I'), 32: plot('Pappersbruk', 'I'),
@@ -129,7 +129,7 @@
   const RULES = {
     startCash: 75000, carPrice: 50000, carSell: 25000, loan: 50000, loanInterest: 5000, maxLoans: 3,
     bondPrice: 500, bonusPerPip: 10000, largeDraw: [100000, 50000, 25000], smallDraw: [50000, 25000, 15000],
-    redeemPct: 1.1, givePct: 0.2, target: 1000000, feeMin: 30000, feeMax: 120000, feeBank: 30000, groupsToWin: 0, maxDoubles: 3, itCost: 5000, itVirus: 15000, itSafeFrom: 4,
+    redeemPct: 1.1, givePct: 0.2, target: 1000000, feeMin: 30000, feeMax: 120000, feeBank: 30000, taxPct: 10, taxMax: 50000, groupsToWin: 0, maxDoubles: 3, itCost: 5000, itVirus: 15000, itSafeFrom: 4,
   };
   const round500 = (v) => Math.round(v / 500) * 500;
   const plotInfo = (n) => {

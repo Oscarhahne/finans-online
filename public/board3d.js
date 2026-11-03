@@ -19,7 +19,7 @@ function fitText(c, text, x, y, width, height, max, min) { let size = max, lines
   const lh = size * 1.08; let ty = y + (height - lines.length * lh) / 2 + lh * 0.8; c.textAlign = 'center'; lines.forEach((l) => { c.fillText(l, x, ty); ty += lh; }); }
 const rr = (c, x, y, w, h, r) => { c.beginPath(); c.moveTo(x + r, y); c.arcTo(x + w, y, x + w, y + h, r); c.arcTo(x + w, y + h, x, y + h, r); c.arcTo(x, y + h, x, y, r); c.arcTo(x, y, x + w, y, r); c.closePath(); };
 const loadImg = (src) => new Promise((res) => { const i = new Image(); i.onload = () => res(i); i.onerror = () => res(null); i.src = src; });
-const iconKey = (s) => s.kind === 'plot' ? s.group : { bor: 'bor', news: 'news', div: 'div', lilla: 'bond', bonddiv: 'bond', branch: 'bank', entry: 'in', exit: 'out', buildsq: 'crane', repay: 'repay', give: 'give', prison: 'bars', gotoprison: 'gojail', itsec: 'shield' }[s.kind];
+const iconKey = (s) => s.kind === 'plot' ? s.group : { bor: 'bor', news: 'news', div: 'div', lilla: 'bond', bonddiv: 'bond', branch: 'bank', entry: 'in', exit: 'out', buildsq: 'crane', repay: 'repay', give: 'give', prison: 'bars', gotoprison: 'gojail', itsec: 'shield', tax: 'tax' }[s.kind];
 function tileCanvas(n, r, w, h) { const S = 3, cw = Math.round(w * S), ch = Math.round(h * S); const cv = document.createElement('canvas'); cv.width = cw; cv.height = ch; const c = cv.getContext('2d'); const s = SQUARES[n]; const isPlot = s.kind === 'plot'; const g = isPlot ? GROUPS[s.group] : null;
   const light = s.kind === 'bor' || s.kind === 'news'; const base = isPlot ? g.color : KIND_BG[s.kind] || '#334155';
   const grad = c.createLinearGradient(0, 0, cw, ch);
