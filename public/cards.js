@@ -30,7 +30,7 @@
     'Frikort! Spara kortet. Du kan använda det för att slippa fängelset.': V('Frikort!', 'Goda kontakter kan rädda dig när det behövs.', 'Slipp fängelset', 'en gång när du använder kortet.', '+', 'bars', 'prison'),
     'Bygglov! Spara kortet. Du kan använda det en gång för att bygga när du vill, före ditt kast.': V('Bygglov!', 'Kommunen säger ja till dina planer.', 'Bygg när du vill', 'en gång, före ditt kast.', '+', 'crane', 'buildsq'),
     'Gå direkt till Bankfilialen.': V('Till Bankfilialen', 'Ett viktigt ärende väntar på banken.', 'Gå till Bankfilialen', 'direkt.', '0', 'city', 'branch'),
-    'Gå direkt till ruta 21.': V('Nytt uppdrag', 'En affärskontakt vill träffa dig på ruta 21.', 'Gå till ruta 21', 'direkt.', '0', 'city', 'exit'),
+    'Gå direkt till ruta 27.': V('Nytt uppdrag', 'En affärskontakt vill träffa dig på ruta 27.', 'Gå till ruta 27', 'direkt.', '0', 'city', 'exit'),
     'Besök en av dina egna tomter. Har du ingen tomt går du direkt till Bankentré.': V('Besök din egen tomt', 'Det är dags att se hur det går med din fastighet.', 'Gå till en egen tomt', 'Har du ingen går du till Bankentré.', '0', 'city', 'exit'),
     'Överlämna valfri tomt eller aktie till föregående spelare.': V('En gåva till grannen', 'En gammal affär måste göras upp.', 'Lämna bort', 'valfri tomt eller aktie till föregående spelare.', '-', 'down', 'give'),
     'Hyresgäster flyttar in. Du får 3 000 kr per tomt du äger.': V('Hyresgäster flyttar in!', 'Lokalerna fylls och hyrorna börjar komma.', '+3 000 kr', 'per tomt du äger.', '+', 'up'),

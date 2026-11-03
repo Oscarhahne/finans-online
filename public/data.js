@@ -17,6 +17,8 @@
   };
   // Utdelning i procent per aktievärde: billiga aktier ger mindre.
   const sharePct = (v) => (v >= 100000 ? 40 : v >= 75000 ? 30 : v >= 25000 ? 25 : 20);
+  // Numret spelaren ser. Rutan efter Bankutgång är nr 1 och Bankutgång är sist. Internt behåller rutorna sina id.
+  const displayNo = (n) => (n >= 49 ? n - 48 : n + 6);
   const shareName = (v) => (v === 20000 ? 'Fondaktie' : 'Aktie');
   // Fondaktien återköps för hela köpesumman, andra aktier för 75 %.
   const shareSellPrice = (v) => (v === 20000 ? v : Math.round(v * 0.75 / 500) * 500);
@@ -86,7 +88,7 @@
     { t: 'jailfree', x: 'Frikort! Spara kortet. Du kan använda det för att slippa fängelset.' },
     { t: 'permit', x: 'Bygglov! Spara kortet. Du kan använda det en gång för att bygga när du vill, före ditt kast.' },
     { t: 'goto', to: 12, x: 'Gå direkt till Bankfilialen.' },
-    { t: 'goto', to: 21, x: 'Gå direkt till ruta 21.' },
+    { t: 'goto', to: 21, x: 'Gå direkt till ruta 27.' },
     { t: 'visit', x: 'Besök en av dina egna tomter. Har du ingen tomt går du direkt till Bankentré.' },
     { t: 'handover', x: 'Överlämna valfri tomt eller aktie till föregående spelare.' },
     { t: 'perplot', a: 3000, x: 'Hyresgäster flyttar in. Du får 3 000 kr per tomt du äger.' },
@@ -136,5 +138,5 @@
       mortgage: round500(g.plot * 0.5), mortgageBuilt: round500((g.plot + g.build) * 0.5),
       sell: round500(g.plot * 0.75), sellBuilt: round500(g.plot * 0.75 + g.build * 0.5) };
   };
-  return { GAME_NAME, GROUPS, SQUARES, BORSTIPS, FINANS, RULES, sharePct, shareName, shareSellPrice, plotInfo };
+  return { GAME_NAME, GROUPS, SQUARES, BORSTIPS, FINANS, RULES, sharePct, shareName, shareSellPrice, displayNo, plotInfo };
 });

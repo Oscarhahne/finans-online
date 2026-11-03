@@ -210,7 +210,7 @@ body.rolling .side{pointer-events:none}
 <script src="cards.js"></script>
 <script src="board3d.js"></script>
 <script>
-const { GAME_NAME, GROUPS, SQUARES, RULES, plotInfo, shareName, shareSellPrice } = window.GAME_DATA;
+const { GAME_NAME, GROUPS, SQUARES, RULES, plotInfo, shareName, shareSellPrice, displayNo } = window.GAME_DATA;
 document.title = GAME_NAME + ' online';
 const COLOR_NAMES = ['Röd', 'Blå', 'Gul', 'Vit', 'Lila', 'Grön'];
 const COLORS = ['#ff1744', '#2979ff', '#ffea00', '#ffffff', '#d500f9', '#00e676'];
@@ -263,7 +263,7 @@ const ICON = {
   I: '<path d="M6 45V25l15 9v-9l15 9v-9l15 9V8h8v37z" fill="#e2e8f0" stroke="#1f2937"/><path d="M12 36h6v5h-6zM26 36h6v5h-6zM40 36h6v5h-6z" fill="#fbbf24"/><circle cx="56" cy="4" r="3" fill="#cbd5e1"/>',
 };
 // Egen bild för Aktieutdelning. Rutans nummer läggs ovanpå numret i bilden.
-const divArt = (n, width) => el('div', { class: 'divart', style: `width:${width}` }, el('img', { src: 'aktieutdelning.png', alt: 'Aktieutdelning', draggable: 'false' }), el('span', {}, n));
+const divArt = (n, width) => el('div', { class: 'divart', style: `width:${width}` }, el('img', { src: 'aktieutdelning.png', alt: 'Aktieutdelning', draggable: 'false' }), el('span', {}, displayNo(n)));
 const iconFor = (s) => { const k = s.kind === 'plot' ? s.group : { bor: 'bor', news: 'news', div: 'div', lilla: 'bond', bonddiv: 'bond', branch: 'bank', entry: 'in', exit: 'out', buildsq: 'crane', itsec: 'shield', repay: 'repay', give: 'give', prison: 'bars', gotoprison: 'gojail' }[s.kind]; return svg(`<svg class="tic" viewBox="0 0 64 48" aria-hidden="true">${ICON[k] || ''}</svg>`); };
 const tileBg = (c) => `linear-gradient(145deg,color-mix(in srgb,${c} 78%,white) 0%,${c} 42%,color-mix(in srgb,${c} 52%,black) 100%)`;
 // Rutans plats på brädet: x, y, bredd, höjd och vridning.
@@ -314,11 +314,11 @@ function buildBoard() {
     const left = r.x + r.w / 2 - w / 2; const top = r.y + r.h / 2 - h / 2;
     const cls = 'c' + (isPlot ? ' t' : '') + (r.bank ? ' bk' : '') + (r.corner ? ' h' : '') + (s.kind === 'bor' ? ' ct-bor' : s.kind === 'news' ? ' ct-news' : '');
     b.append(el('div', { class: 'plinth', style: `left:${r.x + 2}px;top:${r.y + 12}px;width:${r.w - 4}px;height:${r.h - 2}px;background:color-mix(in srgb,${s.kind === 'bor' ? '#2f6fb8' : s.kind === 'news' ? '#a97412' : s.kind === 'div' ? '#0b4f26' : base} 45%,black)` }));
-    const e = el('div', { class: cls, id: 'sq' + n, role: 'button', tabindex: 0, 'aria-label': n + ' ' + s.name, style: `left:${left}px;top:${top}px;width:${w}px;height:${h}px;background:${tileBg(base)};--g:${base};` + (r.rot ? `transform:rotate(${r.rot}deg);` : '') });
+    const e = el('div', { class: cls, id: 'sq' + n, role: 'button', tabindex: 0, 'aria-label': displayNo(n) + ' ' + s.name, style: `left:${left}px;top:${top}px;width:${w}px;height:${h}px;background:${tileBg(base)};--g:${base};` + (r.rot ? `transform:rotate(${r.rot}deg);` : '') });
     e.onclick = () => showSquare(n); e.onkeydown = (ev) => { if (ev.key === 'Enter') showSquare(n); };
     const icon = iconFor(s);
     const name = s.sub ? [el('strong', {}, breakable(s.name)), el('br'), breakable(s.sub)] : [breakable(s.name)];
-    if (r.corner) e.append(el('div', { class: 'r' }, el('div', { class: 'n' }, n), icon, el('div', {}, ...name)));
+    if (r.corner) e.append(el('div', { class: 'r' }, el('div', { class: 'n' }, displayNo(n)), icon, el('div', {}, ...name)));
     else {
       const rot = r.rot || 0; const sideways = Math.abs(rot) === 90;
       if (s.kind === 'div') { const uw = sideways ? h : w, uh = sideways ? w : h; e.classList.add('hasart'); e.append(el('div', { class: 'artwrap', style: `left:${(w - uw) / 2}px;top:${(h - uh) / 2}px;width:${uw}px;height:${uh}px;transform:rotate(${-rot}deg)` }, divArt(n, Math.min(uw, uh * 321 / 214) + 'px'))); b.append(e); continue; }
@@ -329,7 +329,7 @@ function buildBoard() {
       else if (sideways) { const top = isPlot ? 43 : 36; const ah = h - top; W = ah; H = w; lx = w / 2 - W / 2; ly = top + ah / 2 - H / 2; }
       else { const top = isPlot ? 31 : 0; ly = top; H = h - top; just = rot === 180 ? 'flex-start' : 'flex-end'; }
       const row = !!r.wide;
-      e.append(el('div', { class: 'lab' + (row ? ' rowlab' : '') + (sideways ? ' sidelab' : ''), style: `left:${lx}px;top:${ly}px;width:${W}px;height:${H}px;justify-content:${row ? 'center' : just};transform:rotate(${-rot}deg)` }, el('div', { class: 'n' }, n), icon, el('div', { class: 'ltext' }, el('div', {}, ...name), isPlot ? el('div', { class: 'pr' }, kr(g.plot)) : null)));
+      e.append(el('div', { class: 'lab' + (row ? ' rowlab' : '') + (sideways ? ' sidelab' : ''), style: `left:${lx}px;top:${ly}px;width:${W}px;height:${H}px;justify-content:${row ? 'center' : just};transform:rotate(${-rot}deg)` }, el('div', { class: 'n' }, displayNo(n)), icon, el('div', { class: 'ltext' }, el('div', {}, ...name), isPlot ? el('div', { class: 'pr' }, kr(g.plot)) : null)));
     }
     b.append(e);
   }
@@ -743,7 +743,7 @@ function renderLanding() {
   } else if (g.lastCard && (s.kind === 'bor' || s.kind === 'news' || s.kind === 'exit')) rows.push(el('div', { class: 'small' }, g.lastCard.deck), el('div', {}, g.lastCard.text));
   else rows.push(el('div', {}, SQUARE_TEXT[s.kind] || ''));
   box.replaceChildren(el('h3', {}, p.id === S.you ? 'Du landade på' : p.name + ' landade på'),
-    el('div', { class: 'ltile' + (s.kind === 'bor' ? ' ct-bor' : s.kind === 'news' ? ' ct-news' : ''), style: `background:${tileBg(bg)};color:#fff;--g:${bg}` }, isPlot ? el('div', { class: 'lh' }) : null, (s.kind === 'div' ? divArt(n, '100%') : el('div', { class: 'lb' }, el('div', { class: 'small', style: 'color:inherit' }, 'Ruta ' + n), icon, el('div', {}, breakable(s.name))))), ...rows);
+    el('div', { class: 'ltile' + (s.kind === 'bor' ? ' ct-bor' : s.kind === 'news' ? ' ct-news' : ''), style: `background:${tileBg(bg)};color:#fff;--g:${bg}` }, isPlot ? el('div', { class: 'lh' }) : null, (s.kind === 'div' ? divArt(n, '100%') : el('div', { class: 'lb' }, el('div', { class: 'small', style: 'color:inherit' }, 'Ruta ' + displayNo(n)), icon, el('div', {}, breakable(s.name))))), ...rows);
 }
 // Rutan på brädet lyser upp när muspekaren eller fokus är på ett bevis.
 const clearGlow = () => { document.querySelectorAll('.c.glow').forEach((e) => e.classList.remove('glow')); if (window.Board3D && Board3D.on) Board3D.glow([]); };
@@ -831,7 +831,7 @@ const myself = () => S.game.players.find((p) => p.id === S.you);
 function canBuyPlotNow(x) { const g = S.game, me = myself(); return !x.owner && !!me && !me.out && g.phase === 'play' && g.players[g.current].id === S.you && g.stage === 'pre' && !g.debts.length && !g.bondRound && me.lapDone && (canTrade(me) || (me.tradePass || []).length > 0); }
 function showSquare(n) {
   if (!S || !S.game) return;
-  open(() => { const s = SQUARES[n]; const box = [el('h2', {}, n + '. ' + s.name)];
+  open(() => { const s = SQUARES[n]; const box = [el('h2', {}, displayNo(n) + '. ' + s.name)];
     if (s.kind === 'plot') { const i = plotInfo(n); const x = S.game.plots[n]; const g = GROUPS[s.group];
       box.push(el('p', {}, g.name + (g.industry ? ', industritomt' : '')), el('div', { class: 'item' }, 'Pris', el('b', {}, kr(i.price))), el('div', { class: 'item' }, 'Byggkostnad', el('b', {}, kr(i.build))), el('div', { class: 'item' }, 'Hyra obebyggd', el('b', {}, kr(i.rent))), el('div', { class: 'item' }, 'Hyra bebyggd', el('b', {}, kr(i.rentBuilt))), el('div', { class: 'item' }, 'Ägare', el('b', {}, x.owner ? ownerName(x.owner) : 'Banken')), el('p', { class: 'small' }, 'Äger någon hela gruppen med aktier fördubblas hyran.'));
       if (canBuyPlotNow(x)) box.push(el('button', { class: 'primary', style: 'width:100%', disabled: S.game.boughtPlot || myself().cash < i.price, onclick: () => act({ type: 'buyPlot', n }) }, S.game.boughtPlot ? 'Du har redan köpt en tomt den här turen' : myself().cash < i.price ? 'Du har inte råd med tomten' : 'Köp tomten för ' + kr(i.price))); }

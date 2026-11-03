@@ -25,7 +25,7 @@ function tileCanvas(n, r, w, h) { const S = 3, cw = Math.round(w * S), ch = Math
   const grad = c.createLinearGradient(0, 0, cw, ch);
   if (s.kind === 'bor') { grad.addColorStop(0, '#c0e1ff'); grad.addColorStop(.6, '#7cbcf9'); grad.addColorStop(1, '#5aa4ee'); } else if (s.kind === 'news') { grad.addColorStop(0, '#ffe07a'); grad.addColorStop(.6, '#f7bf30'); grad.addColorStop(1, '#eeac1c'); } else { grad.addColorStop(0, shade(base, .28)); grad.addColorStop(.45, base); grad.addColorStop(1, shade(base, -.42)); }
   c.fillStyle = grad; c.fillRect(0, 0, cw, ch); const ink = light ? '#18202c' : '#ffffff';
-  if (s.kind === 'div' && divImg) { c.fillStyle = '#03381e'; c.fillRect(0, 0, cw, ch); const k = Math.min(cw / 321, ch / 214), iw = 321 * k, ih = 214 * k, ix = (cw - iw) / 2, iy = (ch - ih) / 2; c.drawImage(divImg, ix, iy, iw, ih); c.fillStyle = '#0a2a1b'; rr(c, ix + iw * .042, iy + ih * .065, iw * .126, ih * .175, iw * .015); c.fill(); c.fillStyle = '#fff'; c.font = fontOf(Math.round(iw * .085)); c.textAlign = 'center'; c.fillText(n, ix + iw * .105, iy + ih * .19); }
+  if (s.kind === 'div' && divImg) { c.fillStyle = '#03381e'; c.fillRect(0, 0, cw, ch); const k = Math.min(cw / 321, ch / 214), iw = 321 * k, ih = 214 * k, ix = (cw - iw) / 2, iy = (ch - ih) / 2; c.drawImage(divImg, ix, iy, iw, ih); c.fillStyle = '#0a2a1b'; rr(c, ix + iw * .042, iy + ih * .065, iw * .126, ih * .175, iw * .015); c.fill(); c.fillStyle = '#fff'; c.font = fontOf(Math.round(iw * .085)); c.textAlign = 'center'; c.fillText(displayNo(n), ix + iw * .105, iy + ih * .19); }
   else {
     let bx = 0, by = 0, bw = cw, bh = ch; const band = 30 * S;
     if (isPlot) { c.fillStyle = 'rgba(255,255,255,.4)'; if (r.rot === 180) { c.fillRect(0, ch - band, cw, band); bh = ch - band; } else if (r.rot === 90) { c.fillRect(cw - band, 0, band, ch); bw = cw - band; } else if (r.rot === -90) { c.fillRect(0, 0, band, ch); bx = band; bw = cw - band; } else { c.fillRect(0, 0, cw, band); by = band; bh = ch - band; } }
@@ -36,7 +36,7 @@ function tileCanvas(n, r, w, h) { const S = 3, cw = Math.round(w * S), ch = Math
     const ty = by + 7 * S + isz + 2 * S; fitText(c, name, bx + bw / 2, ty, bw - pad, bh - (ty - by) - priceH - 3 * S, 27 * S / 3 * (wide ? 2.6 : 2.8), 26);
     if (isPlot) { c.font = fontOf(19 * S); c.textAlign = 'center'; c.fillText(plotInfo(n).price.toLocaleString('sv-SE').replace(/ /g, ' ') + ' kr', bx + bw / 2, by + bh - 7 * S); }
     c.shadowColor = 'transparent'; c.shadowBlur = 0; c.shadowOffsetY = 0;
-    const nx = isPlot && r.rot === -90 ? band + 6 * S : 6 * S, ny = isPlot && !r.rot ? band + 6 * S : 6 * S; if (!light) { c.fillStyle = 'rgba(0,0,0,.5)'; rr(c, nx, ny, 34 * S, 24 * S, 7 * S); c.fill(); } c.fillStyle = ink; c.font = fontOf(19 * S); c.textAlign = 'center'; c.fillText(n, nx + 17 * S, ny + 18.5 * S);
+    const nx = isPlot && r.rot === -90 ? band + 6 * S : 6 * S, ny = isPlot && !r.rot ? band + 6 * S : 6 * S; if (!light) { c.fillStyle = 'rgba(0,0,0,.5)'; rr(c, nx, ny, 34 * S, 24 * S, 7 * S); c.fill(); } c.fillStyle = ink; c.font = fontOf(19 * S); c.textAlign = 'center'; c.fillText(displayNo(n), nx + 17 * S, ny + 18.5 * S);
   }
   c.strokeStyle = '#000'; c.lineWidth = 4 * S; rr(c, 2 * S, 2 * S, cw - 4 * S, ch - 4 * S, 12 * S); c.stroke(); return cv; }
 function shade(hex, a) { const n = parseInt(hex.slice(1), 16); const t = a < 0 ? 0 : 255, p = Math.abs(a); const f = (v) => Math.round(v + (t - v) * p); return `rgb(${f(n >> 16 & 255)},${f(n >> 8 & 255)},${f(n & 255)})`; }
