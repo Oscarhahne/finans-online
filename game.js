@@ -1,5 +1,5 @@
 // Spelmotorn. Inga nätverksdelar: state in, handling in, state ut.
-const { GROUPS, SQUARES, BORSTIPS, FINANS, RULES: R, sharePct, shareSellPrice, plotInfo } = require('./public/data.js');
+const { GROUPS, SQUARES, BORSTIPS, FINANS, RULES: R, sharePct, shareSellPrice, shareBuyPrice, plotInfo } = require('./public/data.js');
 
 const die = () => 1 + Math.floor(Math.random() * 6);
 const kr = (v) => v.toLocaleString('sv-SE').replace(/ /g, ' ') + ' kr';
@@ -51,6 +51,7 @@ function rentOf(g, n) {
 function pay(g, from, to, amount, why) { if (amount > 0) g.debts.push({ from: from.id, to: to ? to.id : null, amount, why }); }
 
 function dividendTo(g, p, why) {
+  if (newsIs(g, 'baisse')) { log(g, `Ingen aktieutdelning till ${p.name}, baisse på börsen.`); return 0; }
   let a = g.shares.filter((s) => s.owner === p.id).reduce((t, s) => t + Math.round(s.value * s.pct / 100), 0);
   if (newsIs(g, 'divup')) a *= 2; else if (newsIs(g, 'divdown')) a = Math.round(a / 2);
   if (a) { p.cash += a; log(g, `${p.name} får ${kr(a)} i aktieutdelning${why || ''}.`); }
@@ -330,15 +331,15 @@ function apply(g, pid, a) {
       const x = g.plots[a.n]; if (!x || x.owner) fail('Tomten går inte att köpa.'); const c = plotInfo(a.n).price; if (p.cash < c) fail('Du har inte råd.');
       usePass(g, p); p.cash -= c; x.owner = pid; g.boughtPlot = true; log(g, `${p.name} köper ${SQUARES[a.n].name}.`); break; }
     case 'buyShare': { pre(); if (newsIs(g, 'stockclose')) fail('Börsen är stängd just nu.'); if (!canBuy(p)) fail(tradeFail(p)); if (g.boughtShare) fail('Bara en aktie per tur.');
-      const s = g.shares.find((v) => v.id === a.id); if (!s || s.owner) fail('Aktien går inte att köpa.'); if (p.cash < s.value) fail('Du har inte råd.');
-      usePass(g, p); p.cash -= s.value; s.owner = pid; g.boughtShare = true; log(g, `${p.name} köper en aktie i ${GROUPS[s.group].name}.`); break; }
+      const s = g.shares.find((v) => v.id === a.id); if (!s || s.owner) fail('Aktien går inte att köpa.'); const price = shareBuyPrice(s.value, newsIs(g, 'baisse')); if (p.cash < price) fail('Du har inte råd.');
+      usePass(g, p); p.cash -= price; s.owner = pid; g.boughtShare = true; log(g, `${p.name} köper en aktie i ${GROUPS[s.group].name}.`); break; }
     case 'build': { pre(); if (g.news && g.news.type === 'buildstop') fail('Byggstopp gäller just nu.'); if (!canBuildHere(p)) fail('Du kan inte bygga här.'); const x = needOwnPlot(a.n); if (x.built) fail('Tomten är redan bebyggd.'); if (x.mort) fail('Tomten är belånad.');
       const c = plotInfo(a.n).build; if (p.cash < c) fail('Du har inte råd.'); p.cash -= c; x.built = true;
       if (p.pos !== 17 && p.pos !== 41) { g.tipDeck.push(p.permits.shift()); log(g, `${p.name} använder sitt bygglov.`); } log(g, `${p.name} bygger på ${SQUARES[a.n].name}.`); break; }
     case 'mortgage': { if (!raising) fail('Inte nu.'); const x = needOwnPlot(a.n); if (x.mort) fail('Redan belånad.'); const i = plotInfo(a.n); p.cash += x.built ? i.mortgageBuilt : i.mortgage; x.mort = true; log(g, `${p.name} belånar ${SQUARES[a.n].name}.`); break; }
     case 'redeem': { pre(); const x = needOwnPlot(a.n); if (!x.mort) fail('Tomten är inte belånad.'); const i = plotInfo(a.n); const c = Math.round((x.built ? i.mortgageBuilt : i.mortgage) * R.redeemPct); if (p.cash < c) fail('Du har inte råd.'); p.cash -= c; x.mort = false; log(g, `${p.name} löser lånet på ${SQUARES[a.n].name}.`); break; }
     case 'sellPlot': { if (!raising) fail('Inte nu.'); const x = needOwnPlot(a.n); if (x.mort) fail('Lös belåningen först.'); const i = plotInfo(a.n); p.cash += x.built ? i.sellBuilt : i.sell; x.owner = null; x.built = false; log(g, `${p.name} säljer ${SQUARES[a.n].name} till banken.`); break; }
-    case 'sellShare': { if (!raising) fail('Inte nu.'); if (newsIs(g, 'stockclose') && !inDebt) fail('Börsen är stängd just nu.'); const s = g.shares.find((v) => v.id === a.id); if (!s || s.owner !== pid) fail('Du äger inte aktien.'); p.cash += shareSellPrice(s.value); s.owner = null; log(g, `${p.name} säljer en aktie till banken.`); break; }
+    case 'sellShare': { if (!raising) fail('Inte nu.'); if (newsIs(g, 'stockclose') && !inDebt) fail('Börsen är stängd just nu.'); const s = g.shares.find((v) => v.id === a.id); if (!s || s.owner !== pid) fail('Du äger inte aktien.'); p.cash += shareSellPrice(s.value, newsIs(g, 'baisse')); s.owner = null; log(g, `${p.name} säljer en aktie till banken.`); break; }
     case 'loan': if (!raising) fail('Inte nu.'); if (newsIs(g, 'creditstop')) fail('Kreditstopp gäller just nu.'); if (p.pos === 39) fail('Du får inte låna på den här rutan.'); if (p.loans >= R.maxLoans) fail('Du har redan tre lån.'); if (p.loanTaken) fail('Du får bara ta ett lån per omgång.'); p.loanTaken = true; p.loans++; p.cash += R.loan; log(g, `${p.name} tar ett banklån.`); break;
     case 'repay': needTurn(); if (!p.loans) fail('Du har inga lån.'); if (p.cash < R.loan) fail('Du har inte råd.'); p.cash -= R.loan; p.loans--; log(g, `${p.name} betalar tillbaka ett lån.`); break;
     case 'meeting': { pre(); if (newsIs(g, 'stockclose')) fail('Börsen är stängd just nu.'); if (!canTrade(p)) fail(tradeFail(p)); const k = a.group; if (!GROUPS[k]) fail('Okänd företagsgrupp.');
@@ -400,7 +401,7 @@ function botAction(g, pid, passive) {
     if (canTrade(p) && !newsIs(g, 'stockclose') && p.cash > 200000) for (const k of Object.keys(GROUPS)) { const x = meetingCost(g, p, k); const has = groupPlots(k).some((n) => g.plots[n].owner === pid) || g.shares.some((s) => s.group === k && s.owner === pid);
       if (has && x && p.cash >= x + R.feeMax + 50000) return { type: 'meeting', group: k, fee: R.feeMax }; }
     if (!g.boughtPlot) { const n = Object.keys(g.plots).map(Number).find((m) => !g.plots[m].owner && p.cash >= plotInfo(m).price + 20000); if (n) return { type: 'buyPlot', n }; }
-    if (!g.boughtShare && !newsIs(g, 'stockclose')) { const s = g.shares.find((v) => !v.owner && p.cash >= v.value + 20000); if (s) return { type: 'buyShare', id: s.id }; }
+    if (!g.boughtShare && !newsIs(g, 'stockclose')) { const s = g.shares.find((v) => !v.owner && p.cash >= shareBuyPrice(v.value, newsIs(g, 'baisse')) + 20000); if (s) return { type: 'buyShare', id: s.id }; }
   }
   if (canBuildHere(p) && !(g.news && g.news.type === 'buildstop')) { const n = plotsOf(g, p).find((m) => !g.plots[m].built && !g.plots[m].mort && p.cash >= plotInfo(m).build + 30000); if (n) return { type: 'build', n }; }
   if (p.loans && p.cash > 200000) return { type: 'repay' };

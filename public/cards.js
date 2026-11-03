@@ -55,6 +55,7 @@
     'Byggboom! Alla får 5 000 kr per byggnad.': V('Byggboom!', 'Kranarna snurrar och fastigheterna ökar i värde.', '+5 000 kr', 'per byggnad, till alla.', '+', 'crane'),
     'Räntehöjning! Alla betalar 5 000 kr per banklån.': V('Räntehöjning!', 'Riksbanken höjer och lånen blir dyrare.', '−5 000 kr', 'per banklån, för alla.', '-', 'down'),
     'Företagsstöd! Alla spelare får 10 000 kr.': V('Företagsstöd!', 'Staten vill få fart på näringslivet.', '+10 000 kr', 'till alla spelare.', '+', 'coins'),
+    'Baisse på börsen! Banken säljer och återköper aktier till halva värdet. Ingen aktieutdelning. Gäller tills nästa tidning.': V('Baisse på börsen!', 'Kurserna rasar och bolagen sparar sina pengar.', 'Aktier till halva värdet', 'vid köp och försäljning. Ingen aktieutdelning.', '-', 'down'),
     'Hyresreglering! Alla hyror halveras. Gäller tills nästa tidning.': V('Hyresreglering!', 'Nya regler sätter tak på hyresmarknaden.', 'Halv hyra', 'på alla tomter.', '-', 'down'),
     'Bostadsbrist! Hyrorna fördubblas på alla bebyggda tomter. Gäller tills nästa tidning.': V('Bostadsbrist!', 'Lokaler och bostäder räcker inte till.', 'Dubbel hyra', 'på alla bebyggda tomter.', '+', 'up'),
     'Kreditstopp! Banken ger inga nya lån. Gäller tills nästa tidning.': V('Kreditstopp!', 'Bankerna drar åt svångremmen.', 'Inga nya lån', 'från banken.', '-', 'down', 'repay'),

@@ -21,7 +21,8 @@
   const displayNo = (n) => (n >= 49 ? n - 48 : n + 6);
   const shareName = (v) => (v === 20000 ? 'Fondaktie' : 'Aktie');
   // Fondaktien återköps för hela köpesumman, andra aktier för 75 %.
-  const shareSellPrice = (v) => (v === 20000 ? v : Math.round(v * 0.75 / 500) * 500);
+  const shareSellPrice = (v, baisse) => (baisse ? Math.round(v / 2 / 500) * 500 : v === 20000 ? v : Math.round(v * 0.75 / 500) * 500);
+  const shareBuyPrice = (v, baisse) => (baisse ? Math.round(v / 2 / 500) * 500 : v);
 
   const plot = (name, group) => ({ kind: 'plot', name, group });
   const BOR = { kind: 'bor', name: 'Börstips' };
@@ -115,6 +116,7 @@
     Array(2).fill({ t: 'boom', x: 'Byggboom! Alla får 5 000 kr per byggnad.' }),
     Array(2).fill({ t: 'rate', x: 'Räntehöjning! Alla betalar 5 000 kr per banklån.' }),
     Array(2).fill({ t: 'grant', x: 'Företagsstöd! Alla spelare får 10 000 kr.' }),
+    { t: 'baisse', until: true, x: 'Baisse på börsen! Banken säljer och återköper aktier till halva värdet. Ingen aktieutdelning. Gäller tills nästa tidning.' },
     { t: 'rentcontrol', until: true, x: 'Hyresreglering! Alla hyror halveras. Gäller tills nästa tidning.' },
     { t: 'shortage', until: true, x: 'Bostadsbrist! Hyrorna fördubblas på alla bebyggda tomter. Gäller tills nästa tidning.' },
     { t: 'creditstop', until: true, x: 'Kreditstopp! Banken ger inga nya lån. Gäller tills nästa tidning.' },
@@ -140,5 +142,5 @@
       mortgage: round500(g.plot * 0.5), mortgageBuilt: round500((g.plot + g.build) * 0.5),
       sell: round500(g.plot * 0.75), sellBuilt: round500(g.plot * 0.75 + g.build * 0.5) };
   };
-  return { GAME_NAME, GROUPS, SQUARES, BORSTIPS, FINANS, RULES, sharePct, shareName, shareSellPrice, displayNo, plotInfo };
+  return { GAME_NAME, GROUPS, SQUARES, BORSTIPS, FINANS, RULES, sharePct, shareName, shareSellPrice, shareBuyPrice, displayNo, plotInfo };
 });
