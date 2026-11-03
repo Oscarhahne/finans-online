@@ -7,8 +7,8 @@
   const GAME_NAME = 'Finans'; // Byt till ett eget namn innan publik lansering, se README.
 
   const GROUPS = {
-    H: { name: 'Hantverkshuset', color: '#92400e', text: '#fff', plot: 10000, build: 10000, rent: 1500, rentBuilt: 6000, shares: [50000, 50000, 25000] },
-    S: { name: 'Servicekompaniet', color: '#d9480f', text: '#fff', plot: 12000, build: 12000, rent: 2000, rentBuilt: 8000, shares: [25000, 25000] },
+    H: { name: 'Hantverkshuset', color: '#92400e', text: '#fff', plot: 10000, build: 10000, rent: 1500, rentBuilt: 6000, shares: [50000, 50000, 25000, 25000, 20000] },
+    S: { name: 'Servicekompaniet', color: '#d9480f', text: '#fff', plot: 12000, build: 12000, rent: 2000, rentBuilt: 8000, shares: [50000, 50000, 25000, 25000, 20000] },
     A: { name: 'Affärscentrum', color: '#be185d', text: '#fff', plot: 20000, build: 20000, rent: 3000, rentBuilt: 12000, shares: [100000, 75000, 75000] },
     F: { name: 'Finanstrusten', color: '#2563eb', text: '#fff', plot: 25000, build: 25000, rent: 4000, rentBuilt: 16000, shares: [100000, 75000, 75000] },
     T: { name: 'Teknikföretagen', color: '#0f766e', text: '#fff', plot: 30000, build: 30000, rent: 5000, rentBuilt: 20000, shares: [100000, 75000, 75000] },
@@ -16,7 +16,8 @@
     I: { name: 'Industrikoncernen', color: '#dc2626', text: '#fff', plot: 50000, build: 50000, rent: 9000, rentBuilt: 36000, shares: [150000, 75000, 75000], sharePct: 50, industry: true },
   };
   // Utdelning i procent per aktievärde: billiga aktier ger mindre.
-  const sharePct = (v) => (v >= 100000 ? 40 : v >= 75000 ? 30 : 25);
+  const sharePct = (v) => (v >= 100000 ? 40 : v >= 75000 ? 30 : v >= 25000 ? 25 : 20);
+  const shareName = (v) => (v === 20000 ? 'Fondaktie' : 'Aktie');
 
   const plot = (name, group) => ({ kind: 'plot', name, group });
   const BOR = { kind: 'bor', name: 'Börstips' };
@@ -130,5 +131,5 @@
       mortgage: round500(g.plot * 0.5), mortgageBuilt: round500((g.plot + g.build) * 0.5),
       sell: round500(g.plot * 0.75), sellBuilt: round500(g.plot * 0.75 + g.build * 0.5) };
   };
-  return { GAME_NAME, GROUPS, SQUARES, BORSTIPS, FINANS, RULES, sharePct, plotInfo };
+  return { GAME_NAME, GROUPS, SQUARES, BORSTIPS, FINANS, RULES, sharePct, shareName, plotInfo };
 });
