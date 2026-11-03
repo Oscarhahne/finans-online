@@ -534,7 +534,7 @@ function chaseToPrison(g, c, done) {
   const dir = route.length > 1 && (route[1] === route[0] + 1 || (route[0] === 54 && route[1] === 1)) ? 1 : route.length > 1 ? -1 : 1, wrap = (n) => ((n - 1 + 54) % 54) + 1;
   const full = [wrap(route[0] - 3 * dir), wrap(route[0] - 2 * dir), wrap(route[0] - dir), ...route], ms = chaseTime(route) / Math.max(1, full.length - 1), fixed = route.length < 2;
   const cops = [0, 1].map((i) => { const e = el('div', { class: 'copflat', 'aria-hidden': 'true' }, '\u{1F46E}'); const a = tokenSpot(full[0], 1); e.style.cssText = `left:${a.x + i * 6}px;top:${a.y + 16}px;transition:left ${ms * .85}ms linear,top ${ms * .85}ms linear`; t.parentElement.append(e); return e; });
-  cops[0].append(el('div', { class: 'copsay' }, 'Stanna i lagens namn!'));
+  cops[0].append(el('div', { class: 'copsay short' }, 'Stanna!')); setTimeout(() => cops[1].append(el('div', { class: 'copsay' }, 'Stanna i lagens namn!')), 480);
   t.style.transition = `left ${ms * .85}ms linear,top ${ms * .85}ms linear`; t.style.zIndex = 8;
   let k = 1;
   const next = () => { const tk = document.getElementById('tk' + p.color);
