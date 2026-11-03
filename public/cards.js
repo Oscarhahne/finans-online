@@ -63,6 +63,7 @@
     'Lågkonjunktur på börsen! All aktieutdelning från banken halveras. Gäller tills nästa tidning.': V('Lågkonjunktur på börsen!', 'Vinsterna sjunker i hela näringslivet.', 'Halv utdelning', 'på all aktieutdelning från banken.', '-', 'down', 'repay'),
     'Bränslebrist! Bilägare slår bara en tärning. Gäller tills nästa tidning.': V('Bränslebrist!', 'Macken är tom och bilarna blir stående.', 'En tärning', 'för alla bilägare.', '-', 'car', 'repay'),
     'Byggstopp! Ingen får bygga. Gäller tills nästa tidning.': V('Byggstopp!', 'Kommunerna fryser alla nya byggprojekt.', 'Ingen får bygga', 'på sina tomter.', '-', 'crane', 'buildsq'),
+    'Fastighetsreform! Alla spelare lämnar tillbaka valfri tomt till banken och får tillbaka köpesumman, även för byggnaden.': V('Fastighetsreform!', 'Staten köper in mark och ersätter ägarna.', 'Alla lämnar en tomt', 'Du väljer själv och får tillbaka köpesumman, även för byggnaden.', '0', 'crane', 'buildsq'),
     'Ombyggnad i banken! Alla som är inne i banken hamnar direkt på Bankutgång.': V('Ombyggnad i banken!', 'Hantverkarna tar över och lokalerna måste tömmas.', 'Till Bankutgång', 'för alla som är inne i banken.', '0', 'crane', 'exit'),
   };
   return function cardView(text) {

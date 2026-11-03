@@ -123,6 +123,7 @@
     { t: 'divdown', until: true, x: 'Lågkonjunktur på börsen! All aktieutdelning från banken halveras. Gäller tills nästa tidning.' },
     { t: 'fuel', until: true, x: 'Bränslebrist! Bilägare slår bara en tärning. Gäller tills nästa tidning.' },
     { t: 'buildstop', until: true, x: 'Byggstopp! Ingen får bygga. Gäller tills nästa tidning.' },
+    { t: 'returnall', x: 'Fastighetsreform! Alla spelare lämnar tillbaka valfri tomt till banken och får tillbaka köpesumman, även för byggnaden.' },
     { t: 'rebuild', x: 'Ombyggnad i banken! Alla som är inne i banken hamnar direkt på Bankutgång.' },
     Object.keys(GROUPS).map((k) => ({ t: 'double', group: k, until: true, x: `Högkonjunktur för ${GROUPS[k].name}! Dubbel hyra på gruppens tomter. Gäller tills nästa tidning.` }))
   );

@@ -692,6 +692,9 @@ function actionsFor(me, myTurn, debt, bond) {
       el('div', { class: 'actions' }, el('button', { onclick: () => act({ type: 'loan' }), disabled: newsIs('creditstop') || me.loans >= RULES.maxLoans || me.loanTaken || me.pos === 39 }, 'Ta lån 50 000 kr'), el('button', { onclick: () => open(assetsModal) }, 'Mina tillgångar'), me.car ? el('button', { onclick: () => act({ type: 'sellCar' }) }, 'Sälj bilen') : null, el('button', { class: 'danger', onclick: () => open(bankruptModal) }, 'Gå i konkurs')));
   }
   if (debt) return el('p', { class: 'small' }, 'Väntar på en betalning.');
+  const retWho = g.returnRound && g.returnRound.queue[0];
+  if (retWho === S.you) { const back = (n) => { const x = g.plots[n], i = plotInfo(n); return Math.max(0, i.price + (x.built ? i.build : 0) - (x.mort ? (x.built ? i.mortgageBuilt : i.mortgage) : 0)); }; return el('div', { class: 'stack' }, el('div', {}, 'Fastighetsreform: välj en tomt som banken köper tillbaka:'), el('div', { class: 'actions' }, myPlots().map((n) => el('button', { onclick: () => act({ type: 'returnAll', n }) }, SQUARES[n].name + ' ' + kr(back(n)))))); }
+  if (retWho) return el('p', { class: 'small' }, 'Väntar på att spelarna lämnar tillbaka tomter.');
   if (bond === S.you) return el('div', { class: 'stack' }, el('div', {}, 'Välj en obligation för 500 kr:'),
     el('div', { class: 'bondgrid' }, Object.keys(g.bonds).map((n) => el('button', { disabled: !!g.bonds[n], onclick: () => act({ type: 'buyBond', n: Number(n) }) }, n))), el('button', { onclick: () => act({ type: 'skipBond' }) }, 'Köp ingen'));
   if (bond) return el('p', { class: 'small' }, 'Väntar på obligationsköp.');
@@ -830,7 +833,7 @@ function showEvents(g) {
 }
 const myself = () => S.game.players.find((p) => p.id === S.you);
 // Köpknappen på en tomt följer samma regler som vanliga köp: din tur, före kastet, och i banken, på Bankfilialen eller med Köptips.
-function canBuyPlotNow(x) { const g = S.game, me = myself(); return !x.owner && !!me && !me.out && g.phase === 'play' && g.players[g.current].id === S.you && g.stage === 'pre' && !g.debts.length && !g.bondRound && me.lapDone && (canTrade(me) || (me.tradePass || []).length > 0); }
+function canBuyPlotNow(x) { const g = S.game, me = myself(); return !x.owner && !!me && !me.out && g.phase === 'play' && g.players[g.current].id === S.you && g.stage === 'pre' && !g.debts.length && !g.bondRound && !g.returnRound && me.lapDone && (canTrade(me) || (me.tradePass || []).length > 0); }
 function showSquare(n) {
   if (!S || !S.game) return;
   open(() => { const s = SQUARES[n]; const box = [el('h2', {}, displayNo(n) + '. ' + s.name)];
@@ -855,7 +858,7 @@ function buyModal() { const g = S.game; const me = g.players.find((p) => p.id ==
       el('section', { class: 'buybox', 'aria-label': 'Aktier' }, el('h3', {}, 'Aktier'), newsIs('stockclose') ? none('Börsen är stängd just nu.') : null, g.boughtShare ? none('Du har redan köpt en aktie den här turen.') : null, shares.some(Boolean) ? shares : none('Alla aktier är sålda.')))); }
 function buildModal() { const g = S.game; const me = g.players.find((p) => p.id === S.you); const list = myPlots().filter((n) => !g.plots[n].built && !g.plots[n].mort);
   return el('div', {}, el('h2', {}, 'Bygg'), el('p', { class: 'small' }, 'Kontanter: ' + kr(me.cash) + (me.pos === 17 || me.pos === 41 ? '' : '. Bygglovet används när du bygger.')), list.length ? list.map((n) => el('div', { class: 'item' }, SQUARES[n].name + ', ' + kr(plotInfo(n).build), el('button', { disabled: me.cash < plotInfo(n).build, onclick: () => act({ type: 'build', n }) }, 'Bygg'))) : el('p', {}, 'Du har inga tomter att bygga på.')); }
-function assetsModal() { const g = S.game; const me = g.players.find((p) => p.id === S.you); if (!me) return null; const isTurn = g.players[g.current].id === S.you; const pre = isTurn && g.stage === 'pre' && !g.debts.length && !g.bondRound;
+function assetsModal() { const g = S.game; const me = g.players.find((p) => p.id === S.you); if (!me) return null; const isTurn = g.players[g.current].id === S.you; const pre = isTurn && g.stage === 'pre' && !g.debts.length && !g.bondRound && !g.returnRound;
   const myShares = g.shares.filter((s) => s.owner === S.you); const bonds = Object.keys(g.bonds).filter((n) => g.bonds[n] === S.you);
   return el('div', {}, el('h2', {}, 'Mina tillgångar'), el('p', { class: 'small' }, `Kontanter ${kr(me.cash)} · Lån ${me.loans} · Obligationer ${bonds.join(', ') || 'inga'}`),
     me.loans ? el('button', { disabled: !isTurn || me.cash < RULES.loan, onclick: () => act({ type: 'repay' }) }, 'Betala tillbaka ett lån') : null,
