@@ -1,5 +1,5 @@
 // Spelmotorn. Inga nätverksdelar: state in, handling in, state ut.
-const { GROUPS, SQUARES, BORSTIPS, FINANS, RULES: R, sharePct, plotInfo } = require('./public/data.js');
+const { GROUPS, SQUARES, BORSTIPS, FINANS, RULES: R, sharePct, shareSellPrice, plotInfo } = require('./public/data.js');
 
 const die = () => 1 + Math.floor(Math.random() * 6);
 const kr = (v) => v.toLocaleString('sv-SE').replace(/ /g, ' ') + ' kr';
@@ -80,6 +80,7 @@ function drawTip(g, p, d) {
   else if (c.t === 'perplot') { const a = plotsOf(g, p).length * c.a; p.cash += a; log(g, `${p.name} får ${kr(a)} från hyresgäster.`); }
   else if (c.t === 'poorest') { const o = alive(g).reduce((b, q) => (q.cash < b.cash ? q : b), p); o.cash += c.a; log(g, `${o.name} har minst kontanter och får ${kr(c.a)}.`); }
   else if (c.t === 'audit') { const a = Math.ceil(p.cash * c.pct / 100 / 500) * 500; if (a) { pay(g, p, null, a, 'revision'); log(g, `${p.name} betalar ${kr(a)} efter revisionen.`); } }
+  else if (c.t === 'fundshare') { const f = g.shares.find((x) => x.value === 20000 && !x.owner); if (f) { f.owner = p.id; log(g, `${p.name} får en fondaktie i ${GROUPS[f.group].name} gratis.`); } else log(g, `Alla fondaktier är redan utdelade, ${p.name} får ingen.`); }
   else if (c.t === 'carloss') { if (p.car) { p.car = false; log(g, `${p.name} förlorar sin bil.`); } else log(g, `${p.name} har ingen bil att förlora.`); }
   else if (c.t === 'toexit') { p.pos = 48; p.fromPrison = false; g.landed = { player: p.id, pos: 48 }; if (p.loans) pay(g, p, null, p.loans * R.loanInterest, 'låneränta'); log(g, `${p.name} går till Bankutgång.`); }
   else if (c.t === 'news') drawNews(g, p, d);
@@ -331,7 +332,7 @@ function apply(g, pid, a) {
     case 'mortgage': { if (!raising) fail('Inte nu.'); const x = needOwnPlot(a.n); if (x.mort) fail('Redan belånad.'); const i = plotInfo(a.n); p.cash += x.built ? i.mortgageBuilt : i.mortgage; x.mort = true; log(g, `${p.name} belånar ${SQUARES[a.n].name}.`); break; }
     case 'redeem': { pre(); const x = needOwnPlot(a.n); if (!x.mort) fail('Tomten är inte belånad.'); const i = plotInfo(a.n); const c = Math.round((x.built ? i.mortgageBuilt : i.mortgage) * R.redeemPct); if (p.cash < c) fail('Du har inte råd.'); p.cash -= c; x.mort = false; log(g, `${p.name} löser lånet på ${SQUARES[a.n].name}.`); break; }
     case 'sellPlot': { if (!raising) fail('Inte nu.'); const x = needOwnPlot(a.n); if (x.mort) fail('Lös belåningen först.'); const i = plotInfo(a.n); p.cash += x.built ? i.sellBuilt : i.sell; x.owner = null; x.built = false; log(g, `${p.name} säljer ${SQUARES[a.n].name} till banken.`); break; }
-    case 'sellShare': { if (!raising) fail('Inte nu.'); if (newsIs(g, 'stockclose') && !inDebt) fail('Börsen är stängd just nu.'); const s = g.shares.find((v) => v.id === a.id); if (!s || s.owner !== pid) fail('Du äger inte aktien.'); p.cash += Math.round(s.value * 0.75 / 500) * 500; s.owner = null; log(g, `${p.name} säljer en aktie till banken.`); break; }
+    case 'sellShare': { if (!raising) fail('Inte nu.'); if (newsIs(g, 'stockclose') && !inDebt) fail('Börsen är stängd just nu.'); const s = g.shares.find((v) => v.id === a.id); if (!s || s.owner !== pid) fail('Du äger inte aktien.'); p.cash += shareSellPrice(s.value); s.owner = null; log(g, `${p.name} säljer en aktie till banken.`); break; }
     case 'loan': if (!raising) fail('Inte nu.'); if (newsIs(g, 'creditstop')) fail('Kreditstopp gäller just nu.'); if (p.pos === 39) fail('Du får inte låna på den här rutan.'); if (p.loans >= R.maxLoans) fail('Du har redan tre lån.'); if (p.loanTaken) fail('Du får bara ta ett lån per omgång.'); p.loanTaken = true; p.loans++; p.cash += R.loan; log(g, `${p.name} tar ett banklån.`); break;
     case 'repay': needTurn(); if (!p.loans) fail('Du har inga lån.'); if (p.cash < R.loan) fail('Du har inte råd.'); p.cash -= R.loan; p.loans--; log(g, `${p.name} betalar tillbaka ett lån.`); break;
     case 'meeting': { pre(); if (newsIs(g, 'stockclose')) fail('Börsen är stängd just nu.'); if (!canTrade(p)) fail(tradeFail(p)); const k = a.group; if (!GROUPS[k]) fail('Okänd företagsgrupp.');

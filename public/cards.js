@@ -37,6 +37,7 @@
     'Årets företagare! Spelaren med minst kontanter får 30 000 kr av banken.': V('Årets företagare!', 'Priset går till den som behöver det mest.', '+30 000 kr', 'till spelaren med minst kontanter.', '+', 'coins'),
     'Vattenskada! Betala 5 000 kr per bebyggd tomt.': V('Vattenskada!', 'Läckan har gjort stor skada i dina hus.', '−5 000 kr', 'per bebyggd tomt.', '-', 'down'),
     'Revision! Betala 5 % av dina kontanter till banken.': V('Revision!', 'Granskningen visar att du måste betala mer.', '−5 %', 'av dina kontanter till banken.', '-', 'down'),
+    'Gratis fondaktie! Du får en fondaktie på 20 000 kr som ger 20 % i utdelning.': V('Gratis fondaktie!', 'Din bank bjuder på en andel i sin fond.', 'Fondaktie på 20 000 kr', 'gratis, med 20 % utdelning.', '+', 'bond', 'lilla'),
     'Bilstöld! Har du bil förlorar du den utan ersättning.': V('Bilstöld!', 'Parkeringen är tom när du kommer tillbaka.', 'Bilen försvinner', 'utan ersättning, om du har bil.', '-', 'car', 'repay'),
     'Gå direkt till Bankutgång. Du drar inget nytt kort, men betalar eventuell låneränta.': V('Snabbt ut ur banken', 'Du tar genvägen till utgången.', 'Gå till Bankutgång', 'Inget nytt kort, men du betalar eventuell låneränta.', '0', 'city', 'exit'),
     'Hyresfrihet! Spara kortet. Du kan använda det en gång när du ska betala hyra.': V('Hyresfrihet!', 'En uppgörelse med hyresvärden ger dig ett andrum.', 'Slipp en hyra', 'en gång när du ska betala.', '+', 'coins', 'div'),

@@ -18,6 +18,8 @@
   // Utdelning i procent per aktievärde: billiga aktier ger mindre.
   const sharePct = (v) => (v >= 100000 ? 40 : v >= 75000 ? 30 : v >= 25000 ? 25 : 20);
   const shareName = (v) => (v === 20000 ? 'Fondaktie' : 'Aktie');
+  // Fondaktien återköps för hela köpesumman, andra aktier för 75 %.
+  const shareSellPrice = (v) => (v === 20000 ? v : Math.round(v * 0.75 / 500) * 500);
 
   const plot = (name, group) => ({ kind: 'plot', name, group });
   const BOR = { kind: 'bor', name: 'Börstips' };
@@ -91,6 +93,7 @@
     { t: 'poorest', a: 30000, x: 'Årets företagare! Spelaren med minst kontanter får 30 000 kr av banken.' },
     { t: 'perbuild', a: 5000, x: 'Vattenskada! Betala 5 000 kr per bebyggd tomt.' },
     { t: 'audit', pct: 5, x: 'Revision! Betala 5 % av dina kontanter till banken.' },
+    { t: 'fundshare', x: 'Gratis fondaktie! Du får en fondaktie på 20 000 kr som ger 20 % i utdelning.' },
     { t: 'carloss', x: 'Bilstöld! Har du bil förlorar du den utan ersättning.' },
     { t: 'toexit', x: 'Gå direkt till Bankutgång. Du drar inget nytt kort, men betalar eventuell låneränta.' },
     { t: 'rentfree', x: 'Hyresfrihet! Spara kortet. Du kan använda det en gång när du ska betala hyra.' },
@@ -131,5 +134,5 @@
       mortgage: round500(g.plot * 0.5), mortgageBuilt: round500((g.plot + g.build) * 0.5),
       sell: round500(g.plot * 0.75), sellBuilt: round500(g.plot * 0.75 + g.build * 0.5) };
   };
-  return { GAME_NAME, GROUPS, SQUARES, BORSTIPS, FINANS, RULES, sharePct, shareName, plotInfo };
+  return { GAME_NAME, GROUPS, SQUARES, BORSTIPS, FINANS, RULES, sharePct, shareName, shareSellPrice, plotInfo };
 });

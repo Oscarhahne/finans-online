@@ -210,7 +210,7 @@ body.rolling .side{pointer-events:none}
 <script src="cards.js"></script>
 <script src="board3d.js"></script>
 <script>
-const { GAME_NAME, GROUPS, SQUARES, RULES, plotInfo, shareName } = window.GAME_DATA;
+const { GAME_NAME, GROUPS, SQUARES, RULES, plotInfo, shareName, shareSellPrice } = window.GAME_DATA;
 document.title = GAME_NAME + ' online';
 const COLOR_NAMES = ['Röd', 'Blå', 'Gul', 'Vit', 'Lila', 'Grön'];
 const COLORS = ['#ff1744', '#2979ff', '#ffea00', '#ffffff', '#d500f9', '#00e676'];
@@ -785,7 +785,7 @@ function showDeed(n) {
 }
 function showShare(id) {
   open(() => { const v = S.game.shares.find((q) => q.id === id); if (!v) return null; const gr = GROUPS[v.group];
-    return deedShell(v.value === 20000 ? 'Fondaktie' : 'Aktiebrev', gr.name, gr.color, gr.text, svg(CHART), [deedRow('Aktiens värde', kr(v.value)), deedRow('Utdelning', v.pct + ' %'), deedRow('Utdelning från banken', kr(Math.round(v.value * v.pct / 100))), deedRow('Banken köper tillbaka för', kr(Math.round(v.value * 0.75 / 500) * 500)), deedRow('20 % från motspelare', kr(Math.round(v.value * RULES.givePct)))], 'Aktier och alla tomter i gruppen behövs för att äga en komplett företagsgrupp.'); });
+    return deedShell(v.value === 20000 ? 'Fondaktie' : 'Aktiebrev', gr.name, gr.color, gr.text, svg(CHART), [deedRow('Aktiens värde', kr(v.value)), deedRow('Utdelning', v.pct + ' %'), deedRow('Utdelning från banken', kr(Math.round(v.value * v.pct / 100))), deedRow('Banken köper tillbaka för', kr(shareSellPrice(v.value))), deedRow('20 % från motspelare', kr(Math.round(v.value * RULES.givePct)))], 'Aktier och alla tomter i gruppen behövs för att äga en komplett företagsgrupp.'); });
 }
 function showBond(n) {
   open(() => deedShell('Obligation', 'Nr ' + n, '#c4b5fd', '#1a1740', null, [deedRow('Inköpspris', kr(RULES.bondPrice)), deedRow('Stora dragningen', RULES.largeDraw.map(kr).join(', ')), deedRow('Lilla dragningen', RULES.smallDraw.map(kr).join(', '))], 'Vid dragningen slås två tärningar. Högsta vinsten går till summan, andra vinsten till högsta tärningen och tredje vinsten till lägsta tärningen. Obligationen går sedan tillbaka till banken.'));
@@ -859,7 +859,7 @@ function assetsModal() { const g = S.game; const me = g.players.find((p) => p.id
     me.loans ? el('button', { disabled: !isTurn || me.cash < RULES.loan, onclick: () => act({ type: 'repay' }) }, 'Betala tillbaka ett lån') : null,
     grouped((k) => [...myPlots().filter((n) => SQUARES[n].group === k).map((n) => { const x = g.plots[n]; const i = plotInfo(n); const mv = x.built ? i.mortgageBuilt : i.mortgage; const sv = x.built ? i.sellBuilt : i.sell;
       return el('div', { class: 'item' }, SQUARES[n].name + (x.built ? ', bebyggd' : '') + (x.mort ? ', belånad' : ''), el('div', { class: 'btns' }, x.mort ? el('button', { disabled: !pre, onclick: () => act({ type: 'redeem', n }) }, 'Lös ' + kr(Math.round(mv * RULES.redeemPct))) : [el('button', { onclick: () => act({ type: 'mortgage', n }) }, 'Belåna ' + kr(mv)), el('button', { onclick: () => act({ type: 'sellPlot', n }) }, 'Sälj ' + kr(sv))])); }),
-      ...myShares.filter((s) => s.group === k).map((s) => el('div', { class: 'item' }, `${shareName(s.value)} ${kr(s.value)}, ger ${s.pct} %`, el('button', { disabled: newsIs('stockclose') && !(g.debts[0] && g.debts[0].from === S.you), onclick: () => act({ type: 'sellShare', id: s.id }) }, 'Sälj ' + kr(Math.round(s.value * 0.75 / 500) * 500))))])); }
+      ...myShares.filter((s) => s.group === k).map((s) => el('div', { class: 'item' }, `${shareName(s.value)} ${kr(s.value)}, ger ${s.pct} %`, el('button', { disabled: newsIs('stockclose') && !(g.debts[0] && g.debts[0].from === S.you), onclick: () => act({ type: 'sellShare', id: s.id }) }, 'Sälj ' + kr(shareSellPrice(s.value)))))])); }
 function meetingModal() { const g = S.game; const me = g.players.find((p) => p.id === S.you);
   return el('div', {}, el('h2', {}, 'Bolagsstämma'), el('p', {}, 'Köp ut motspelarna ur en grupp där du redan äger något. Högre avgift ger bättre chans: du lyckas om två tärningar visar högst avgiften delat med 10 000. Med 120 000 kr lyckas du alltid.'),
     grouped((k) => { const mine = plotsIn(k).some((n) => g.plots[n].owner === S.you) || g.shares.some((s) => s.group === k && s.owner === S.you); let x = 0; plotsIn(k).forEach((n) => { const q = g.plots[n]; if (q.owner && q.owner !== S.you) x += plotInfo(n).price + (q.built ? plotInfo(n).build : 0); }); g.shares.forEach((s) => { if (s.group === k && s.owner && s.owner !== S.you) x += s.value; }); if (!mine || !x) return [];
