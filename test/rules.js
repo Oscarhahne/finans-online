@@ -24,8 +24,8 @@ assert.equal(g.plots[5].owner, 'a');
 A.cash = 100000; g.current = 1; B.pos = 4; B.cash = 100000; B.car = false; g.stage = 'pre';
 const orig = Math.random; Math.random = () => 0; G.apply(g, 'b', { type: 'roll' }); Math.random = orig;
 assert.equal(B.pos, 5); assert.equal(B.cash, 100000 - 24000); assert.equal(A.cash, 124000);
-// Tvingad återbetalning: 50 000 + 5 000.
-g = two(); g.players[0].pos = 38; g.players[0].loans = 1; g.players[0].cash = 60000; Math.random = () => 0; G.apply(g, 'a', { type: 'roll' }); Math.random = orig;
+// Tvingad återbetalning: 50 000 + 10 000.
+g = two(); g.players[0].pos = 38; g.players[0].loans = 1; g.players[0].cash = 65000; Math.random = () => 0; G.apply(g, 'a', { type: 'roll' }); Math.random = orig;
 assert.equal(g.players[0].pos, 39); assert.equal(g.players[0].cash, 5000); assert.equal(g.players[0].loans, 0);
 // Obligationsdragning: två fyror ger 8, 4 och 3. Två ettor ger 2, 1 och 12.
 g = two(); g.players[0].pos = 41; g.bonds[2] = 'a'; g.bonds[1] = 'b'; g.bonds[12] = 'c';
@@ -81,7 +81,7 @@ const D = require('../public/data.js');
 const tip = (g, match) => { const i = D.BORSTIPS.findIndex(match); g.tipDeck = [i, ...g.tipDeck.filter((v) => v !== i)]; };
 const news = (g, match) => { const i = D.FINANS.findIndex(match); g.newsDeck = [i, ...g.newsDeck.filter((v) => v !== i)]; };
 const landOn = (g, pos, die = 0) => { g.players[g.current].pos = pos - 1; Math.random = () => die; G.apply(g, g.players[g.current].id, { type: 'roll' }); Math.random = orig; };
-assert.equal(D.BORSTIPS.length, 61); assert.equal(D.BORSTIPS.filter((c) => c.t === 'bondwin').length, 1); assert.equal(D.BORSTIPS.filter((c) => c.t === 'back').length, 1); assert.equal(D.BORSTIPS.filter((c) => c.t === 'forward').length, 1); assert.equal(D.FINANS.length, 40);
+assert.equal(D.BORSTIPS.length, 62); assert.equal(D.BORSTIPS.filter((c) => c.t === 'bondwin').length, 1); assert.equal(D.BORSTIPS.filter((c) => c.t === 'back').length, 1); assert.equal(D.BORSTIPS.filter((c) => c.t === 'forward').length, 1); assert.equal(D.FINANS.length, 40);
 g = two(); g.bonds[1] = 'b'; { const c = g.players[1].cash; tip(g, (c) => c.t === 'bondwin' && c.n === 1); landOn(g, 2); assert.equal(g.players[1].cash, c + 10000); assert.equal(g.bonds[1], null); }
 g = two(); tip(g, (c) => c.t === 'smalldraw'); landOn(g, 2); assert.equal(g.bondRound.draw, 'small');
 g = two(); tip(g, (c) => c.t === 'back'); landOn(g, 2); assert.equal(g.players[0].pos, 54);
@@ -125,7 +125,7 @@ g = two(); { const p = g.players[0]; g.plots[10].owner = 'a'; g.plots[13].owner 
 g = two(); { g.players[2].cash = 100; tip(g, (x) => x.t === 'poorest'); landOn(g, 2); assert.equal(g.players[2].cash, 30100); }
 g = two(); { const p = g.players[0]; g.plots[10].owner = 'a'; g.plots[10].built = true; g.plots[13].owner = 'a'; const c = p.cash; tip(g, (x) => x.t === 'perbuild' && x.a === 5000); landOn(g, 2); assert.equal(p.cash, c - 5000); }
 g = two(); { const p = g.players[0]; p.car = true; const i = D.BORSTIPS.findIndex((x) => x.t === 'carloss'); g.tipDeck = [i, ...g.tipDeck.filter((v) => v !== i)]; p.pos = 49; const q = [0, 0.2]; let k = 0; Math.random = () => q[k++ % 2]; G.apply(g, 'a', { type: 'roll' }); Math.random = orig; assert.equal(p.pos, 52); assert.equal(p.car, false); }
-g = two(); { const p = g.players[0]; p.loans = 1; const c = p.cash; const before = g.tipDeck.length; tip(g, (x) => x.t === 'toexit'); landOn(g, 2); assert.equal(p.pos, 48); assert.equal(p.cash, c - 5000); assert.equal(g.tipDeck.length, before); assert.equal(g.stage, 'post'); }
+g = two(); { const p = g.players[0]; p.loans = 1; const c = p.cash; const before = g.tipDeck.length; tip(g, (x) => x.t === 'toexit'); landOn(g, 2); assert.equal(p.pos, 48); assert.equal(p.cash, c - 10000); assert.equal(g.tipDeck.length, before); assert.equal(g.stage, 'post'); }
 g = two(); { const p = g.players[0]; p.cash = 100000; tip(g, (x) => x.t === 'audit'); landOn(g, 2); assert.equal(p.cash, 95000); }
 // Hyresfrihet ger ett val när hyra ska betalas.
 g = two(); { const p = g.players[0]; const i = D.BORSTIPS.findIndex((x) => x.t === 'rentfree'); p.rentFree = [i]; g.tipDeck = g.tipDeck.filter((v) => v !== i); g.plots[10].owner = 'b'; const c = p.cash; landOn(g, 10); assert.equal(g.stage, 'rentchoice'); G.apply(g, 'a', { type: 'useRentFree' }); assert.equal(p.cash, c); assert.equal(p.rentFree.length, 0); assert.ok(g.tipDeck.includes(i)); assert.equal(g.stage, 'post'); }
@@ -188,3 +188,7 @@ for (const pct of [30, 40]) { const q = two(); q.shares.forEach((x, i) => { x.ow
 // Baisse: aktier köps och säljs för halva värdet och ingen utdelning betalas. Gäller tills nästa tidning.
 { const q = two(); const p = q.players[0]; p.lapDone = true; p.pos = 12; p.cash = 100000; q.news = { type: 'baisse' }; const a100 = q.shares.find((x) => x.value === 50000); G.apply(q, 'a', { type: 'buyShare', id: a100.id }); assert.equal(p.cash, 75000); G.apply(q, 'a', { type: 'sellShare', id: a100.id }); assert.equal(p.cash, 100000); const f = q.shares.find((x) => x.value === 20000); f.owner = 'a'; G.apply(q, 'a', { type: 'sellShare', id: f.id }); assert.equal(p.cash, 110000);
   const r = two(); const rp = r.players[0]; r.news = { type: 'baisse' }; r.shares[0].owner = 'a'; const c = rp.cash; rp.pos = 3; const o = Math.random; Math.random = () => 0; G.apply(r, 'a', { type: 'roll' }); Math.random = o; assert.equal(rp.pos, 4); assert.equal(rp.cash, c); assert.equal(r.lastRain, undefined); const card = D.FINANS.find((x) => x.t === 'baisse'); assert.ok(card && card.until); }
+// Banken säger upp ett lån: 50 000 kr direkt om man har lån, annars inget.
+{ const q = two(); const p = q.players[0]; p.loans = 2; p.cash = 80000; tip(q, (x) => x.t === 'loancall'); landOn(q, 2); assert.equal(p.loans, 1); assert.equal(p.cash, 30000); const r = two(); const c = r.players[0].cash; tip(r, (x) => x.t === 'loancall'); landOn(r, 2); assert.equal(r.players[0].cash, c); assert.equal(r.players[0].loans, 0); }
+// Räntan är 10 000 kr per lån vid Bankutgång.
+{ const q = two(); const p = q.players[0]; p.loans = 2; p.cash = 100000; tip(q, (x) => x.t === 'carloss'); landOn(q, 48); assert.equal(p.pos, 48); assert.equal(p.cash, 80000); }

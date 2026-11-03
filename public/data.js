@@ -99,6 +99,7 @@
     { t: 'sharecrash', pct: 30, x: 'Kursras! Alla spelares 30 %-aktier blir värdelösa och går tillbaka till banken utan ersättning.' },
     { t: 'sharecrash', pct: 40, x: 'Börskrasch! Alla spelares 40 %-aktier blir värdelösa och går tillbaka till banken utan ersättning.' },
     { t: 'returnplot', x: 'Återlämna en tomt! Välj en av dina tomter som går tillbaka till banken utan ersättning.' },
+    { t: 'loancall', x: 'Banken säger upp ditt lån! Har du ett banklån betalar du tillbaka 50 000 kr direkt.' },
     { t: 'fundshare', x: 'Gratis fondaktie! Du får en fondaktie på 20 000 kr som ger 20 % i utdelning.' },
     { t: 'carloss', x: 'Bilstöld! Har du bil förlorar du den utan ersättning.' },
     { t: 'toexit', x: 'Gå direkt till Bankutgång. Du drar inget nytt kort, men betalar eventuell låneränta.' },
@@ -131,7 +132,7 @@
   );
 
   const RULES = {
-    startCash: 75000, carPrice: 50000, carSell: 25000, loan: 50000, loanInterest: 5000, maxLoans: 3,
+    startCash: 75000, carPrice: 50000, carSell: 25000, loan: 50000, loanInterest: 10000, maxLoans: 3,
     bondPrice: 500, bonusPerPip: 10000, largeDraw: [100000, 50000, 25000], smallDraw: [50000, 25000, 15000],
     redeemPct: 1.1, givePct: 0.2, target: 1000000, feeMin: 30000, feeMax: 120000, feeBank: 30000, taxPct: 10, taxMax: 50000, groupsToWin: 0, maxDoubles: 3, itCost: 5000, itVirus: 15000, itSafeFrom: 4,
   };
