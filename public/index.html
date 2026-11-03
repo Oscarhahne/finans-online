@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Affärsspel online</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600&family=Nunito:wght@600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600&family=Manrope:wght@500;600;700;800&family=Nunito:wght@600;700;800&display=swap" rel="stylesheet">
 <style>
 :root{--bg:#060d22;--panel:#0c1a3a;--line:#31507f;--ink:#fff;--mute:#c6d4ee;--dark:#1a1740;--gold:#fbbf24}
 *{box-sizing:border-box}
@@ -18,9 +18,28 @@ button.danger{background:#b91c1c}
 input,select{font:700 16px Nunito,sans-serif;min-height:44px;padding:8px 12px;border-radius:12px;border:1px solid var(--line);background:#081430;color:#fff;width:100%}
 label{display:block;font-weight:700;margin:0 0 6px;color:var(--mute)}
 body::before{content:'';position:fixed;inset:0;z-index:-1;background:var(--bg) url(bakgrund.jpg) center/cover no-repeat}body:has(.game)::before{display:none}
-.home h1{color:#fbbf24;text-shadow:-2px -2px 0 #0b1a14,2px -2px 0 #0b1a14,-2px 2px 0 #0b1a14,2px 2px 0 #0b1a14,0 5px 14px rgba(0,0,0,.9)}.home .lead{color:#fde9a8;background:rgba(6,20,16,.88);padding:9px 13px;border-radius:10px;border:1px solid rgba(251,191,36,.45)}
+.home h1{color:#fff;font-family:Manrope,Nunito,sans-serif;font-weight:800;letter-spacing:-.035em;text-shadow:0 3px 14px rgba(0,0,0,.8)}.home .lead{color:#fde9a8;background:rgba(6,20,16,.88);padding:9px 13px;border-radius:10px;border:1px solid rgba(251,191,36,.45)}
 .home{max-width:560px;margin:0 auto;padding:40px 16px}
 .home h1{font-size:clamp(26px,9.6vw,60px);line-height:1}.home .lead{color:var(--mute);margin:8px 0 28px}
+.mhome{min-height:100vh;box-sizing:border-box;overflow-x:hidden;display:flex;align-items:center;background:rgba(4,8,20,.74);color:#fff;font-family:Manrope,Nunito,sans-serif}
+.mh-wrap{box-sizing:border-box;width:100%;max-width:1400px;margin:0 auto;padding:32px 48px 36px 56px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,560px);grid-template-areas:"head panel" "art panel";grid-template-rows:auto 1fr;column-gap:28px}
+.mh-head{grid-area:head}.mh-head h1{margin:0;font:800 clamp(34px,calc((100vw - 692px)*.115),66px)/1 Manrope,Nunito,sans-serif;letter-spacing:-.035em;color:#fff}.mh-head p{margin:18px 0 0;max-width:410px;font-size:16.5px;line-height:1.4;font-weight:600;color:#f1f4f9}
+.mh-art{grid-area:art;position:relative;min-width:0}.mh-board{position:relative;width:96%;margin:70px 0 0 -2%;transform:rotate(-2.5deg)}.mh-board img{display:block;width:100%;filter:drop-shadow(0 26px 22px rgba(0,0,0,.72))}.mh-board .mh-pawn{position:absolute;filter:drop-shadow(0 10px 7px rgba(0,0,0,.65))}
+.mh-panel{grid-area:panel;min-width:0;margin-top:22px;display:flex;flex-direction:column;gap:14px;position:relative;z-index:2}
+.mhome label{margin:0;color:inherit;font-weight:800}.mhome input{min-height:0;border-radius:0}.mhome button{border-radius:0;box-shadow:none;cursor:pointer;font-family:Manrope,Nunito,sans-serif}.mhome button:focus-visible,.mhome input:focus-visible{outline:3px solid #2979ff;outline-offset:-3px}
+.mh-name{box-sizing:border-box;padding:11px 48px 11px 20px;background:#fff;color:#060a14;display:flex;align-items:center;gap:14px;clip-path:polygon(0 0,100% 0,calc(100% - 28px) 100%,0 100%)}.mh-name label{flex:none;font-size:14px}.mh-name input{flex:1;width:auto;min-width:0;height:44px;padding:0;border:0;background:transparent;color:#060a14;font:800 28px Manrope,Nunito,sans-serif;letter-spacing:-.02em}
+.mh-pair{display:grid;grid-template-columns:minmax(0,1.22fr) minmax(0,1fr)}.mhome button.mh-make{min-height:290px;box-sizing:border-box;padding:24px 60px 26px 24px;border:0;background:#ffc53d;color:#17120a;text-align:left;display:flex;flex-direction:column;justify-content:space-between;gap:14px;clip-path:polygon(0 0,100% 0,84% 100%,0 100%);transition:filter .12s}.mhome button.mh-make:hover{filter:brightness(1.1);background:#ffc53d;transform:none}.mh-make span{font:800 40px/1.04 Manrope,Nunito,sans-serif;letter-spacing:-.03em}
+.mh-join{min-height:290px;box-sizing:border-box;margin-left:-13%;padding:24px 22px 26px 50px;background:#060a14;display:flex;flex-direction:column;justify-content:space-between;align-items:flex-end;gap:14px;clip-path:polygon(16% 0,100% 0,100% 100%,0 100%)}.mh-join>div{width:100%;display:flex;flex-direction:column;gap:12px}.mh-join label{font-size:27px;line-height:1.05;letter-spacing:-.025em;color:#fff}.mh-codeRow{display:flex;flex-direction:row !important;gap:0 !important}.mh-codeRow input{flex:1;width:auto;min-width:0;height:50px;padding:0 11px;border:2px solid #fff;border-right:0;background:transparent;color:#fff;font:700 15px Manrope,Nunito,sans-serif;text-transform:uppercase}.mh-codeRow input::placeholder{color:#b8c1d0;text-transform:none}.mhome button.mh-white{flex:none;height:50px;min-height:0;padding:0 13px;border:0;background:#fff;color:#060a14;font-weight:800;font-size:14px}.mhome button.mh-white:hover{background:#ffc53d;transform:none}
+.mh-open{box-sizing:border-box;padding:16px 20px 14px 40px;background:#060a14;display:flex;flex-direction:column;gap:8px;clip-path:polygon(28px 0,100% 0,100% 100%,0 100%)}.mh-open h2{margin:0;font:800 20px Manrope,Nunito,sans-serif;letter-spacing:-.015em;color:#ffc53d}.mh-rooms{max-height:214px;overflow-y:auto;display:flex;flex-direction:column;gap:8px}.mh-room{padding-top:8px;border-top:1px solid rgba(255,255,255,.22);display:flex;align-items:center;justify-content:space-between;gap:12px}.mh-room b{display:block;font-size:16px;font-weight:800}.mh-room small{font-size:13.5px;font-weight:500;color:#d9deea}.mh-room .mh-white{height:44px;padding:0 16px}.mh-empty{margin:0;padding-top:8px;border-top:1px solid rgba(255,255,255,.22);font-size:14.5px;color:#eef1f6}
+.mhome button.mh-dice{position:absolute;z-index:3;right:-22px;top:-20px;width:184px;height:152px;min-height:0;padding:0;border:0;background:transparent}.mhome button.mh-dice:hover{background:transparent;transform:none}
+.mh-die{--mh-at:0ms;position:absolute;width:var(--s);height:var(--s);transform-style:preserve-3d;filter:drop-shadow(0 10px 7px rgba(0,0,0,.6))}.mh-d1{--s:84px;--ry:36deg;left:6px;top:6px}.mh-d2{--s:64px;--ry:-30deg;left:108px;top:84px}.mh-cube{position:absolute;inset:0;transform-style:preserve-3d;transform:rotateX(-38deg) rotateY(var(--ry))}.mh-face{position:absolute;inset:0;width:100%;height:100%}.mh-ft{transform:rotateX(90deg) translateZ(calc(var(--s)/2))}.mh-fu{transform:rotateX(-90deg) translateZ(calc(var(--s)/2))}.mh-ff{transform:translateZ(calc(var(--s)/2));filter:brightness(.86)}.mh-fb{transform:rotateY(180deg) translateZ(calc(var(--s)/2));filter:brightness(.8)}.mh-fr{transform:rotateY(90deg) translateZ(calc(var(--s)/2));filter:brightness(.72)}.mh-fl{transform:rotateY(-90deg) translateZ(calc(var(--s)/2));filter:brightness(.72)}
+.mh-roll .mh-die{animation:mh-path 1.5s linear var(--mh-at) both}.mh-roll .mh-cube{animation:mh-spin 1.5s cubic-bezier(.16,.7,.3,1) var(--mh-at) both}.mh-roll .mh-d2,.mh-roll .mh-d2 .mh-cube{animation-delay:calc(var(--mh-at) + 140ms)}
+@keyframes mh-path{0%{opacity:0;transform:translate(-500px,-210px)}6%{opacity:1}45%{transform:translate(-132px,0)}62%{transform:translate(-58px,-52px)}78%{transform:translate(-16px,0)}88%{transform:translate(-5px,-14px)}100%{opacity:1;transform:translate(0,0)}}
+@keyframes mh-spin{0%{transform:rotateX(-1118deg) rotateY(calc(var(--ry) + 1440deg))}100%{transform:rotateX(-38deg) rotateY(var(--ry))}}
+@media (prefers-reduced-motion:reduce){.mh-die,.mh-cube{animation:none !important}}
+@media (min-width:1000px) and (max-width:1250px){.mhome button.mh-dice{top:14px;right:-14px;transform:scale(.72);transform-origin:100% 0}.mh-head p{font-size:15px}}
+@media (max-width:999px){.mh-head h1{font-size:clamp(34px,9.6vw,66px)}.mh-wrap{grid-template-columns:minmax(0,1fr);grid-template-areas:"head" "panel" "art";padding:24px 16px 32px}.mh-head p{max-width:none}.mh-panel{margin-top:22px}.mh-board{width:100%;margin:64px 0 16px}.mhome button.mh-dice{right:0;top:18px;transform:scale(.8);transform-origin:100% 0}}
+@media (max-width:640px){.mh-pair{grid-template-columns:minmax(0,1fr);gap:14px}.mhome button.mh-make,.mh-join{clip-path:none;margin-left:0;min-height:0;padding:20px}.mh-make span{font-size:34px}.mh-join{align-items:flex-start}.mh-make svg,.mh-join svg{width:56px;height:56px}.mh-name{padding-right:40px}.mh-name input{font-size:23px}}
 .card{background:var(--panel);border-radius:20px;padding:20px;margin-bottom:16px}
 .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}.row>*{flex:1 1 140px}.stack{display:grid;gap:12px}
 .roomrow{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:8px 0;border-top:1px solid var(--line)}
@@ -364,6 +383,11 @@ function updateRollLock() { const locked = popupOpen(); document.querySelectorAl
 setInterval(updateRollLock, 150);
 
 function render() { if (!S) renderHome(); else if (!S.game) renderLobby(); else renderGame(); }
+// Startmenyns tärningar rullar in en gång när sidan öppnas och landar på två sexor. Klick slår dem igen.
+let menuRollAt = null;
+const MENU_PIPS = { 1: [[50, 50]], 2: [[28, 28], [72, 72]], 3: [[26, 26], [50, 50], [74, 74]], 4: [[28, 28], [72, 28], [28, 72], [72, 72]], 5: [[26, 26], [74, 26], [50, 50], [26, 74], [74, 74]], 6: [[28, 23], [72, 23], [28, 50], [72, 50], [28, 77], [72, 77]] };
+const menuFace = (n, c) => `<svg class="mh-face ${c}" viewBox="0 0 100 100" aria-hidden="true"><rect x="1" y="1" width="98" height="98" rx="14" fill="#fff" stroke="#c6ccd8" stroke-width="2"/>${MENU_PIPS[n].map(([x, y]) => `<circle cx="${x}" cy="${y}" r="${n === 1 ? 11 : 9.5}" fill="${n === 1 ? '#b4162c' : '#14192a'}"/>`).join('')}</svg>`;
+const menuDie = (c) => `<span class="mh-die ${c}"><span class="mh-cube">${menuFace(1, 'mh-fu')}${menuFace(5, 'mh-fb')}${menuFace(4, 'mh-fl')}${menuFace(3, 'mh-fr')}${menuFace(2, 'mh-ff')}${menuFace(6, 'mh-ft')}</span></span>`;
 function renderHome() {
   if (window.Board3D && (Board3D.on || Board3D.starting)) { Board3D.stop(); animating = false; pendingState = null; } boardEl = null;
   const urlCode = new URLSearchParams(location.search).get('kod') || '';
@@ -380,14 +404,22 @@ function renderHome() {
     if (focused) document.getElementById(focused)?.focus();
     return;
   }
-  app.replaceChildren(el('div', { class: 'home' },
-    el('h1', {}, GAME_NAME), el('p', { class: 'lead' }, 'Köp tomter och aktier, ta över företagsgrupper och bli först till miljonen. 2–6 spelare online.'),
-    el('div', { class: 'card stack' },
-      el('div', {}, el('label', { for: 'name' }, 'Ditt namn'), name),
-      el('button', { class: 'primary', onclick: () => { const n = nm(); if (n) wsend({ t: 'create', name: n, open: true }); } }, 'Skapa nytt spel'),
-      el('div', {}, el('label', { for: 'code' }, 'Har du en kod?'), el('div', { class: 'row' }, codeI, el('button', { onclick: joinCode }, 'Gå med')))),
-    el('div', { class: 'card' }, el('h2', {}, 'Öppna spel'),
-      rooms.length ? rooms.map((r) => el('div', { class: 'roomrow' }, el('div', {}, r.host + 's spel', el('div', { class: 'small' }, r.count + ' av 6 spelare')), el('button', { onclick: () => { const n = nm(); if (n) wsend({ t: 'join', name: n, code: r.code }); } }, 'Gå med'))) : el('p', { class: 'small' }, 'Inga väntande spel just nu. Skapa ett!'))));
+  const menuNow = performance.now(); if (menuRollAt === null) menuRollAt = menuNow; const rolledFor = menuNow - menuRollAt;
+  const dice = el('button', { class: 'mh-dice' + (rolledFor < 1700 ? ' mh-roll' : ''), 'aria-label': 'Slå tärningarna igen', onclick: (ev) => { const b = ev.currentTarget; sfx.dice(); b.style.setProperty('--mh-at', '0ms'); b.querySelectorAll('.mh-die').forEach((d) => d.style.setProperty('--mh-at', '0ms')); b.classList.remove('mh-roll'); void b.offsetWidth; b.classList.add('mh-roll'); } });
+  dice.innerHTML = menuDie('mh-d1') + menuDie('mh-d2'); if (rolledFor > 0) dice.querySelectorAll('.mh-die').forEach((d) => d.style.setProperty('--mh-at', -Math.round(rolledFor) + 'ms'));
+  const icon = (d, c) => svg(`<svg width="84" height="84" viewBox="0 0 74 74" fill="none" stroke="${c}" stroke-width="4.5" stroke-linecap="square" stroke-linejoin="miter" aria-hidden="true">${d}</svg>`);
+  codeI.placeholder = 'Spelkod';
+  app.replaceChildren(el('div', { class: 'mhome' }, el('div', { class: 'mh-wrap' },
+    el('div', { class: 'mh-head' }, el('h1', {}, GAME_NAME), el('p', {}, 'Köp tomter och aktier, ta över företagsgrupper och bli först till miljonen. 2–6 spelare online.')),
+    el('div', { class: 'mh-art' }, dice, el('div', { class: 'mh-board' }, el('img', { src: 'menybrade.webp', alt: 'Spelbrädet i 3D', draggable: 'false' }),
+      el('img', { class: 'mh-pawn', src: 'pawns/4-5.png', alt: '', draggable: 'false', style: 'left:27%;top:42%;width:15%' }), el('img', { class: 'mh-pawn', src: 'pawns/1-2.png', alt: '', draggable: 'false', style: 'left:3%;top:46%;width:14%' }), el('img', { class: 'mh-pawn', src: 'pawns/0-0.png', alt: '', draggable: 'false', style: 'left:67%;top:56%;width:16%' }))),
+    el('div', { class: 'mh-panel' },
+      el('div', { class: 'mh-name' }, el('label', { for: 'name' }, 'Ditt namn'), name),
+      el('div', { class: 'mh-pair' },
+        el('button', { class: 'mh-make', onclick: () => { const n = nm(); if (n) wsend({ t: 'create', name: n, open: true }); } }, icon('<path d="M8 66h58"/><path d="M15 66V33l13-8v41"/><path d="M28 66V12l20 10v44"/><path d="M48 66V37l11 6v23"/><path d="M36 25v.01M36 36v.01M36 47v.01"/>', '#17120a'), el('span', {}, 'Skapa nytt ', el('br'), 'spel')),
+        el('div', { class: 'mh-join' }, icon('<circle cx="24" cy="50" r="15"/><path d="M35 39l29-29"/><path d="M53 21l10 10"/><path d="M44 30l8 8"/>', '#ffc53d'), el('div', {}, el('label', { for: 'code' }, 'Har du en kod?'), el('div', { class: 'mh-codeRow' }, codeI, el('button', { class: 'mh-white', onclick: joinCode }, 'Gå med'))))),
+      el('section', { class: 'mh-open', 'aria-labelledby': 'mh-open-title' }, el('h2', { id: 'mh-open-title' }, 'Öppna spel'),
+        rooms.length ? el('div', { class: 'mh-rooms' }, rooms.map((r) => el('div', { class: 'mh-room' }, el('div', {}, el('b', {}, r.host + 's spel'), el('small', {}, r.count + ' av 6 spelare')), el('button', { class: 'mh-white', onclick: () => { const n = nm(); if (n) wsend({ t: 'join', name: n, code: r.code }); } }, 'Gå med')))) : el('p', { class: 'mh-empty' }, 'Inga väntande spel just nu. Skapa ett!'))))));
   if (focused) document.getElementById(focused)?.focus();
 }
 function renderLobby() {
