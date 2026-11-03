@@ -157,3 +157,8 @@ console.log('Alla regeltester klara');
   q = two(); q.shares[0].owner = 'a'; roll(q, 3); assert.equal(q.players[0].pos, 4); assert.deepEqual(q.lastRain, { id: 1, player: 'a', pos: 4 }); }
 // Köp av bil visas bara en sekund.
 { const q = two(); q.players[0].cash = 100000; G.apply(q, 'a', { type: 'buyCar' }); assert.equal(q.events[q.events.length - 1].ms, 1000); }
+// Lika ut ur fängelset ger nytt kast och räknas som det första av tre.
+{ const q = two(); const p = q.players[0]; p.pos = 9; p.jail = 2; p.car = true; const o = Math.random; Math.random = () => 0.2; G.apply(q, 'a', { type: 'roll' }); assert.equal(p.jail, 0); assert.equal(p.pos, 13); assert.equal(q.doubles, 1); assert.equal(q.stage, 'pre'); assert.equal(q.current, 0);
+  p.cash = 500000; Object.keys(q.plots).forEach((n) => { q.plots[n].owner = null; }); Math.random = () => 0.2; G.apply(q, 'a', { type: 'roll' }); assert.equal(q.doubles, 2); assert.equal(q.stage, 'pre'); q.players[0].pos = 1; G.apply(q, 'a', { type: 'roll' }); Math.random = o; assert.equal(p.pos, 9); assert.equal(q.stage, 'sentence'); }
+// Utan bil får man också slå igen, men nästa kast är en tärning och kan inte bli lika.
+{ const q = two(); const p = q.players[0]; p.pos = 9; p.jail = 1; const o = Math.random; Math.random = () => 0.2; G.apply(q, 'a', { type: 'roll' }); assert.equal(q.stage, 'pre'); G.apply(q, 'a', { type: 'roll' }); Math.random = o; assert.equal(q.doubles, 1); assert.notEqual(q.stage, 'pre'); }

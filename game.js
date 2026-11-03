@@ -271,7 +271,8 @@ function apply(g, pid, a) {
           p.jail = 0; let steps = p.car && !newsIs(g, 'fuel') ? d1 + d2 : d1; if (g.news && g.news.type === 'good') steps *= 2; else if (g.news && g.news.type === 'bad') steps = d1;
           const path = [p.pos]; while (steps-- > 0) { p.pos = p.pos === 54 ? 1 : p.pos + 1; path.push(p.pos); if (p.pos === 35 || p.pos === 48) break; } if (g.lastRoll) g.lastRoll.path = path;
           log(g, `${p.name} slår lika och går ut ur fängelset till ${SQUARES[p.pos].name}.`);
-          g.stage = 'post'; land(g, p); break;
+          g.doubles = 1; g.extraRoll = true; // Lika ger nytt kast och räknas som det första av tre.
+          g.stage = 'post'; land(g, p); afterLanding(g, p); break;
         }
         p.jail--; g.stage = 'post';
         log(g, p.jail ? `${p.name} sitter kvar i fängelset, ${p.jail} år till.` : `${p.name} har suttit av sitt straff och slår som vanligt nästa tur.`);
