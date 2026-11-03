@@ -9,7 +9,7 @@ const groupPlots = (k) => Object.keys(SQUARES).map(Number).filter((n) => SQUARES
 
 function newGame(players, opts = {}) {
   const g = {
-    phase: 'play', autoEnd: opts.autoEnd !== false, target: opts.target || R.target, doubles: 0, pendingRent: null, bonusThenLand: false, drawNo: 0, lastDraw: null, extraRoll: false, eventNo: 0, events: [], finalRound: null, landed: null, prisonNo: 0, lastPrison: null, cardNo: 0, rollNo: 0, lastRoll: null, turnNo: 1, current: 0, stage: 'pre', boughtPlot: false, boughtShare: false,
+    phase: 'play', autoEnd: opts.autoEnd !== false, target: opts.target || R.target, doubles: 0, pendingRent: null, bonusThenLand: false, drawNo: 0, lastDraw: null, extraRoll: false, eventNo: 0, events: [], finalRound: null, landed: null, prisonNo: 0, lastPrison: null, rentNo: 0, lastRent: null, cardNo: 0, rollNo: 0, lastRoll: null, turnNo: 1, current: 0, stage: 'pre', boughtPlot: false, boughtShare: false,
     players: players.map((p, i) => ({ id: p.id, name: p.name, bot: !!p.bot, color: p.color ?? i, shape: p.shape ?? i, pos: 48, cash: R.startCash, car: false, loans: 0, jail: 0, jailFree: [], permits: [], rentFree: [], tradePass: [], lapDone: false, fromPrison: false, out: false })),
     plots: {}, shares: [], bonds: {}, news: null, dice: [], debts: [], bondRound: null, returnRound: null, winner: null, log: [],
     tipDeck: shuffled(BORSTIPS.length), newsDeck: shuffled(FINANS.length), lastCard: null,
@@ -156,6 +156,8 @@ function prevPlayer(g, p) {
   for (let k = 1; k < n; k++) { const o = g.players[(i - k + n) % n]; if (!o.out) return o; }
   return null;
 }
+// Visas för alla: rutan vänds och visar vad spelaren ska betala.
+const showRent = (g, p, pos, amount, owner) => { g.rentNo = (g.rentNo || 0) + 1; g.lastRent = { id: g.rentNo, player: p.id, pos, amount, to: owner.name }; };
 function afterLanding(g, p) {
   if (g.stage === 'post' && g.extraRoll && !p.jail && !p.out) { g.stage = 'pre'; log(g, `${p.name} slog lika och får slå igen.`); }
   if (!['bonus', 'visit', 'handover', 'returnplot', 'rentchoice', 'itsec'].includes(g.stage)) g.extraRoll = false;
@@ -167,7 +169,7 @@ function land(g, p, depth = 0) {
   switch (s.kind) {
     case 'plot': { const x = g.plots[p.pos];
       if (x.owner && x.owner !== p.id && !x.mort && p.rentFree.length) { g.pendingRent = { to: x.owner, amount: rentOf(g, p.pos), pos: p.pos }; g.stage = 'rentchoice'; }
-      else if (x.owner && x.owner !== p.id && !x.mort) { const o = P(g, x.owner); const r = rentOf(g, p.pos); log(g, `${p.name} hamnar på ${s.name} och betalar ${kr(r)} i hyra till ${o.name}.`); pay(g, p, o, r, 'hyra'); }
+      else if (x.owner && x.owner !== p.id && !x.mort) { const o = P(g, x.owner); const r = rentOf(g, p.pos); log(g, `${p.name} hamnar på ${s.name} och betalar ${kr(r)} i hyra till ${o.name}.`); showRent(g, p, p.pos, r, o); pay(g, p, o, r, 'hyra'); }
       break; }
     case 'bor': drawTip(g, p, depth); break;
     case 'news': drawNews(g, p, depth); break;
@@ -320,7 +322,7 @@ function apply(g, pid, a) {
       if (it.kind === 'plot') { g.plots[it.n].owner = to.id; log(g, `${p.name} lämnar över ${SQUARES[it.n].name} till ${to.name}.`); }
       else { g.shares.find((v) => v.id === it.id).owner = to.id; log(g, `${p.name} lämnar över en aktie till ${to.name}.`); }
       g.stage = 'post'; afterLanding(g, p); break; }
-    case 'payRent': { needTurn(); if (g.stage !== 'rentchoice') fail('Det går inte nu.'); const r = g.pendingRent; const o = P(g, r.to); log(g, `${p.name} betalar ${kr(r.amount)} i hyra till ${o.name}.`); pay(g, p, o, r.amount, 'hyra'); g.pendingRent = null; g.stage = 'post'; afterLanding(g, p); break; }
+    case 'payRent': { needTurn(); if (g.stage !== 'rentchoice') fail('Det går inte nu.'); const r = g.pendingRent; const o = P(g, r.to); log(g, `${p.name} betalar ${kr(r.amount)} i hyra till ${o.name}.`); showRent(g, p, r.pos, r.amount, o); pay(g, p, o, r.amount, 'hyra'); g.pendingRent = null; g.stage = 'post'; afterLanding(g, p); break; }
     case 'itPay': { needTurn(); if (g.stage !== 'itsec') fail('Det går inte nu.'); log(g, `${p.name} betalar ${kr(R.itCost)} för bra it-säkerhet.`); pay(g, p, null, R.itCost, 'it-säkerhet'); g.stage = 'post'; afterLanding(g, p); break; }
     case 'itRoll': { needTurn(); if (g.stage !== 'itsec') fail('Det går inte nu.'); const v = die(); setRoll(g, pid, [v], 'slår om it-säkerheten');
       if (v < R.itSafeFrom) { log(g, `${p.name} slår ${v}, drabbas av virus i verksamheten och betalar ${kr(R.itVirus)}.`, true); pay(g, p, null, R.itVirus, 'virus i verksamheten'); } else log(g, `${p.name} slår ${v} och är säker från ytterligare dataintrång.`, true);

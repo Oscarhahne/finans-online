@@ -210,3 +210,18 @@ for (const pct of [30, 40]) { const q = two(); const who = q.players[q.current].
   eq(g.lastPrison.player, a.id, 'jakten gäller rätt spelare'); eq(g.lastPrison.route[0], 30, 'jakten börjar på rutan'); eq(g.lastPrison.route[g.lastPrison.route.length - 1], 9, 'jakten slutar i fängelset');
   console.log('Polisjakten klar');
 }
+
+// Hyra: alla klienter får veta vad som ska visas på rutans baksida, men bara när hyran verkligen betalas.
+{
+  const G3 = require('../game.js'), D3 = require('../public/data.js'); const orig3 = Math.random;
+  const land = (g, pos) => { const p = g.players[g.current]; p.pos = pos - 1; Math.random = () => 0; try { G3.apply(g, p.id, { type: 'roll' }); } finally { Math.random = orig3; } return p; };
+  const plot = Number(Object.keys(D3.SQUARES).find((n) => D3.SQUARES[n].kind === 'plot'));
+  const g = G3.newGame([{ id: 'a', name: 'A' }, { id: 'b', name: 'B' }], { autoEnd: false }); g.plots[plot].owner = 'b'; const p = land(g, plot); const paid = 75000 - p.cash;
+  if (!g.lastRent || g.lastRent.player !== p.id || g.lastRent.pos !== plot || g.lastRent.to !== 'B' || g.lastRent.amount <= 0) throw new Error('hyran ska visas: ' + JSON.stringify(g.lastRent));
+  if (G3.publicView(g).lastRent.amount !== g.lastRent.amount) throw new Error('hyran ska skickas till alla');
+  const own = G3.newGame([{ id: 'a', name: 'A' }, { id: 'b', name: 'B' }], { autoEnd: false }); own.plots[plot].owner = 'a'; land(own, plot); if (own.lastRent) throw new Error('egen tomt ska inte visas');
+  const mort = G3.newGame([{ id: 'a', name: 'A' }, { id: 'b', name: 'B' }], { autoEnd: false }); mort.plots[plot].owner = 'b'; mort.plots[plot].mort = true; land(mort, plot); if (mort.lastRent) throw new Error('pantsatt tomt ska inte visas');
+  const free = G3.newGame([{ id: 'a', name: 'A' }, { id: 'b', name: 'B' }], { autoEnd: false }); free.plots[plot].owner = 'b'; free.players[0].rentFree = [D3.BORSTIPS.findIndex((c) => c.t === 'rentfree')]; land(free, plot); if (free.lastRent || free.stage !== 'rentchoice') throw new Error('rentchoice först');
+  G3.apply(free, 'a', { type: 'payRent' }); if (!free.lastRent || free.lastRent.pos !== plot) throw new Error('betald hyra ska visas');
+  console.log('Hyresvisningen klar', paid > 0 ? '' : '');
+}

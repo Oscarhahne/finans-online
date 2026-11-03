@@ -5,7 +5,7 @@ const path = require('path');
 const crypto = require('crypto');
 const { WebSocketServer } = require('ws');
 const G = require('./game.js');
-const { chaseTime } = require('./public/data.js');
+const { chaseTime, RENT_SHOW } = require('./public/data.js');
 
 const PORT = process.env.PORT || 3000;
 const PUBLIC = path.join(__dirname, 'public');
@@ -63,6 +63,7 @@ function botWait(r, g) {
     if (g.cardNo !== r.seenCard) { if (r.seenCard !== undefined && g.lastCard) r.hold = Math.max(r.hold, r.anim + POPUP_CARD); r.seenCard = g.cardNo; }
     // Polisjakten börjar samtidigt som kortet visas, men händelserutorna kommer först efter jakten.
     if ((g.prisonNo || 0) !== r.seenPrison) { if (r.seenPrison !== undefined && g.lastPrison) { r.anim += chaseTime(g.lastPrison.route) + 200; r.hold = Math.max(r.hold, r.anim + 300); } r.seenPrison = g.prisonNo || 0; }
+    if ((g.rentNo || 0) !== r.seenRent) { if (r.seenRent !== undefined && g.lastRent) { r.anim += RENT_SHOW + 200; r.hold = Math.max(r.hold, r.anim + 300); } r.seenRent = g.rentNo || 0; }
     if (g.drawNo !== r.seenDraw) { if (r.seenDraw !== undefined) r.hold = Math.max(r.hold, r.anim + DICE_TIME + POPUP_DRAW); r.seenDraw = g.drawNo; }
     if (g.eventNo !== r.seenEvent) { if (r.seenEvent !== undefined) { const ev = g.events[g.events.length - 1]; r.hold = Math.max(r.hold, r.anim + (ev && ev.ms ? ev.ms + 200 : POPUP_EVENT)); } r.seenEvent = g.eventNo; }
   }

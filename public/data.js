@@ -19,6 +19,8 @@
   const sharePct = (v) => (v >= 100000 ? 40 : v >= 75000 ? 30 : v >= 25000 ? 25 : 20);
   // Numret spelaren ser. Rutan efter Bankutgång är nr 1 och Bankutgång är sist. Internt behåller rutorna sina id.
   const displayNo = (n) => (n >= 49 ? n - 48 : n + 6);
+  // Så länge visas hyran: rutan vänds och pjäsen seglar ner i fallskärm.
+  const RENT_SHOW = 3500;
   // Vägen från en ruta till fängelset (ruta 9), åt det håll som är kortast.
   const prisonRoute = (from) => { const fwd = (9 - from + 54) % 54, back = 54 - fwd || 0, dir = fwd <= back ? 1 : -1, steps = Math.min(fwd, back), route = [from]; let n = from; for (let i = 0; i < steps; i++) { n = dir > 0 ? (n === 54 ? 1 : n + 1) : (n === 1 ? 54 : n - 1); route.push(n); } return route; };
   // Polisjakten tar längre tid ju längre vägen är, men aldrig för länge.
@@ -147,5 +149,5 @@
       mortgage: round500(g.plot * 0.5), mortgageBuilt: round500((g.plot + g.build) * 0.5),
       sell: round500(g.plot * 0.75), sellBuilt: round500(g.plot * 0.75 + g.build * 0.5) };
   };
-  return { GAME_NAME, GROUPS, SQUARES, BORSTIPS, FINANS, RULES, sharePct, shareName, shareSellPrice, shareBuyPrice, displayNo, plotInfo, prisonRoute, chaseTime };
+  return { GAME_NAME, GROUPS, SQUARES, BORSTIPS, FINANS, RULES, sharePct, shareName, shareSellPrice, shareBuyPrice, displayNo, plotInfo, prisonRoute, chaseTime, RENT_SHOW };
 });

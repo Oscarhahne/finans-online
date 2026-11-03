@@ -212,7 +212,7 @@ body.rolling .side{pointer-events:none}
 <script src="cards.js"></script>
 <script src="board3d.js"></script>
 <script>
-const { GAME_NAME, GROUPS, SQUARES, RULES, plotInfo, shareName, shareSellPrice, shareBuyPrice, displayNo, chaseTime } = window.GAME_DATA;
+const { GAME_NAME, GROUPS, SQUARES, RULES, plotInfo, shareName, shareSellPrice, shareBuyPrice, displayNo, chaseTime, RENT_SHOW } = window.GAME_DATA;
 document.title = GAME_NAME + ' online';
 const COLOR_NAMES = ['Röd', 'Blå', 'Gul', 'Vit', 'Lila', 'Grön'];
 const COLORS = ['#ff1744', '#2979ff', '#ffea00', '#ffffff', '#d500f9', '#00e676'];
@@ -464,7 +464,7 @@ function gameSounds(g) {
 }
 function soundButton() { return el('button', { id: 'soundbtn', style: 'width:100%', 'aria-pressed': sfx.on ? 'true' : 'false', onclick: () => { sfx.on = !sfx.on; store.set('sound', sfx.on ? 'on' : 'off'); document.getElementById('soundbtn').replaceWith(soundButton()); if (sfx.on) sfx.register(); } }, sfx.on ? 'Ljud: på' : 'Ljud: av'); }
 // Tärningarna rullas för alla spelare. Resultatet visas först när de stannat.
-let seenRoll = null, seenDraw = null, seenPrison = null, drawTimer = null, animating = false, pendingState = null;
+let seenRoll = null, seenDraw = null, seenPrison = null, seenRent = null, drawTimer = null, animating = false, pendingState = null;
 const FACE_POS = { 1: [4], 2: [0, 8], 3: [0, 4, 8], 4: [0, 2, 6, 8], 5: [0, 2, 4, 6, 8], 6: [0, 2, 3, 5, 6, 8] };
 const FACE_TF = { 1: 'rotateY(0deg)', 6: 'rotateY(180deg)', 2: 'rotateY(90deg)', 5: 'rotateY(-90deg)', 3: 'rotateX(90deg)', 4: 'rotateX(-90deg)' };
 const SHOW = { 1: [0, 0], 6: [0, 180], 2: [0, -90], 5: [0, 90], 3: [-90, 0], 4: [90, 0] };
@@ -554,6 +554,12 @@ function onState(m) {
     seenRoll = r.id; animating = true;
     playDice(m.game, r, () => walkToken(S.game, r, () => { animating = false; const q = pendingState || m; pendingState = null; onState(q); }));
     return;
+  }
+  const rent = m.game && m.game.lastRent;
+  if (seenRent === null || !S || !S.game) seenRent = rent ? rent.id : 0;
+  else if (rent && rent.id !== seenRent) {
+    seenRent = rent.id;
+    if (window.Board3D && Board3D.on) { animating = true; Board3D.rentFlip(rent.player, rent.pos, rent.amount, rent.to, () => { animating = false; const q = pendingState || m; pendingState = null; onState(q); }); return; }
   }
   const c = m.game && m.game.lastPrison;
   if (seenPrison === null || !S || !S.game) seenPrison = c ? c.id : 0;
