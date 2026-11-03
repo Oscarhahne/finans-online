@@ -96,6 +96,7 @@ function drawTip(g, p, d) {
     if (passedEntry) { p.lapDone = true; g.extraRoll = false; g.bonusThenLand = true; g.stage = 'bonus'; } else land(g, p, d + 1); }
   else if (c.t === 'jailfree') log(g, `${p.name} sparar ett frikort.`);
   else if (c.t === 'visit') { if (plotsOf(g, p).length) g.stage = 'visit'; else { p.pos = 35; land(g, p, d + 1); } }
+  else if (c.t === 'returnplot') { if (plotsOf(g, p).length) g.stage = 'returnplot'; else log(g, `${p.name} har ingen tomt att lämna tillbaka.`); }
   else if (c.t === 'handover') { if (handoverItems(g, p).length && prevPlayer(g, p)) g.stage = 'handover'; else log(g, `${p.name} har inget att lämna över.`); }
   else if (c.t === 'car') { if (p.car) pay(g, p, null, c.a, 'bilservice'); }
   else if (c.t === 'collect') alive(g).forEach((o) => { if (o !== p) pay(g, o, p, c.a, 'födelsedag'); });
@@ -153,7 +154,7 @@ function prevPlayer(g, p) {
 }
 function afterLanding(g, p) {
   if (g.stage === 'post' && g.extraRoll && !p.jail && !p.out) { g.stage = 'pre'; log(g, `${p.name} slog lika och får slå igen.`); }
-  if (!['bonus', 'visit', 'handover', 'rentchoice', 'itsec'].includes(g.stage)) g.extraRoll = false;
+  if (!['bonus', 'visit', 'handover', 'returnplot', 'rentchoice', 'itsec'].includes(g.stage)) g.extraRoll = false;
 }
 function land(g, p, depth = 0) {
   if (depth > 5) return;
@@ -308,6 +309,7 @@ function apply(g, pid, a) {
       log(g, `${p.name} använder sitt frikort och slipper fängelset.`); break; }
     case 'visit': { needTurn(); if (g.stage !== 'visit') fail('Det går inte nu.'); const n = Number(a.n); needOwnPlot(n);
       p.pos = n; g.stage = 'post'; log(g, `${p.name} besöker ${SQUARES[n].name}.`); land(g, p, 1); afterLanding(g, p); break; }
+    case 'returnplot': { needTurn(); if (g.stage !== 'returnplot') fail('Det går inte nu.'); const n = Number(a.n), x = g.plots[n]; if (!x || x.owner !== pid) fail('Du äger inte tomten.'); log(g, `${p.name} lämnar tillbaka ${SQUARES[n].name} till banken utan ersättning${x.built ? ', med byggnad' : ''}.`); x.owner = null; x.built = false; x.mort = false; g.stage = 'post'; afterLanding(g, p); break; }
     case 'handover': { needTurn(); if (g.stage !== 'handover') fail('Det går inte nu.'); const to = prevPlayer(g, p); const items = handoverItems(g, p);
       const it = items.find((v) => (a.kind === 'plot' ? v.kind === 'plot' && v.n === Number(a.n) : v.kind === 'share' && v.id === a.id)); if (!it) fail('Det går inte att lämna över.');
       if (it.kind === 'plot') { g.plots[it.n].owner = to.id; log(g, `${p.name} lämnar över ${SQUARES[it.n].name} till ${to.name}.`); }
@@ -384,6 +386,7 @@ function botAction(g, pid, passive) {
   if (g.stage === 'itsec') return { type: p.cash >= R.itCost ? 'itPay' : 'itRoll' };
   if (g.stage === 'rentchoice') return !passive && g.pendingRent.amount >= 8000 ? { type: 'useRentFree' } : { type: 'payRent' };
   if (g.stage === 'visit') return { type: 'visit', n: plotsOf(g, p)[0] };
+  if (g.stage === 'returnplot') { const worth = (n) => plotInfo(n).price + (g.plots[n].built ? plotInfo(n).build : 0) - (g.plots[n].mort ? 1000000 : 0); return { type: 'returnplot', n: plotsOf(g, p).sort((a, b) => worth(a) - worth(b))[0] }; }
   if (g.stage === 'handover') { const it = handoverItems(g, p).sort((x, y) => x.value - y.value)[0]; return { type: 'handover', ...it }; }
   if (g.stage === 'post') return { type: 'end' };
   if (passive) return { type: 'roll' };

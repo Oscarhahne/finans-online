@@ -81,7 +81,7 @@ const D = require('../public/data.js');
 const tip = (g, match) => { const i = D.BORSTIPS.findIndex(match); g.tipDeck = [i, ...g.tipDeck.filter((v) => v !== i)]; };
 const news = (g, match) => { const i = D.FINANS.findIndex(match); g.newsDeck = [i, ...g.newsDeck.filter((v) => v !== i)]; };
 const landOn = (g, pos, die = 0) => { g.players[g.current].pos = pos - 1; Math.random = () => die; G.apply(g, g.players[g.current].id, { type: 'roll' }); Math.random = orig; };
-assert.equal(D.BORSTIPS.length, 60); assert.equal(D.BORSTIPS.filter((c) => c.t === 'bondwin').length, 1); assert.equal(D.BORSTIPS.filter((c) => c.t === 'back').length, 1); assert.equal(D.BORSTIPS.filter((c) => c.t === 'forward').length, 1); assert.equal(D.FINANS.length, 38);
+assert.equal(D.BORSTIPS.length, 61); assert.equal(D.BORSTIPS.filter((c) => c.t === 'bondwin').length, 1); assert.equal(D.BORSTIPS.filter((c) => c.t === 'back').length, 1); assert.equal(D.BORSTIPS.filter((c) => c.t === 'forward').length, 1); assert.equal(D.FINANS.length, 38);
 g = two(); g.bonds[1] = 'b'; { const c = g.players[1].cash; tip(g, (c) => c.t === 'bondwin' && c.n === 1); landOn(g, 2); assert.equal(g.players[1].cash, c + 10000); assert.equal(g.bonds[1], null); }
 g = two(); tip(g, (c) => c.t === 'smalldraw'); landOn(g, 2); assert.equal(g.bondRound.draw, 'small');
 g = two(); tip(g, (c) => c.t === 'back'); landOn(g, 2); assert.equal(g.players[0].pos, 54);
@@ -177,3 +177,7 @@ for (const pct of [30, 40]) { const q = two(); q.shares.forEach((x, i) => { x.ow
 // Skatteverket: 10 % av kontanterna, högst 50 000 kr. Avrundas nedåt till hela 500-lappar.
 { const D2 = require('../public/data.js'); assert.equal(D2.SQUARES[20].kind, 'tax'); assert.equal(D2.displayNo(20), 26); assert.equal(D2.SQUARES[26].kind, 'news');
   for (const [cash, want] of [[100000, 10000], [1000000, 50000], [12300, 1000], [400, 0]]) { const q = two(); const p = q.players[0]; p.cash = cash; p.pos = 19; const o = Math.random; Math.random = () => 0; G.apply(q, 'a', { type: 'roll' }); Math.random = o; assert.equal(p.pos, 20); assert.equal(p.cash, cash - want); } }
+// Återlämna en tomt: spelaren väljer, ingen ersättning, byggnaden följer med.
+{ const q = two(); const p = q.players[0]; q.plots[5] = { owner: 'a', built: true, mort: false }; q.plots[7].owner = 'a'; const c = p.cash; tip(q, (x) => x.t === 'returnplot'); landOn(q, 2); assert.equal(q.stage, 'returnplot'); rejects(q, 'a', { type: 'roll' }, /./); rejects(q, 'a', { type: 'returnplot', n: 10 }, /äger inte/); G.apply(q, 'a', { type: 'returnplot', n: 5 }); assert.equal(q.plots[5].owner, null); assert.equal(q.plots[5].built, false); assert.equal(q.plots[7].owner, 'a'); assert.equal(p.cash, c); assert.equal(q.stage, 'post'); }
+{ const q = two(); tip(q, (x) => x.t === 'returnplot'); landOn(q, 2); assert.notEqual(q.stage, 'returnplot'); }
+{ const q = two(); q.plots[5] = { owner: 'a', built: true, mort: false }; q.plots[1].owner = 'a'; tip(q, (x) => x.t === 'returnplot'); landOn(q, 2); assert.deepEqual(G.botAction(q, 'a', true), { type: 'returnplot', n: 1 }); }
