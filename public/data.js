@@ -9,9 +9,9 @@
   const GROUPS = {
     H: { name: 'Hantverkshuset', color: '#92400e', text: '#fff', plot: 10000, build: 10000, rent: 1500, rentBuilt: 6000, shares: [50000, 50000, 25000] },
     S: { name: 'Servicekompaniet', color: '#d9480f', text: '#fff', plot: 12000, build: 12000, rent: 2000, rentBuilt: 8000, shares: [25000, 25000] },
-    A: { name: 'Affärscentrum', color: '#be185d', text: '#fff', plot: 20000, build: 20000, rent: 3000, rentBuilt: 12000, shares: [75000, 50000, 50000] },
-    F: { name: 'Finanstrusten', color: '#2563eb', text: '#fff', plot: 25000, build: 25000, rent: 4000, rentBuilt: 16000, shares: [75000, 75000, 50000] },
-    T: { name: 'Teknikföretagen', color: '#0f766e', text: '#fff', plot: 30000, build: 30000, rent: 5000, rentBuilt: 20000, shares: [100000, 75000, 50000] },
+    A: { name: 'Affärscentrum', color: '#be185d', text: '#fff', plot: 20000, build: 20000, rent: 3000, rentBuilt: 12000, shares: [100000, 75000, 75000] },
+    F: { name: 'Finanstrusten', color: '#2563eb', text: '#fff', plot: 25000, build: 25000, rent: 4000, rentBuilt: 16000, shares: [100000, 75000, 75000] },
+    T: { name: 'Teknikföretagen', color: '#0f766e', text: '#fff', plot: 30000, build: 30000, rent: 5000, rentBuilt: 20000, shares: [100000, 75000, 75000] },
     K: { name: 'Kemibolaget', color: '#7c3aed', text: '#fff', plot: 40000, build: 40000, rent: 7000, rentBuilt: 28000, shares: [100000, 75000, 75000], industry: true },
     I: { name: 'Industrikoncernen', color: '#dc2626', text: '#fff', plot: 50000, build: 50000, rent: 9000, rentBuilt: 36000, shares: [150000, 75000, 75000], sharePct: 50, industry: true },
   };

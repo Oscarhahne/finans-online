@@ -18,7 +18,7 @@ g = two(); const [A, B, C] = g.players; A.lapDone = true; A.pos = 41; A.cash = 5
 g.plots[5] = { owner: 'b', built: true, mort: false }; g.plots[7].owner = 'a'; g.plots[8].owner = 'a';
 g.shares.find((s) => s.id === 'A0').owner = 'a'; g.shares.find((s) => s.id === 'A1').owner = 'b'; g.shares.find((s) => s.id === 'A2').owner = 'c';
 G.apply(g, 'a', { type: 'meeting', group: 'A', fee: 120000 });
-assert.equal(A.cash, 500000 - 140000 - 120000); assert.equal(B.cash, 90000 + 45000); assert.equal(C.cash, 50000 + 45000);
+assert.equal(A.cash, 500000 - 190000 - 120000); assert.equal(B.cash, 115000 + 45000); assert.equal(C.cash, 75000 + 45000);
 assert.equal(g.plots[5].owner, 'a');
 // Hyra fördubblas med komplett grupp.
 A.cash = 100000; g.current = 1; B.pos = 4; B.cash = 100000; B.car = false; g.stage = 'pre';
