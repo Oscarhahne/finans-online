@@ -1,5 +1,5 @@
 // Spelmotorn. Inga nätverksdelar: state in, handling in, state ut.
-const { GROUPS, SQUARES, BORSTIPS, FINANS, RULES: R, sharePct, shareSellPrice, shareBuyPrice, plotInfo } = require('./public/data.js');
+const { GROUPS, SQUARES, BORSTIPS, FINANS, RULES: R, sharePct, shareSellPrice, shareBuyPrice, plotInfo, prisonRoute } = require('./public/data.js');
 
 const die = () => 1 + Math.floor(Math.random() * 6);
 const kr = (v) => v.toLocaleString('sv-SE').replace(/ /g, ' ') + ' kr';
@@ -9,7 +9,7 @@ const groupPlots = (k) => Object.keys(SQUARES).map(Number).filter((n) => SQUARES
 
 function newGame(players, opts = {}) {
   const g = {
-    phase: 'play', autoEnd: opts.autoEnd !== false, target: opts.target || R.target, doubles: 0, pendingRent: null, bonusThenLand: false, drawNo: 0, lastDraw: null, extraRoll: false, eventNo: 0, events: [], finalRound: null, landed: null, cardNo: 0, rollNo: 0, lastRoll: null, turnNo: 1, current: 0, stage: 'pre', boughtPlot: false, boughtShare: false,
+    phase: 'play', autoEnd: opts.autoEnd !== false, target: opts.target || R.target, doubles: 0, pendingRent: null, bonusThenLand: false, drawNo: 0, lastDraw: null, extraRoll: false, eventNo: 0, events: [], finalRound: null, landed: null, prisonNo: 0, lastPrison: null, cardNo: 0, rollNo: 0, lastRoll: null, turnNo: 1, current: 0, stage: 'pre', boughtPlot: false, boughtShare: false,
     players: players.map((p, i) => ({ id: p.id, name: p.name, bot: !!p.bot, color: p.color ?? i, shape: p.shape ?? i, pos: 48, cash: R.startCash, car: false, loans: 0, jail: 0, jailFree: [], permits: [], rentFree: [], tradePass: [], lapDone: false, fromPrison: false, out: false })),
     plots: {}, shares: [], bonds: {}, news: null, dice: [], debts: [], bondRound: null, returnRound: null, winner: null, log: [],
     tipDeck: shuffled(BORSTIPS.length), newsDeck: shuffled(FINANS.length), lastCard: null,
@@ -141,6 +141,7 @@ function runDraw(g, kind) {
 // Spelaren hamnar i fängelset och slår själv hur länge det blir.
 function sendToPrison(g, p) {
   g.prisonFrom = { pos: p.pos, fromPrison: p.fromPrison };
+  g.prisonNo = (g.prisonNo || 0) + 1; g.lastPrison = { id: g.prisonNo, player: p.id, route: prisonRoute(p.pos) };
   p.pos = 9; p.fromPrison = true; g.landed = { player: p.id, pos: 9 }; g.extraRoll = false; g.stage = 'sentence';
   log(g, `${p.name} åker i fängelse.`);
 }

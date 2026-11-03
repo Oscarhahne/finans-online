@@ -19,6 +19,10 @@
   const sharePct = (v) => (v >= 100000 ? 40 : v >= 75000 ? 30 : v >= 25000 ? 25 : 20);
   // Numret spelaren ser. Rutan efter Bankutgång är nr 1 och Bankutgång är sist. Internt behåller rutorna sina id.
   const displayNo = (n) => (n >= 49 ? n - 48 : n + 6);
+  // Vägen från en ruta till fängelset (ruta 9), åt det håll som är kortast.
+  const prisonRoute = (from) => { const fwd = (9 - from + 54) % 54, back = 54 - fwd || 0, dir = fwd <= back ? 1 : -1, steps = Math.min(fwd, back), route = [from]; let n = from; for (let i = 0; i < steps; i++) { n = dir > 0 ? (n === 54 ? 1 : n + 1) : (n === 1 ? 54 : n - 1); route.push(n); } return route; };
+  // Polisjakten tar längre tid ju längre vägen är, men aldrig för länge.
+  const chaseTime = (route) => Math.max(1800, Math.min(3400, (route.length - 1) * 170));
   const shareName = (v) => (v === 20000 ? 'Fondaktie' : 'Aktie');
   // Fondaktien återköps för hela köpesumman, andra aktier för 75 %.
   const shareSellPrice = (v, baisse) => (baisse ? Math.round(v / 2 / 500) * 500 : v === 20000 ? v : Math.round(v * 0.75 / 500) * 500);
@@ -143,5 +147,5 @@
       mortgage: round500(g.plot * 0.5), mortgageBuilt: round500((g.plot + g.build) * 0.5),
       sell: round500(g.plot * 0.75), sellBuilt: round500(g.plot * 0.75 + g.build * 0.5) };
   };
-  return { GAME_NAME, GROUPS, SQUARES, BORSTIPS, FINANS, RULES, sharePct, shareName, shareSellPrice, shareBuyPrice, displayNo, plotInfo };
+  return { GAME_NAME, GROUPS, SQUARES, BORSTIPS, FINANS, RULES, sharePct, shareName, shareSellPrice, shareBuyPrice, displayNo, plotInfo, prisonRoute, chaseTime };
 });

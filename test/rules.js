@@ -192,3 +192,21 @@ for (const pct of [30, 40]) { const q = two(); q.shares.forEach((x, i) => { x.ow
 { const q = two(); const p = q.players[0]; p.loans = 2; p.cash = 80000; tip(q, (x) => x.t === 'loancall'); landOn(q, 2); assert.equal(p.loans, 1); assert.equal(p.cash, 30000); const r = two(); const c = r.players[0].cash; tip(r, (x) => x.t === 'loancall'); landOn(r, 2); assert.equal(r.players[0].cash, c); assert.equal(r.players[0].loans, 0); }
 // Räntan är 10 000 kr per lån vid Bankutgång.
 { const q = two(); const p = q.players[0]; p.loans = 2; p.cash = 100000; tip(q, (x) => x.t === 'carloss'); landOn(q, 48); assert.equal(p.pos, 48); assert.equal(p.cash, 80000); }
+
+// Polisjakten: vägen går kortaste vägen till fängelset och alla klienter får veta att den ska spelas.
+{
+  const { prisonRoute, chaseTime } = require('../public/data.js');
+  const eq = (a, b, m) => { if (JSON.stringify(a) !== JSON.stringify(b)) throw new Error(`${m}: ${JSON.stringify(a)} != ${JSON.stringify(b)}`); };
+  eq(prisonRoute(9), [9], 'står redan i fängelset');
+  eq(prisonRoute(8), [8, 9], 'ett steg framåt');
+  eq(prisonRoute(12), [12, 11, 10, 9], 'kortast bakåt');
+  eq(prisonRoute(53), [53, 54, 1, 2, 3, 4, 5, 6, 7, 8, 9], 'runt över ruta 54');
+  eq(prisonRoute(30).length, 22, 'från Gå direkt i fängelse');
+  for (let n = 1; n <= 54; n++) { const r = prisonRoute(n); if (r[0] !== n || r[r.length - 1] !== 9 || r.length > 28) throw new Error('fel väg från ' + n); r.slice(1).forEach((v, i) => { const d = (v - r[i] + 54) % 54; if (d !== 1 && d !== 53) throw new Error('hopp i vägen från ' + n); }); if (chaseTime(r) < 1800 || chaseTime(r) > 3400) throw new Error('fel tid'); }
+  const G2 = require('../game.js'); const g = G2.newGame([{ id: 'a', name: 'A' }, { id: 'b', name: 'B' }]);
+  const a = g.players[g.current]; a.pos = 29; const orig = Math.random; Math.random = () => 0; // Tärningen visar 1.
+  try { G2.apply(g, a.id, { type: 'roll' }); } finally { Math.random = orig; }
+  if (a.pos !== 9 || g.stage !== 'sentence') throw new Error('skulle åka i fängelse');
+  eq(g.lastPrison.player, a.id, 'jakten gäller rätt spelare'); eq(g.lastPrison.route[0], 30, 'jakten börjar på rutan'); eq(g.lastPrison.route[g.lastPrison.route.length - 1], 9, 'jakten slutar i fängelset');
+  console.log('Polisjakten klar');
+}
