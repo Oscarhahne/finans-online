@@ -155,7 +155,7 @@ button.waiting::after{content:' (vänta)';font-weight:600}
 .l{display:flex;align-items:center;gap:9px;font:700 14px/1.2 Nunito,sans-serif}
 .s{width:22px;height:22px;flex:none;border-radius:50%}
 .deck{border:2px solid var(--g);text-shadow:0 2px 3px rgba(0,0,0,.6);position:absolute;width:170px;height:100px;border-radius:16px;display:flex;flex-direction:column;gap:6px;align-items:center;justify-content:center;font:600 19px/1 Fredoka,sans-serif;color:var(--dark);box-shadow:0 6px 16px rgba(0,0,0,.45)}
-.deck svg{width:66px;height:50px}
+.deck{overflow:hidden}.deck canvas{flex:none;width:100%;height:100%}
 .pl{display:flex;justify-content:space-between;align-items:center;gap:6px;padding:3px 8px;border-radius:10px;background:#10234c;margin-top:4px}
 .pl.on{outline:2px solid var(--gold)}.pl.out{opacity:.45;text-decoration:line-through}
 .pawnicon{display:block;width:28px;height:39px;margin:-5px 0;flex:none}
@@ -226,6 +226,7 @@ body.rolling .side{pointer-events:none}
 <div id="app"></div><div id="toast" role="alert"></div>
 <script src="data.js"></script>
 <script src="cards.js"></script>
+<script src="rutbilder.js"></script>
 <script src="gubbar.js"></script>
 <script src="board3d.js"></script>
 <script>
@@ -282,21 +283,8 @@ const ICON = {
   I: '<path d="M6 45V25l15 9v-9l15 9v-9l15 9V8h8v37z" fill="#e2e8f0" stroke="#1f2937"/><path d="M12 36h6v5h-6zM26 36h6v5h-6zM40 36h6v5h-6z" fill="#fbbf24"/><circle cx="56" cy="4" r="3" fill="#cbd5e1"/>',
 };
 // Egen bild för Aktieutdelning. Rutans nummer läggs ovanpå numret i bilden.
-// Aktieutdelningsrutan fyller hela rutan, oavsett form: grön botten till kanterna och bildens innehåll i mitten.
-function drawDivArt(c, cw, ch, img, n) {
-  const unit = Math.min(cw, ch), bg = c.createLinearGradient(0, 0, 0, ch); bg.addColorStop(0, '#04562c'); bg.addColorStop(.3, '#023a1c'); bg.addColorStop(1, '#02301a'); c.fillStyle = bg; c.fillRect(0, 0, cw, ch);
-  // Bilden utan sin egen ram och siffra: mynten, pilen och texten tonas in i bottnen.
-  const sx = 321 * .13, sy = 214 * .03, sw = 321 * .74, sh = 214 * .9, pad = unit * .085, k = Math.min((cw - 2 * pad) / sw, (ch - 2 * pad) / sh), dw = sw * k, dh = sh * k, part = document.createElement('canvas'); part.width = Math.ceil(dw); part.height = Math.ceil(dh); const o = part.getContext('2d'); o.drawImage(img, sx, sy, sw, sh, 0, 0, dw, dh); o.globalCompositeOperation = 'destination-in';
-  const fx = o.createLinearGradient(0, 0, dw, 0); fx.addColorStop(0, 'rgba(0,0,0,0)'); fx.addColorStop(.12, '#000'); fx.addColorStop(.88, '#000'); fx.addColorStop(1, 'rgba(0,0,0,0)'); o.fillStyle = fx; o.fillRect(0, 0, dw, dh);
-  const fy = o.createLinearGradient(0, 0, 0, dh); fy.addColorStop(0, 'rgba(0,0,0,0)'); fy.addColorStop(.06, '#000'); fy.addColorStop(.95, '#000'); fy.addColorStop(1, 'rgba(0,0,0,0)'); o.fillStyle = fy; o.fillRect(0, 0, dw, dh);
-  o.globalCompositeOperation = 'destination-out'; const bx0 = (321 * .1 - sx) * k, by0 = (214 * .13 - sy) * k, rb = 321 * .14 * k, cut = o.createRadialGradient(bx0, by0, rb * .55, bx0, by0, rb); cut.addColorStop(0, '#000'); cut.addColorStop(1, 'rgba(0,0,0,0)'); o.fillStyle = cut; o.fillRect(0, 0, dw, dh);
-  c.drawImage(part, (cw - dw) / 2, (ch - dh) / 2);
-  // Ram ända ut mot kanten, med samma gröna sken som i bilden.
-  const inset = unit * .045, rad = unit * .075; c.save(); c.strokeStyle = 'rgba(38,226,120,.16)'; c.lineWidth = unit * .07; c.beginPath(); c.roundRect(inset, inset, cw - 2 * inset, ch - 2 * inset, rad); c.stroke(); c.shadowColor = '#3dff9a'; c.shadowBlur = unit * .05; c.strokeStyle = '#49f59b'; c.lineWidth = Math.max(2, unit * .012); c.beginPath(); c.roundRect(inset, inset, cw - 2 * inset, ch - 2 * inset, rad); c.stroke(); c.restore();
-  const bw = unit * .21, bh = unit * .17, bx = unit * .085, by = unit * .085; c.fillStyle = '#0a2a1b'; c.beginPath(); c.roundRect(bx, by, bw, bh, unit * .03); c.fill(); c.fillStyle = '#fff'; c.font = `800 ${Math.round(unit * .125)}px Nunito, "Trebuchet MS", Verdana, sans-serif`; c.textAlign = 'center'; c.textBaseline = 'middle'; c.fillText(displayNo(n), bx + bw / 2, by + bh / 2 + unit * .006); c.textBaseline = 'alphabetic';
-}
-// Samma ruta på det enkla brädet. Den ritas när bilden har laddats.
-function divTile(n, w, h) { const S = 2, cv = el('canvas', { class: 'divfill', 'aria-label': 'Aktieutdelning' }); cv.width = Math.round(w * S); cv.height = Math.round(h * S); const img = new Image(); img.onload = () => drawDivArt(cv.getContext('2d'), cv.width, cv.height, img, n); img.src = 'aktieutdelning.webp'; return cv; }
+// Ruta på det enkla brädet. Aktieutdelning ritas när bilden har laddats, de andra direkt.
+function artTile(kind, no, w, h, label) { const S = 2, cv = el('canvas', { class: 'divfill', 'aria-label': label }); cv.width = Math.round(w * S); cv.height = Math.round(h * S); const c = cv.getContext('2d'); if (kind === 'div') { const img = new Image(); img.onload = () => drawDivArt(c, cv.width, cv.height, img, no); img.src = 'aktieutdelning.webp'; } else drawCardArt(c, cv.width, cv.height, kind, no); return cv; }
 const divArt = (n, width) => el('div', { class: 'divart', style: `width:${width}` }, el('img', { src: 'aktieutdelning.webp', alt: 'Aktieutdelning', draggable: 'false' }), el('span', {}, displayNo(n)));
 const iconFor = (s) => { const k = s.kind === 'plot' ? s.group : { bor: 'bor', news: 'news', div: 'div', lilla: 'bond', bonddiv: 'bond', branch: 'bank', entry: 'in', exit: 'out', buildsq: 'crane', itsec: 'shield', tax: 'tax', repay: 'repay', give: 'give', prison: 'bars', gotoprison: 'gojail' }[s.kind]; return svg(`<svg class="tic" viewBox="0 0 64 48" aria-hidden="true">${ICON[k] || ''}</svg>`); };
 const tileBg = (c) => `linear-gradient(145deg,color-mix(in srgb,${c} 78%,white) 0%,${c} 42%,color-mix(in srgb,${c} 52%,black) 100%)`;
@@ -337,8 +325,8 @@ function buildBoard() {
   b.append(el('div', { class: 'plinth', style: `left:${colX(6) + 2}px;top:${BOTTOM - 5 * ROW + 12}px;width:${TW - 4}px;height:${5 * ROW + D - 2}px;background:#5c3a06` }));
   b.append(el('div', { class: 'mid', style: `left:${colX(6)}px;width:${TW}px;top:${BOTTOM - 5 * ROW}px;height:${5 * ROW + D}px` }, 'Bankens huvudkontor'));
   const leftC = D + 2 * TW; const rightC = colX(8) + 2 * TW;
-  b.append(el('div', { class: 'deck ct-bor', style: `left:${leftC - 85}px;top:${BOTTOM - 705}px;transform:rotate(-4deg)` }, iconFor(SQUARES[2]), 'Börstips'));
-  b.append(el('div', { class: 'deck ct-news', style: `left:${rightC - 85}px;top:${BOTTOM - 705}px;transform:rotate(4deg)` }, iconFor(SQUARES[6]), 'Finanstidningen'));
+  b.append(el('div', { class: 'deck ct-bor', style: `left:${leftC - 85}px;top:${BOTTOM - 705}px;transform:rotate(-4deg)` }, artTile('bor', null, 170, 100, 'Börstips')));
+  b.append(el('div', { class: 'deck ct-news', style: `left:${rightC - 85}px;top:${BOTTOM - 705}px;transform:rotate(4deg)` }, artTile('news', null, 170, 100, 'Finanstidningen')));
   b.append(el('div', { class: 'activenews', id: 'activenews', style: `left:${colX(8) + 10}px;width:${4 * TW - 20}px;top:${BOTTOM - 585}px` }));
   for (let n = 1; n <= 54; n++) {
     const s = SQUARES[n]; const r = rect(n); const isPlot = s.kind === 'plot';
@@ -355,7 +343,7 @@ function buildBoard() {
     if (r.corner) e.append(el('div', { class: 'r' }, el('div', { class: 'n' }, displayNo(n)), icon, el('div', {}, ...name)));
     else {
       const rot = r.rot || 0; const sideways = Math.abs(rot) === 90;
-      if (s.kind === 'div') { const uw = sideways ? h : w, uh = sideways ? w : h; e.classList.add('hasart'); e.append(el('div', { class: 'artwrap', style: `left:${(w - uw) / 2}px;top:${(h - uh) / 2}px;width:${uw}px;height:${uh}px;transform:rotate(${-rot}deg)` }, divTile(n, uw, uh))); b.append(e); continue; }
+      if (s.kind === 'div' || s.kind === 'bor' || s.kind === 'news') { const uw = sideways ? h : w, uh = sideways ? w : h; e.classList.add('hasart'); e.append(el('div', { class: 'artwrap', style: `left:${(w - uw) / 2}px;top:${(h - uh) / 2}px;width:${uw}px;height:${uh}px;transform:rotate(${-rot}deg)` }, artTile(s.kind, displayNo(n), uw, uh, s.name))); b.append(e); continue; }
       if (isPlot) e.append(el('div', { class: 'head', id: 'h' + n, style: (sideways ? 'height:42px;' : '') + (rot === -90 ? 'justify-content:flex-end' : '') }));
       // Rutan är vriden så att huvudet pekar inåt, men texten står rak mot skärmen. Pjäsen får en egen del av rutan.
       let lx = 0, ly = 0, W = w, H = h, just = 'center';

@@ -25,7 +25,8 @@ function tileCanvas(n, r, w, h) { const S = 3, cw = Math.round(w * S), ch = Math
   const grad = c.createLinearGradient(0, 0, cw, ch);
   if (s.kind === 'bor') { grad.addColorStop(0, '#c0e1ff'); grad.addColorStop(.6, '#7cbcf9'); grad.addColorStop(1, '#5aa4ee'); } else if (s.kind === 'news') { grad.addColorStop(0, '#ffe07a'); grad.addColorStop(.6, '#f7bf30'); grad.addColorStop(1, '#eeac1c'); } else { grad.addColorStop(0, shade(base, .28)); grad.addColorStop(.45, base); grad.addColorStop(1, shade(base, -.42)); }
   c.fillStyle = grad; c.fillRect(0, 0, cw, ch); const ink = light ? '#18202c' : '#ffffff';
-  if (s.kind === 'div' && divImg) drawDivArt(c, cw, ch, divImg, n);
+  if (s.kind === 'div' && divImg) drawDivArt(c, cw, ch, divImg, displayNo(n));
+  else if (light) drawCardArt(c, cw, ch, s.kind, displayNo(n));
   else {
     let bx = 0, by = 0, bw = cw, bh = ch; const band = 30 * S;
     if (isPlot) { c.fillStyle = 'rgba(255,255,255,.4)'; if (r.rot === 180) { c.fillRect(0, ch - band, cw, band); bh = ch - band; } else if (r.rot === 90) { c.fillRect(cw - band, 0, band, ch); bw = cw - band; } else if (r.rot === -90) { c.fillRect(0, 0, band, ch); bx = band; bw = cw - band; } else { c.fillRect(0, 0, cw, band); by = band; bh = ch - band; } }
@@ -74,7 +75,7 @@ function bankBuilding() { const cx = wx(colX(6) + TW / 2), z0 = wz(BOTTOM - 5 * 
   const roofTex = texOf(cv); const roof = add(g, box(w + .16, .12, len + .04), [gold, gold, new THREE.MeshStandardMaterial({ map: roofTex, roughness: .4, metalness: .25 }), gold, gold, gold], cx, hgt + .16, z0 + len / 2);
   const sh = new THREE.Shape(); sh.moveTo(-w / 2 - .08, 0); sh.lineTo(w / 2 + .08, 0); sh.lineTo(0, .3); sh.closePath(); const pedi = add(g, new THREE.ExtrudeGeometry(sh, { depth: .12, bevelEnabled: false }), cream, cx, hgt + .22, z1 - .14);
   [-1, -.33, .33, 1].forEach((s) => add(g, cyl(.06, .065, hgt, 16), cream, cx + s * w * .38, hgt / 2 + .1, z1 + .02)); scene.add(g); }
-function deck(x, z, rot, kind, label) { const g = new THREE.Group(); const cv = document.createElement('canvas'); cv.width = 510; cv.height = 300; const c = cv.getContext('2d'); const gr = c.createLinearGradient(0, 0, 510, 300); if (kind === 'bor') { gr.addColorStop(0, '#c0e1ff'); gr.addColorStop(1, '#5aa4ee'); } else { gr.addColorStop(0, '#ffe07a'); gr.addColorStop(1, '#eeac1c'); } c.fillStyle = gr; c.fillRect(0, 0, 510, 300); const ic = iconImg[kind]; if (ic) c.drawImage(ic, 170, 40, 170, 128); c.fillStyle = '#18202c'; c.textAlign = 'center'; c.font = fontOf(52); c.fillText(label, 255, 240); c.strokeStyle = '#000'; c.lineWidth = 10; rr(c, 5, 5, 500, 290, 28); c.stroke();
+function deck(x, z, rot, kind) { const g = new THREE.Group(); const cv = document.createElement('canvas'); cv.width = 1020; cv.height = 600; const c = cv.getContext('2d'); drawCardArt(c, 1020, 600, kind, null); c.strokeStyle = '#000'; c.lineWidth = 20; rr(c, 10, 10, 1000, 580, 56); c.stroke();
   const top = new THREE.MeshStandardMaterial({ map: texOf(cv), roughness: .45 }); const side = mat(kind === 'bor' ? '#e8f2fc' : '#fff4c9'); const dim = [1.7, .02, 1]; for (let i = 0; i < 16; i++) { const m = add(g, box(...dim), i === 15 ? [side, side, top, side, side, side] : side, Math.sin(i * 1.3) * .012, .02 + i * .022, Math.cos(i * 1.9) * .012); m.rotation.y = Math.sin(i * 2.7) * .012; } g.position.set(x, .04, z); g.rotation.y = rot; scene.add(g); }
 
   function animate(dur, fn, done) { if (still()) { fn(1); done && done(); return; } anims.push({ t: 0, dur, fn, done }); }
@@ -141,7 +142,7 @@ function deck(x, z, rot, kind, label) { const g = new THREE.Group(); const cv = 
     sirenLights = ['#ff1a1a', '#2158ff'].map((c) => { const l = new THREE.PointLight(c, 0, 7, 1.6); scene.add(l); return l; });
     const slabM = new THREE.MeshStandardMaterial({ map: slabTexture(), roughness: .8 }); const edge = mat('#0a1a3a', { roughness: .6 }); const trim = mat('#c79a2c', { metalness: .7, roughness: .35 }); add(scene, box(W * U + .3, .5, H * U + .3), [edge, edge, slabM, edge, edge, edge], 0, -.25, 0); add(scene, box(W * U + .42, .1, H * U + .42), trim, 0, -.5, 0);
     for (let n = 1; n <= 54; n++) { const r = rect(n), s = SQUARES[n]; const hgt = r.corner ? .3 : r.bank ? .16 : .2; const col = s.kind === 'plot' ? GROUPS[s.group].color : s.kind === 'bor' ? '#2f6fb8' : s.kind === 'news' ? '#b57e12' : s.kind === 'div' ? '#0b4f26' : KIND_BG[s.kind] || '#334155'; const side = mat(shade(col, -.45), { roughness: .55 }); const top = new THREE.MeshStandardMaterial({ map: texOf(tileCanvas(n, r, r.w, r.h)), roughness: .48, metalness: 0 }); const m = add(scene, box(r.w * U - .025, hgt, r.h * U - .025), [side, side, top, side, side, side], wx(r.x + r.w / 2), hgt / 2, wz(r.y + r.h / 2)); m.userData.n = n; tiles[n] = m; tileTop[n] = hgt; hit.push(m); }
-    bankBuilding(); deck(wx(W / 2 - 285), wz(D + 115), -.05, 'bor', 'Börstips'); deck(wx(W / 2 + 285), wz(D + 115), .05, 'news', 'Finanstidningen');
+    bankBuilding(); deck(wx(W / 2 - 285), wz(D + 115), -.05, 'bor'); deck(wx(W / 2 + 285), wz(D + 115), .05, 'news');
     const tg = new THREE.Vector3(0, 0, .25); fitPose(.86, .72, 0, tg); controls.target.copy(tg); controls.update(); }
   window.Board3D = {
     on: false,
