@@ -1,13 +1,15 @@
 // Spelpjäserna: sex gubbar i leksaksstil, var och en med sin egen hatt i spelarens färg. Framsidan är +x och fötterna står på y = 0.
 // Ben och armar sitter i egna leder, så att gubbarna kan gå, springa, sitta i bil och hänga i fallskärm.
 (function () {
+  // Delade former: alla gubbar återanvänder samma geometri, vilket sparar minne.
+  const SHAPES = new Map(), shared = (key, make) => { if (!SHAPES.has(key)) SHAPES.set(key, make()); return SHAPES.get(key); };
   window.GUBBE_NAMES = ['Direktören', 'Mäklaren', 'Byggherren', 'Bankchefen', 'Industrimagnaten', 'Investeraren'];
   window.makeGubbe = function (kind, color) {
     const T = THREE, g = new T.Group();
     const lin = (c) => new T.Color(c).convertSRGBToLinear();
     const M = (c, o = {}) => new T.MeshStandardMaterial({ roughness: 0.55, metalness: 0.03, ...o, color: lin(c), ...(o.emissive ? { emissive: lin(o.emissive) } : {}) });
     const add = (p, geo, m, x = 0, y = 0, z = 0) => { const o = new T.Mesh(geo, m); o.position.set(x, y, z); o.castShadow = true; o.receiveShadow = true; p.add(o); return o; };
-    const box = (a, b, c) => new T.BoxGeometry(a, b, c), cyl = (a, b, h, s = 24) => new T.CylinderGeometry(a, b, h, s), ball = (r) => new T.SphereGeometry(r, 40, 30);
+    const box = (a, b, c) => shared(`b${a},${b},${c}`, () => new T.BoxGeometry(a, b, c)), cyl = (a, b, h, s = 24) => shared(`c${a},${b},${h},${s}`, () => new T.CylinderGeometry(a, b, h, s)), ball = (r) => shared(`s${r}`, () => (r >= 0.1 ? new T.SphereGeometry(r, 40, 30) : r >= 0.04 ? new T.SphereGeometry(r, 20, 14) : new T.SphereGeometry(r, 12, 8)));
     const body = M(color, { roughness: 0.42 }), gold = M('#f4c542', { metalness: 0.85, roughness: 0.3 }), dark = M('#191c24'), white = M('#f7f7f2');
     const skin = M(['#f0c29b', '#e6b38a', '#c98d5f', '#f3cba8', '#efc09a', '#8d5a3a'][kind]), hairC = ['#2b2118', '#6b4423', '#3a2a1c', '#b5763a', '#8a8d93', '#14100d'][kind], hair = M(hairC, { roughness: 0.8 });
     const y0 = 0.015, pants = kind === 2 ? M('#39475f') : kind === 5 ? M('#2d3a55') : kind === 1 ? M('#2a2f3b') : body;

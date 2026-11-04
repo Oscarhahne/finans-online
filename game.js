@@ -21,7 +21,7 @@ function newGame(players, opts = {}) {
   return g;
 }
 const log = (g, m, quiet, ms) => {
-  g.log.push(m); if (g.log.length > 80) g.log.shift();
+  g.log.push(m); if (g.log.length > 40) g.log.shift(); // Klienten visar de 40 senaste.
   // Händelser visas som korta rutor hos alla spelare. Kast och kort har egna visningar.
   if (!quiet) { g.eventNo++; g.events.push({ id: g.eventNo, text: m, ...(ms ? { ms } : {}) }); if (g.events.length > 20) g.events.shift(); }
 };

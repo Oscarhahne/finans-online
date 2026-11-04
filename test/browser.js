@@ -1,6 +1,6 @@
 // Två riktiga webbläsare spelar mot varandra via servern.
 const { chromium } = require('playwright');
-const out = process.argv[2];
+const out = process.argv[2] || require('fs').mkdtempSync(require('path').join(require('os').tmpdir(), 'skarm-'));
 (async () => {
   const b = await chromium.launch();
   const errors = [];
