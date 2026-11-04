@@ -53,8 +53,7 @@ body::before{content:'';position:fixed;inset:0;z-index:-1;background:var(--bg) u
 .ml-actions{display:grid;grid-template-columns:minmax(0,3fr) minmax(0,1fr)}.mhome button.ml-start{min-height:84px;border:0;padding:12px 56px 12px 24px;background:#ffc53d;color:#17120a;text-align:left;clip-path:polygon(0 0,100% 0,calc(100% - 40px) 100%,0 100%);display:flex;flex-direction:column;justify-content:center;gap:2px}.mhome button.ml-start:hover:not(:disabled){filter:brightness(1.1);background:#ffc53d;transform:none}.mhome button.ml-start:disabled{background:#8f7730;color:#120e04;opacity:1;cursor:default}.ml-start span{font:800 36px/1 Manrope,Nunito,sans-serif;letter-spacing:-.03em}.ml-start small{font-size:14px;font-weight:700}.mhome button.ml-leave{min-height:84px;margin-left:-40px;border:0;padding:0 14px 0 54px;background:#060a14;color:#fff;font-weight:800;font-size:15px;clip-path:polygon(40px 0,100% 0,100% 100%,0 100%)}.mhome button.ml-leave:hover{background:#1b2a4f;transform:none}.ml-wait{display:flex;align-items:center;min-height:84px;box-sizing:border-box;padding:12px 56px 12px 22px;background:#fff;color:#060a14;font-size:18px;font-weight:800;line-height:1.25;clip-path:polygon(0 0,100% 0,calc(100% - 40px) 100%,0 100%)}
 @media (max-width:999px){.ml-wrap{grid-template-columns:minmax(0,1fr);padding:22px 16px 24px}.ml-code{flex:1 1 100%}}
 @media (max-width:560px){.ml-seats{grid-template-columns:repeat(3,minmax(0,1fr))}.ml-pick{flex-direction:column}.ml-hero{flex:none;min-height:130px;clip-path:polygon(0 0,100% 0,calc(100% - 26px) 100%,0 100%);padding-right:0}.ml-spot .pawn{max-width:96px}.mhome button.ml-copy{font-size:13px;padding:0 10px 0 28px}.ml-code b{font-size:25px}.ml-code span{display:none}.mhome button.ml-dice{right:-6px}.ml-settings{grid-template-columns:minmax(0,1fr)}.ml-start span{font-size:29px}}
-.card{background:var(--panel);border-radius:20px;padding:20px;margin-bottom:16px}
-.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}.row>*{flex:1 1 140px}.stack{display:grid;gap:12px}
+.card{background:var(--panel);border-radius:20px;padding:20px;margin-bottom:16px}.stack{display:grid;gap:12px}
 .code{font:600 36px Fredoka,sans-serif;letter-spacing:3px;color:var(--gold)}
 .game{display:grid;grid-template-columns:165px minmax(0,1fr) 255px;grid-template-rows:minmax(0,1fr) auto;gap:6px;padding:6px;height:100vh;height:100dvh}
 .holdings{grid-column:1/-1}
@@ -68,8 +67,7 @@ body::before{content:'';position:fixed;inset:0;z-index:-1;background:var(--bg) u
 .landing{background:var(--panel);border-radius:14px;padding:9px;display:grid;gap:7px;align-content:start;font-size:13.5px}
 .landing h3{font-size:15px}
 .ltile{border-radius:14px;box-shadow:inset 0 0 0 2px color-mix(in srgb,var(--g) 55%,white);text-shadow:0 2px 3px rgba(0,0,0,.6);overflow:hidden;font-weight:800;text-align:center}
-.ltile .lh{height:30px;background:rgba(255,255,255,.4);border-bottom:1px solid rgba(0,0,0,.45)}
-.ltile .lb{padding:8px 4px;display:grid;gap:4px;justify-items:center;overflow-wrap:anywhere;font:600 16px/1.15 Fredoka,sans-serif}
+.ltart canvas{display:block;width:100%;height:auto}
 .lrow{display:flex;justify-content:space-between;gap:8px;font-size:13.5px}
 .holdings{background:var(--panel);border-radius:12px;padding:5px 8px;display:grid;grid-template-columns:132px minmax(0,1fr) 150px;gap:10px}
 .holdings h4{margin:0 0 2px;font:800 12.5px Nunito,sans-serif;color:var(--mute)}
@@ -109,20 +107,14 @@ body::before{content:'';position:fixed;inset:0;z-index:-1;background:var(--bg) u
 .side{min-width:0}
 .c{position:absolute;width:105px;height:120px;border-radius:16px;color:#fff;text-shadow:0 2px 3px rgba(0,0,0,.65);padding:0;font:800 25px/1.08 Nunito,sans-serif;text-align:center;overflow-wrap:break-word;cursor:pointer;background:none;overflow:hidden}
 .c::after{content:'';position:absolute;inset:0;pointer-events:none;border:3px solid #000;border-radius:inherit;background:linear-gradient(120deg,rgba(255,255,255,.2) 0,rgba(255,255,255,.04) 28%,transparent 29%)}
-.bk .pr{font-size:16px}
-.pr{font:800 20px/1.1 Nunito,sans-serif;opacity:.95;white-space:nowrap}
-.lab{position:absolute;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:3px;text-align:center}
 .c:hover{filter:brightness(1.08)}
 .n{position:absolute;top:5px;left:5px;min-width:30px;padding:3px 6px;border-radius:8px;background:rgba(0,0,0,.45);font:800 17px/19px Nunito,sans-serif;text-align:center;z-index:1}
 .tic{display:block;width:66px;height:50px;flex:none;filter:drop-shadow(0 3px 3px rgba(0,0,0,.5))}
-.rowlab{flex-direction:row;gap:5px;padding-left:4px}.rowlab .tic{width:44px;height:33px;margin-top:14px}.rowlab .ltext{min-width:0;flex:1}
-.sidelab{font-size:23px;gap:0;padding-top:2px}.sidelab .tic{width:36px;height:27px}.sidelab .pr{font-size:17px}
-.bk .tic{width:36px;height:27px}.bk .lab{gap:0;font-size:18px}.h .tic{width:84px;height:63px}
-.ltile .tic{width:92px;height:69px}
+.bk .tic{width:36px;height:27px}.h .tic{width:84px;height:63px}
 .t{font-weight:800}
 .head{position:absolute;top:1px;left:1px;right:1px;height:30px;border-radius:13px 13px 0 0;background:rgba(255,255,255,.4);border-bottom:1px solid rgba(0,0,0,.45);display:flex;align-items:center;justify-content:flex-start;gap:3px;padding:0 3px}
 .bk{height:105px;font-size:20px}
-.narrow .c{font-size:20px}.narrow .bk .lab{font-size:14.5px}.narrow .rowlab .tic{width:32px;height:24px}.narrow .pr{font-size:16px}
+.narrow .c{font-size:20px}
 .h{width:120px;height:120px}
 .r{position:absolute;inset:0;padding:10px;display:flex;flex-direction:column;gap:2px;align-items:center;justify-content:center;text-align:center}
 .ic{display:block;margin:0 auto 1px;width:44px;height:30px}
@@ -190,12 +182,11 @@ button.waiting::after{content:' (vänta)';font-weight:600}
 .cardpop.placed{width:440px}.cardpop.placed .cpscene{height:112px}.cardpop.placed .cpbody h2{font-size:31px}.cardpop.placed .cpbody p{font-size:17px}.cardpop.placed .cpeff b{font-size:25px}
 .drawbox.placed{width:500px;overflow:visible}
 .events.placed{transform:none!important;animation:none!important;left:var(--x)!important;top:var(--y)!important;right:auto!important;bottom:auto!important;width:var(--w)!important;max-width:none!important}
-.hasart{background:#03381e!important}.artwrap{position:absolute;display:flex;align-items:center;justify-content:center}
+.hasart{background:#03381e!important}.hasart .head{background:none;border:0;z-index:1}.hasart.mort .artwrap{filter:grayscale(.85) brightness(.75)}.artwrap{position:absolute;display:flex;align-items:center;justify-content:center}
 .divfill{display:block;width:100%;height:100%;border-radius:inherit}.divart{position:relative;container-type:inline-size;aspect-ratio:321/214;flex:none;text-shadow:none}.divart img{display:block;width:100%;height:100%}
 .divart span{position:absolute;left:4.2%;top:6.5%;width:12.6%;height:17.5%;display:flex;align-items:center;justify-content:center;border-radius:12%;background:#0a2a1b;color:#fff;font:800 9.5cqw/1 Nunito,sans-serif}
 .ct-news,.ct-bor{color:#18202c!important;text-shadow:none!important}.ct-news{background:linear-gradient(150deg,#ffe07a,#f7bf30 60%,#eeac1c)!important}.ct-bor{background:linear-gradient(150deg,#c0e1ff,#7cbcf9 60%,#5aa4ee)!important}
-.ct-news .n,.ct-bor .n{background:none;color:#18202c;font-size:21px;font-weight:800}
-.ct-news .sidelab,.ct-bor .sidelab{font-size:21px}.ct-news .sidelab .tic,.ct-bor .sidelab .tic{width:50px;height:38px}.ct-news.bk .tic,.ct-bor.bk .tic{width:44px;height:33px}.ct-news .lab,.ct-bor .lab{opacity:1}
+.ct-news .n,.ct-bor .n{background:none;color:#18202c;font-size:21px;font-weight:800}.ct-news.bk .tic,.ct-bor.bk .tic{width:44px;height:33px}
 .ct-news::after,.ct-bor::after{background:none}
 .deck.ct-news{border:3px solid #000;box-shadow:0 6px 0 #b98516,0 10px 18px rgba(0,0,0,.45)}.deck.ct-bor{border:3px solid #000;box-shadow:0 6px 0 #2f6fb8,0 10px 18px rgba(0,0,0,.45)}
 .lastcard .news{background:#101d24!important;color:#fff;border:3px solid #f6c945;padding:0;overflow:hidden}.lastcard .news.tips{border-color:#7cc0ff}.lcband{background:#fbe89a;color:#18202c;font:800 13px/1.2 Nunito,sans-serif;text-transform:uppercase;letter-spacing:.5px;padding:3px 11px}.tips .lcband{background:#cfe8ff}.lcbody{padding:4px 11px 6px;font:700 14.5px/1.2 Nunito,sans-serif}.lcbody b{display:block;font-size:17px;font-weight:800;margin-bottom:1px}
@@ -284,7 +275,9 @@ const ICON = {
 };
 // Egen bild för Aktieutdelning. Rutans nummer läggs ovanpå numret i bilden.
 // Ruta på det enkla brädet. Aktieutdelning ritas när bilden har laddats, de andra direkt.
-function artTile(kind, no, w, h, label) { const S = 2, cv = el('canvas', { class: 'divfill', 'aria-label': label }); cv.width = Math.round(w * S); cv.height = Math.round(h * S); const c = cv.getContext('2d'); if (kind === 'div') { const img = new Image(); img.onload = () => drawDivArt(c, cv.width, cv.height, img, no); img.src = 'aktieutdelning.webp'; } else drawCardArt(c, cv.width, cv.height, kind, no); return cv; }
+function artTile(kind, no, w, h, label, n) { const S = 2, cv = el('canvas', { class: 'divfill', role: 'img', 'aria-label': label }); cv.width = Math.round(w * S); cv.height = Math.round(h * S); const c = cv.getContext('2d');
+  const draw = () => { if (kind === 'bor' || kind === 'news') drawCardArt(c, cv.width, cv.height, kind, no); else { const q = SQUARES[n], plot = q.kind === 'plot'; drawTileArt(c, w, h, S, { no, name: q.name, sub: q.sub, col: plot ? GROUPS[q.group].color : KIND_BG[q.kind], price: plot ? plotInfo(n).price.toLocaleString('sv-SE') + ' kr' : '' }); c.strokeStyle = '#000'; c.lineWidth = 6; c.strokeRect(0, 0, cv.width, cv.height); } };
+  if (kind === 'div') { const img = new Image(); img.onload = () => drawDivArt(c, cv.width, cv.height, img, no); img.src = 'aktieutdelning.webp'; } else { draw(); if (document.fonts && document.fonts.status !== 'loaded') document.fonts.ready.then(draw); } return cv; }
 const divArt = (n, width) => el('div', { class: 'divart', style: `width:${width}` }, el('img', { src: 'aktieutdelning.webp', alt: 'Aktieutdelning', draggable: 'false' }), el('span', {}, displayNo(n)));
 const iconFor = (s) => { const k = s.kind === 'plot' ? s.group : { bor: 'bor', news: 'news', div: 'div', lilla: 'bond', bonddiv: 'bond', branch: 'bank', entry: 'in', exit: 'out', buildsq: 'crane', itsec: 'shield', tax: 'tax', repay: 'repay', give: 'give', prison: 'bars', gotoprison: 'gojail' }[s.kind]; return svg(`<svg class="tic" viewBox="0 0 64 48" aria-hidden="true">${ICON[k] || ''}</svg>`); };
 const tileBg = (c) => `linear-gradient(145deg,color-mix(in srgb,${c} 78%,white) 0%,${c} 42%,color-mix(in srgb,${c} 52%,black) 100%)`;
@@ -328,6 +321,8 @@ function buildBoard() {
   b.append(el('div', { class: 'deck ct-bor', style: `left:${leftC - 85}px;top:${BOTTOM - 705}px;transform:rotate(-4deg)` }, artTile('bor', null, 170, 100, 'Börstips')));
   b.append(el('div', { class: 'deck ct-news', style: `left:${rightC - 85}px;top:${BOTTOM - 705}px;transform:rotate(4deg)` }, artTile('news', null, 170, 100, 'Finanstidningen')));
   b.append(el('div', { class: 'activenews', id: 'activenews', style: `left:${colX(8) + 10}px;width:${4 * TW - 20}px;top:${BOTTOM - 585}px` }));
+  // Rutorna läggs in sist, så att skuggan från rutan bredvid inte täcker namnet.
+  const cells = [];
   for (let n = 1; n <= 54; n++) {
     const s = SQUARES[n]; const r = rect(n); const isPlot = s.kind === 'plot';
     const g = isPlot ? GROUPS[s.group] : null;
@@ -338,23 +333,13 @@ function buildBoard() {
     b.append(el('div', { class: 'plinth', style: `left:${r.x + 2}px;top:${r.y + 12}px;width:${r.w - 4}px;height:${r.h - 2}px;background:color-mix(in srgb,${s.kind === 'bor' ? '#2f6fb8' : s.kind === 'news' ? '#a97412' : s.kind === 'div' ? '#0b4f26' : base} 45%,black)` }));
     const e = el('div', { class: cls, id: 'sq' + n, role: 'button', tabindex: 0, 'aria-label': displayNo(n) + ' ' + s.name, style: `left:${left}px;top:${top}px;width:${w}px;height:${h}px;background:${tileBg(base)};--g:${base};` + (r.rot ? `transform:rotate(${r.rot}deg);` : '') });
     e.onclick = () => showSquare(n); e.onkeydown = (ev) => { if (ev.key === 'Enter') showSquare(n); };
-    const icon = iconFor(s);
-    const name = s.sub ? [el('strong', {}, breakable(s.name)), el('br'), breakable(s.sub)] : [breakable(s.name)];
-    if (r.corner) e.append(el('div', { class: 'r' }, el('div', { class: 'n' }, displayNo(n)), icon, el('div', {}, ...name)));
-    else {
-      const rot = r.rot || 0; const sideways = Math.abs(rot) === 90;
-      if (s.kind === 'div' || s.kind === 'bor' || s.kind === 'news') { const uw = sideways ? h : w, uh = sideways ? w : h; e.classList.add('hasart'); e.append(el('div', { class: 'artwrap', style: `left:${(w - uw) / 2}px;top:${(h - uh) / 2}px;width:${uw}px;height:${uh}px;transform:rotate(${-rot}deg)` }, artTile(s.kind, displayNo(n), uw, uh, s.name))); b.append(e); continue; }
-      if (isPlot) e.append(el('div', { class: 'head', id: 'h' + n, style: (sideways ? 'height:42px;' : '') + (rot === -90 ? 'justify-content:flex-end' : '') }));
-      // Rutan är vriden så att huvudet pekar inåt, men texten står rak mot skärmen. Pjäsen får en egen del av rutan.
-      let lx = 0, ly = 0, W = w, H = h, just = 'center';
-      if (r.bank) { const res = 36; if (r.wide) { W = w - res - 4; } else if (r.arm === 'L') { W = w - res; } else { lx = res; W = w - res; } }
-      else if (sideways) { const top = isPlot ? 43 : 36; const ah = h - top; W = ah; H = w; lx = w / 2 - W / 2; ly = top + ah / 2 - H / 2; }
-      else { const top = isPlot ? 31 : 0; ly = top; H = h - top; just = rot === 180 ? 'flex-start' : 'flex-end'; }
-      const row = !!r.wide;
-      e.append(el('div', { class: 'lab' + (row ? ' rowlab' : '') + (sideways ? ' sidelab' : ''), style: `left:${lx}px;top:${ly}px;width:${W}px;height:${H}px;justify-content:${row ? 'center' : just};transform:rotate(${-rot}deg)` }, el('div', { class: 'n' }, displayNo(n)), icon, el('div', { class: 'ltext' }, el('div', {}, ...name), isPlot ? el('div', { class: 'pr' }, kr(g.plot)) : null)));
-    }
-    b.append(e);
+    // Texten står rak mot skärmen fast rutan är vriden. Ägare och hus ligger ovanpå bilden.
+    const rot = r.rot || 0, sideways = Math.abs(rot) === 90, uw = sideways ? h : w, uh = sideways ? w : h; e.classList.add('hasart');
+    e.append(el('div', { class: 'artwrap', style: `left:${(w - uw) / 2}px;top:${(h - uh) / 2}px;width:${uw}px;height:${uh}px;transform:rotate(${-rot}deg)` }, artTile(s.kind, displayNo(n), uw, uh, s.name, n)));
+    if (isPlot) e.append(el('div', { class: 'head', id: 'h' + n, style: (sideways ? 'height:42px;' : '') + (rot === -90 ? 'justify-content:flex-end' : '') }));
+    cells.push(e);
   }
+  b.append(...cells);
   return b;
 }
 let S = null, ws = null, modal = null, boardEl = null, lastLogTop = 0, joinedInfo = null;
@@ -821,7 +806,7 @@ function renderLanding() {
   const box = document.getElementById('landing'); if (!box) return; const g = S.game; const L = g.landed;
   if (!L) { box.replaceChildren(el('h3', {}, 'Senaste rutan'), el('p', { class: 'small', style: 'margin:0' }, 'Här visas rutan som spelaren landar på.')); return; }
   const p = g.players.find((v) => v.id === L.player); const n = L.pos; const s = SQUARES[n]; const isPlot = s.kind === 'plot'; const gr = isPlot ? GROUPS[s.group] : null;
-  const bg = isPlot ? gr.color : KIND_BG[s.kind]; const icon = iconFor(s);
+  const bg = isPlot ? gr.color : KIND_BG[s.kind];
   const rows = [];
   if (isPlot) { const i = plotInfo(n); const x = g.plots[n]; const row = (a, b) => el('div', { class: 'lrow' }, el('span', { class: 'small' }, a), el('b', {}, b));
     rows.push(el('div', { class: 'small' }, gr.name), row('Ägare', x.owner ? ownerName(x.owner) : 'Banken'));
@@ -831,7 +816,7 @@ function renderLanding() {
   } else if (g.lastCard && (s.kind === 'bor' || s.kind === 'news' || s.kind === 'exit')) rows.push(el('div', { class: 'small' }, g.lastCard.deck), el('div', {}, g.lastCard.text));
   else rows.push(el('div', {}, SQUARE_TEXT[s.kind] || ''));
   box.replaceChildren(el('h3', {}, p.id === S.you ? 'Du landade på' : p.name + ' landade på'),
-    el('div', { class: 'ltile' + (s.kind === 'bor' ? ' ct-bor' : s.kind === 'news' ? ' ct-news' : ''), style: `background:${tileBg(bg)};color:#fff;--g:${bg}` }, isPlot ? el('div', { class: 'lh' }) : null, (s.kind === 'div' ? divArt(n, '100%') : el('div', { class: 'lb' }, el('div', { class: 'small', style: 'color:inherit' }, 'Ruta ' + displayNo(n)), icon, el('div', {}, breakable(s.name))))), ...rows);
+    el('div', { class: 'ltile' + (s.kind === 'bor' ? ' ct-bor' : s.kind === 'news' ? ' ct-news' : ''), style: `background:${tileBg(bg)};color:#fff;--g:${bg}` }, (s.kind === 'div' ? divArt(n, '100%') : el('div', { class: 'ltart' }, artTile(s.kind, displayNo(n), 210, 136, s.name, n)))), ...rows);
 }
 // Rutan på brädet lyser upp när muspekaren eller fokus är på ett bevis.
 const clearGlow = () => { document.querySelectorAll('.c.glow').forEach((e) => e.classList.remove('glow')); if (window.Board3D && Board3D.on) Board3D.glow([]); };
