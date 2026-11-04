@@ -25,7 +25,7 @@ function tileCanvas(n, r, w, h) { const S = 3, cw = Math.round(w * S), ch = Math
   const grad = c.createLinearGradient(0, 0, cw, ch);
   if (s.kind === 'bor') { grad.addColorStop(0, '#c0e1ff'); grad.addColorStop(.6, '#7cbcf9'); grad.addColorStop(1, '#5aa4ee'); } else if (s.kind === 'news') { grad.addColorStop(0, '#ffe07a'); grad.addColorStop(.6, '#f7bf30'); grad.addColorStop(1, '#eeac1c'); } else { grad.addColorStop(0, shade(base, .28)); grad.addColorStop(.45, base); grad.addColorStop(1, shade(base, -.42)); }
   c.fillStyle = grad; c.fillRect(0, 0, cw, ch); const ink = light ? '#18202c' : '#ffffff';
-  if (s.kind === 'div' && divImg) { c.fillStyle = '#03381e'; c.fillRect(0, 0, cw, ch); const k = Math.min(cw / 321, ch / 214), iw = 321 * k, ih = 214 * k, ix = (cw - iw) / 2, iy = (ch - ih) / 2; c.drawImage(divImg, ix, iy, iw, ih); c.fillStyle = '#0a2a1b'; rr(c, ix + iw * .042, iy + ih * .065, iw * .126, ih * .175, iw * .015); c.fill(); c.fillStyle = '#fff'; c.font = fontOf(Math.round(iw * .085)); c.textAlign = 'center'; c.fillText(displayNo(n), ix + iw * .105, iy + ih * .19); }
+  if (s.kind === 'div' && divImg) drawDivArt(c, cw, ch, divImg, n);
   else {
     let bx = 0, by = 0, bw = cw, bh = ch; const band = 30 * S;
     if (isPlot) { c.fillStyle = 'rgba(255,255,255,.4)'; if (r.rot === 180) { c.fillRect(0, ch - band, cw, band); bh = ch - band; } else if (r.rot === 90) { c.fillRect(cw - band, 0, band, ch); bw = cw - band; } else if (r.rot === -90) { c.fillRect(0, 0, band, ch); bx = band; bw = cw - band; } else { c.fillRect(0, 0, cw, band); by = band; bh = ch - band; } }
